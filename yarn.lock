@@ -1698,6 +1698,11 @@
   optionalDependencies:
     "prettier" "^1.18.2"
 
+"@vue/devtools-api@^6.0.0-beta.14":
+  "integrity" "sha512-56vRhO7nXWWFYTx520BQSDlQH5VYpwy62hFDEqi2yHHEBpEqseOP5WYQusq7BEW3DXSY9E9cfPVR5CFtJbKuMg=="
+  "resolved" "https://registry.npmjs.org/@vue/devtools-api/-/devtools-api-6.0.0-beta.18.tgz"
+  "version" "6.0.0-beta.18"
+
 "@vue/eslint-config-prettier@^6.0.0":
   "integrity" "sha512-wFQmv45c3ige5EA+ngijq40YpVcIkAy0Lihupnsnd1Dao5CBbPyfCzqtejFLZX1EwH/kCJdpz3t6s+5wd3+KxQ=="
   "resolved" "https://registry.npmjs.org/@vue/eslint-config-prettier/-/eslint-config-prettier-6.0.0.tgz"
@@ -10517,10 +10522,12 @@
   "resolved" "https://registry.npmjs.org/vue-property-decorator/-/vue-property-decorator-9.1.2.tgz"
   "version" "9.1.2"
 
-"vue-router@^3.5.2":
-  "integrity" "sha512-807gn82hTnjCYGrnF3eNmIw/dk7/GE4B5h69BlyCK9KHASwSloD1Sjcn06zg9fVG4fYH2DrsNBZkpLtb25WtaQ=="
-  "resolved" "https://registry.npmjs.org/vue-router/-/vue-router-3.5.2.tgz"
-  "version" "3.5.2"
+"vue-router@^4.0.11":
+  "integrity" "sha512-sha6I8fx9HWtvTrFZfxZkiQQBpqSeT+UCwauYjkdOQYRvwsGwimlQQE2ayqUwuuXGzquFpCPoXzYKWlzL4OuXg=="
+  "resolved" "https://registry.npmjs.org/vue-router/-/vue-router-4.0.11.tgz"
+  "version" "4.0.11"
+  dependencies:
+    "@vue/devtools-api" "^6.0.0-beta.14"
 
 "vue-style-loader@^4.1.0", "vue-style-loader@^4.1.2":
   "integrity" "sha512-sFuh0xfbtpRlKfm39ss/ikqs9AbKCoXZBpHeVZ8Tx650o0k0q/YCM7FRvigtxpACezfq6af+a7JeqVTWvncqDg=="
