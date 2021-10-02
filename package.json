@@ -38,6 +38,7 @@
     "webpack-notifier": "^1.13.0"
   },
   "dependencies": {
+    "axios": "^0.22.0",
     "core-js": "^3.18.1",
     "stimulus": "^2.0.0",
     "vue": "^3.2.19",

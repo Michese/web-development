@@ -27,6 +27,9 @@ Encore.setOutputPath('public/build/')
   .enableVueLoader(() => ({}), {
     runtimeCompilerBuild: true,
   })
-  .enableTypeScriptLoader();
+  .enableTypeScriptLoader()
+    .addAliases({
+        '@': '/assets'
+    });
 
 module.exports = Encore.getWebpackConfig();
