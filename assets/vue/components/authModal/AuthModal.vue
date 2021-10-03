@@ -1,5 +1,5 @@
 <template>
-  <button type="button" @click="openModal">
+  <button type="button" class="auth-modal__btn" @click="openModal">
     <slot></slot>
   </button>
 
@@ -64,6 +64,10 @@ export default class AuthModal extends Vue {
   padding: 10px;
   z-index: 100;
   background-color: rgba(#3b3b3b, 0.8);
+
+  &__btn {
+    cursor: pointer;
+  }
 
   &__inner {
     padding: 15px;

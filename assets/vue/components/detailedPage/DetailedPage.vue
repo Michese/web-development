@@ -158,6 +158,7 @@ export default class DetailedPage extends Vue {}
 
     &__img {
       max-width: 465px;
+      margin-right: 50px;
       margin-bottom: 0;
     }
 

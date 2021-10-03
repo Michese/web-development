@@ -7,10 +7,8 @@
       </router-link>
 
       <auth-modal>
-        <button type="button" class="header-page__btn maria">
-          <span class="header-page__auth">Вход/Регистрация</span>
-          <img src="./assets/avatar.svg" alt="avatar" class="header-page__avatar" />
-        </button>
+        <span class="header-page__auth maria">Вход/Регистрация</span>
+        <img src="./assets/avatar.svg" alt="avatar" class="header-page__avatar" />
       </auth-modal>
     </div>
   </header>
