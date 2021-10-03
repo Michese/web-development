@@ -143,6 +143,10 @@ export default class GallerySection extends Vue {
   align-items: center;
   cursor: pointer;
 
+  &:hover &__img {
+    animation: rotation 1s linear infinite;
+  }
+
   &__img {
     text-align: center;
     display: block;

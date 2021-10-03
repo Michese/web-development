@@ -50,6 +50,7 @@ export default class GalleryCard extends Vue {
 
   &__img {
     border-radius: 15px;
+    transition: transform 0.1s linear;
   }
 
   &__title {
@@ -60,6 +61,15 @@ export default class GalleryCard extends Vue {
   &__date {
     display: block;
     color: var(--color-dark-green);
+  }
+
+  &:hover &__img {
+    box-shadow: 0 0 10px #000;
+    transform: scale(1.05);
+  }
+  &:hover &__title,
+  &:hover &__date {
+    text-shadow: 6px 4px 4px rgba(0, 0, 0, 0.25);
   }
 }
 </style>

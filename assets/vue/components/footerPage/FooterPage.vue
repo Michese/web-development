@@ -39,6 +39,10 @@ export default class FooterPage extends Vue {}
     margin-bottom: 15px;
     color: var(--color-yellow);
     text-align: center;
+
+    &:hover {
+      color: var(--color-gray);
+    }
   }
 }
 
