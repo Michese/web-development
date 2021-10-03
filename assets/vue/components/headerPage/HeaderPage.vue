@@ -6,20 +6,24 @@
         <span class="logo__text maria">Чайная комната</span>
       </router-link>
 
-      <button type="button" class="header-page__btn maria">
-        <span class="header-page__auth">Вход/Регистрация</span>
-        <img src="./assets/avatar.svg" alt="avatar" class="header-page__avatar" />
-      </button>
+      <auth-modal>
+        <button type="button" class="header-page__btn maria">
+          <span class="header-page__auth">Вход/Регистрация</span>
+          <img src="./assets/avatar.svg" alt="avatar" class="header-page__avatar" />
+        </button>
+      </auth-modal>
     </div>
   </header>
 </template>
 
 <script lang="ts">
 import { Options, Vue } from 'vue-class-component';
+import AuthModal from '@/vue/components/authModal/AuthModal.vue';
 import { routerEnum } from '@/enums';
 
 @Options({
   name: 'HeaderPage',
+  components: { AuthModal },
 })
 export default class HeaderPage extends Vue {
   get linkToGeneralPage(): string {

@@ -14,7 +14,6 @@
           боюсь высоты, но на крышу выхожу погулять тёмной ночкой, то жена, то примерная дочка, то смеюсь, то рыдаю
           белугой, то мирюсь, то ругаюсь с подругой. Не больна я, не в психике трещина… Просто Я – стопроцентная
           ЖЕНЩИНА! (Лариса Рубальская)
-Lorem ipsum dolor sit amet, consectetur adipisicing elit. Ab, accusamus ad adipisci consequatur consequuntur ducimus impedit ipsam iste iure iusto maiores modi, nulla optio quasi quis ratione tempore vel veritatis vitae voluptatum. Distinctio esse illo praesentium soluta vel! Consectetur magnam nobis placeat repudiandae voluptate! Dolores ipsa nam reprehenderit vel vitae!
         </p>
       </div>
       <footer class="detailed-page__footer">
@@ -49,6 +48,8 @@ export default class DetailedPage extends Vue {}
 <style lang="scss" scoped>
 @import '/assets/css/media';
 .detailed-page {
+  display: flex;
+  align-items: center;
   min-height: 100vh;
   padding: 150px 15px 60px;
   background-image: url('./assets/promo-background.jpg');
