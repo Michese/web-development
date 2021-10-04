@@ -37,14 +37,22 @@
 
 <script lang="ts">
 import { Options, Vue } from 'vue-class-component';
+import { Inject } from 'vue-property-decorator';
 import AuthModal from '@/vue/components/authModal/AuthModal.vue';
 import { routerEnum } from '@/enums';
+import { TUser } from '@/types';
 
 @Options({
   name: 'HeaderPage',
   components: { AuthModal },
 })
 export default class HeaderPage extends Vue {
+  @Inject() readonly user!: TUser | null;
+
+  created(): void {
+    // console.log('user', this.user);
+  }
+
   get linkToGeneralPage(): string {
     return routerEnum.generalPage;
   }

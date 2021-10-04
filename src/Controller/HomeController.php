@@ -20,7 +20,7 @@ class HomeController extends AbstractController
         ]);
     }
 
-    #[Route('/api/colors', name: 'colors_route')]
+    #[Route('/api/colors', name: 'colors_route', methods: ['GET'])]
     public function colorsAction()
     {
         return new JsonResponse(array('colors' => ['red', 'green','blue', 'yellow'], "success" => true));
