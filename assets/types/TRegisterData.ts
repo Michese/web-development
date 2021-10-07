@@ -1,6 +1,6 @@
-export type TUser = {
-  id: number;
+export type TRegisterData = {
   name: string;
   email: string;
+  password: string;
   phone: number;
 };

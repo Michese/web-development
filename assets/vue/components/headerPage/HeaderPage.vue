@@ -10,15 +10,21 @@
         <span class="logo__text maria">Чайная комната</span>
       </router-link>
 
-      <auth-modal>
+      <template v-if="!!user">
+        <div class="header-page__dropdown dropdown">
+          <span class="header-page__auth maria" @click="openDropDown = !openDropDown">
+            Здравствуйте, {{ user.name }}
+          </span>
+          <div class="dropdown__body" v-show="openDropDown">
+            <router-link :to="link">Добавить запись</router-link>
+            <span class="dropdown__text" @click="clickLogout">Выйти</span>
+          </div>
+        </div>
+
+      </template>
+      <auth-modal v-else>
         <span class="header-page__auth maria">Вход/Регистрация</span>
-        <svg
-          width="45"
-          height="45"
-          viewBox="0 0 45 45"
-          class="header-page__avatar"
-          xmlns="http://www.w3.org/2000/svg"
-        >
+        <svg width="45" height="45" viewBox="0 0 45 45" class="header-page__avatar" xmlns="http://www.w3.org/2000/svg">
           <path
             d="M22.5 0C10.0934 0 0 10.0934 0 22.5C0 34.9066 10.0934 45 22.5 45C34.9066 45 45 34.9066 45 22.5C45 10.0934 34.9066 0 22.5 0ZM22.5 42.3633C11.5473 42.3633 2.63672 33.4527 2.63672 22.5C2.63672 11.5473 11.5473 2.63672 22.5 2.63672C33.4527 2.63672 42.3633 11.5473 42.3633 22.5C42.3633 33.4527 33.4527 42.3633 22.5 42.3633Z"
           />
@@ -29,7 +35,6 @@
             d="M37.323 29.4823C35.571 27.5026 33.0515 26.3672 30.4105 26.3672H14.5901C11.9491 26.3672 9.42956 27.5026 7.67764 29.4823L7.05273 30.1885L7.51908 31.0081C10.5792 36.3858 16.3197 39.7266 22.5003 39.7266C28.6809 39.7266 34.4214 36.3858 37.4816 31.008L37.948 30.1884L37.323 29.4823ZM22.5003 37.0898C17.6016 37.0898 13.0291 34.6116 10.3377 30.56C11.52 29.5623 13.0253 29.0039 14.5901 29.0039H30.4105C31.9753 29.0039 33.4806 29.5623 34.6629 30.56C31.9715 34.6116 27.399 37.0898 22.5003 37.0898Z"
           />
         </svg>
-        <!--        <img src="./assets/avatar.svg" alt="avatar" class="header-page__avatar" />-->
       </auth-modal>
     </div>
   </header>
@@ -37,20 +42,31 @@
 
 <script lang="ts">
 import { Options, Vue } from 'vue-class-component';
-import { Inject } from 'vue-property-decorator';
+import { InjectReactive } from 'vue-property-decorator';
 import AuthModal from '@/vue/components/authModal/AuthModal.vue';
 import { routerEnum } from '@/enums';
 import { TUser } from '@/types';
+import SecurityApi from '@/api/SecurityApi';
 
 @Options({
   name: 'HeaderPage',
   components: { AuthModal },
 })
 export default class HeaderPage extends Vue {
-  @Inject() readonly user!: TUser | null;
+  @InjectReactive('user') readonly user!: TUser | null;
 
-  created(): void {
-    // console.log('user', this.user);
+  openDropDown = false;
+
+  get link(): string {
+    return routerEnum.creatingPage;
+  }
+
+  async clickLogout(): Promise<void> {
+    await SecurityApi.logout();
+  }
+
+  mounted(): void {
+    console.log('user', this.user);
   }
 
   get linkToGeneralPage(): string {
@@ -91,6 +107,7 @@ export default class HeaderPage extends Vue {
     display: none;
     color: var(--color-yellow);
     margin-right: 8px;
+    cursor: pointer;
 
     &:hover {
       color: var(--color-gray);
@@ -116,6 +133,26 @@ export default class HeaderPage extends Vue {
   }
   &:hover &__text {
     color: var(--color-gray);
+  }
+}
+
+.dropdown {
+  position: relative;
+
+  &__body {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    position: absolute;
+    padding: 10px 0;
+    top: 100%;
+    right: 0;
+    background-color: var(--color-promo-bg);
+    border: 0.3px solid var(--color-yellow);
+  }
+
+  &__text {
+    padding: 5px;
   }
 }
 

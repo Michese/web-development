@@ -5,6 +5,7 @@ namespace App\Repository;
 use App\Entity\User;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
 use Doctrine\Persistence\ManagerRegistry;
+use JetBrains\PhpStorm\ArrayShape;
 use Symfony\Component\Security\Core\Exception\UnsupportedUserException;
 use Symfony\Component\Security\Core\User\PasswordAuthenticatedUserInterface;
 use Symfony\Component\Security\Core\User\PasswordUpgraderInterface;
@@ -34,6 +35,41 @@ class UserRepository extends ServiceEntityRepository implements PasswordUpgrader
         $user->setPassword($newHashedPassword);
         $this->_em->persist($user);
         $this->_em->flush();
+    }
+
+    public function getUserByEmail(string $email): User
+    {
+        return $this->findOneBy(['email' => $email]);
+    }
+
+    public function getUserByApiToken(string $apiToken): User
+    {
+        return $this->createQuery(
+            'SELECT *
+            FROM user
+            WHERE p.api_token = :api_token'
+        )->setParameter('api_token', $apiToken);
+    }
+
+    #[ArrayShape(['apiToken' => "null|string", 'email' => "null|string", 'name' => "null|string", 'phone' => "null|string"])]
+    public function parseToArray(User $user): array
+    {
+        return [
+            'id' => $user->getId(),
+            'email' => $user->getEmail(),
+            'name' => $user->getName(),
+            'phone' => $user->getPhone(),
+        ];
+    }
+
+    public function parseToUser(array $content): User
+    {
+        $user = new User();
+        $user->setName($content['name']);
+        $user->setEmail($content['email']);
+        $user->setPassword($content['password']);
+        $user->setPhone($content['phone']);
+        return $user;
     }
 
     // /**

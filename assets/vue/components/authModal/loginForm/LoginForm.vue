@@ -26,13 +26,16 @@
 <script lang="ts">
 import { Options, Vue } from 'vue-class-component';
 import Input from '@/vue/components/authModal/input/Input.vue';
-import { TInput } from '@/types';
-import { Emit } from 'vue-property-decorator';
+import { TInput, TUser } from '@/types';
+import { Emit, Inject } from 'vue-property-decorator';
+import { TLoginData } from '@/types/TLoginData';
+import findBy from '@/helpers/findBy';
+import SecurityApi from '@/api/SecurityApi';
 
 const inputs: TInput[] = [
   {
     type: 'email',
-    name: 'login',
+    name: 'email',
     placeholder: 'Логин',
     pattern: /^[a-z]+.+@[a-z]{2,}.[a-z]{2,}$/i,
     defaultValue: '',
@@ -51,6 +54,9 @@ const inputs: TInput[] = [
   components: { Input },
 })
 export default class LoginForm extends Vue {
+  @Inject()
+  setUser!: (user: TUser) => void;
+
   inputValues = inputs.map(({ defaultValue }: TInput) => defaultValue);
 
   @Emit('closeModal') closeModal(): void {
@@ -65,16 +71,25 @@ export default class LoginForm extends Vue {
     this.inputValues[index] = newValue;
   }
 
-  onSubmit(): void {
+  async onSubmit(): Promise<void> {
     if (!this.formIsValid) return;
 
-    const data: any = {};
+    const data: TLoginData = {
+      email: this.inputValues[inputs.findIndex(findBy('name', 'email'))],
+      password: this.inputValues[inputs.findIndex(findBy('name', 'password'))],
+    };
 
-    inputs.forEach((input, index) => {
-      data[input.name] = this.inputValues[index];
-    });
+    // inputs.forEach((input, index) => {
+    //   data[input.name] = this.inputValues[index];
+    // });
 
-    console.log(data);
+    const { user } = await SecurityApi.login(data);
+
+    if (user) {
+      this.setUser(user);
+    }
+
+    console.log(user);
 
     this.clearForm();
   }

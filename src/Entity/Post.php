@@ -45,15 +45,19 @@ class Post
     private $deleted_at;
 
     /**
-     * @ORM\ManyToOne(targetEntity=User::class, inversedBy="posts")
-     * @ORM\JoinColumn(nullable=false)
+     * @ORM\OneToMany(targetEntity=PostRating::class, mappedBy="post_id")
+     */
+    private $postRatings;
+
+    /**
+     * @ORM\Column(type="string", length=255, nullable=true)
      */
     private $author;
 
     /**
-     * @ORM\OneToMany(targetEntity=PostRating::class, mappedBy="post_id")
+     * @ORM\Column(type="bigint")
      */
-    private $postRatings;
+    private $user_id;
 
     public function __construct()
     {
@@ -125,18 +129,6 @@ class Post
         return $this;
     }
 
-    public function getAuthor(): ?User
-    {
-        return $this->author;
-    }
-
-    public function setAuthor(?User $author): self
-    {
-        $this->author = $author;
-
-        return $this;
-    }
-
     /**
      * @return Collection|PostRating[]
      */
@@ -163,6 +155,30 @@ class Post
                 $postRating->setPostId(null);
             }
         }
+
+        return $this;
+    }
+
+    public function getAuthor(): ?string
+    {
+        return $this->author;
+    }
+
+    public function setAuthor(?string $author): self
+    {
+        $this->author = $author;
+
+        return $this;
+    }
+
+    public function getUserId(): ?string
+    {
+        return $this->user_id;
+    }
+
+    public function setUserId(string $user_id): self
+    {
+        $this->user_id = $user_id;
 
         return $this;
     }

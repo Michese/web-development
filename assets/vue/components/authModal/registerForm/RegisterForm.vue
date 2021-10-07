@@ -20,7 +20,7 @@
     </div>
     <footer class="register-form__footer">
       <label class="register-form__approval approval">
-        <input type="checkbox" name="approval" value="true" class="approval__checkbox" id="approval" />
+        <input type="checkbox" name="approval" v-model="approval" class="approval__checkbox" id="approval" />
         Согласие на обработку персональных данных
       </label>
       <button type="submit" class="register-form__submit" @click.prevent="onSubmit" :disabled="!formIsValid">
@@ -33,7 +33,10 @@
 <script lang="ts">
 import { Options, Vue } from 'vue-class-component';
 import Input from '@/vue/components/authModal/input/Input.vue';
-import { TInput } from '@/types';
+import { TInput, TRegisterData, TUser } from '@/types';
+import findBy from '@/helpers/findBy';
+import SecurityApi from '@/api/SecurityApi';
+import { Inject, InjectReactive, Provide } from 'vue-property-decorator';
 
 const inputs: TInput[] = [
   {
@@ -45,7 +48,7 @@ const inputs: TInput[] = [
   },
   {
     type: 'email',
-    name: 'login',
+    name: 'email',
     placeholder: 'e-mail',
     pattern: /^[a-z]+.+@[a-z]{2,}.[a-z]{2,}$/i,
     defaultValue: '',
@@ -80,6 +83,9 @@ const inputs: TInput[] = [
 export default class RegisterForm extends Vue {
   inputValues = inputs.map(({ defaultValue }: TInput) => defaultValue);
   approval = false;
+  // @Inject() readonly user!: TUser | null;
+  @InjectReactive()
+  setUser!: (user: TUser) => void;
 
   get getInputs(): TInput[] {
     return inputs;
@@ -89,26 +95,47 @@ export default class RegisterForm extends Vue {
     this.inputValues[index] = newValue;
   }
 
-  onSubmit(): void {
+  async onSubmit(): Promise<void> {
     if (!this.formIsValid) return;
 
-    const data: any = {};
+    console.log('onSubmit');
+    const data: TRegisterData = {
+      name: this.inputValues[inputs.findIndex(findBy('name', 'name'))],
+      email: this.inputValues[inputs.findIndex(findBy('name', 'email'))],
+      phone: +this.inputValues[inputs.findIndex(findBy('name', 'phone'))],
+      password: this.inputValues[inputs.findIndex(findBy('name', 'password'))],
+    };
 
-    inputs.forEach((input, index) => {
-      data[input.name] = this.inputValues[index];
-    });
+    const { user } = await SecurityApi.register(data);
+    console.log('setUser', this.setUser);
+    this.setUser(user);
+    // try {
 
-    console.log(data);
+      // console.log(result);
+    // } catch (exp) {
+    //   const result = await SecurityApi.logout();
+    //   console.log('logout', result);
+    // }
 
-    this.clearForm();
+    // this.clearForm();
+  }
+
+  async created(): Promise<void> {
+    // try {
+    //   const result = await SecurityApi.logout();
+    //   console.log('logout', result);
+    // } catch (err) {
+    //   console.log('err', err);
+    // }
+
   }
 
   get formIsValid(): boolean {
     return (
       this.approval &&
-      inputs.reduce((total: boolean, input: TInput, index: number) => {
-        return total && input.pattern.test(this.inputValues[index]);
-      }, true)
+      inputs.every((input: TInput, index: number) => {
+        return input.pattern.test(this.inputValues[index]);
+      })
     );
   }
 

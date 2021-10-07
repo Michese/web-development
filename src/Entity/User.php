@@ -18,17 +18,17 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     /**
      * @ORM\Id
      * @ORM\GeneratedValue
-     * @ORM\Column(type="integer")
+     * @ORM\Column(type="integer", nullable=false)
      */
     private $id;
 
     /**
-     * @ORM\Column(type="string", length=180, unique=true)
+     * @ORM\Column(type="string", length=180, unique=true, nullable=false)
      */
     private $email;
 
     /**
-     * @ORM\Column(type="json")
+     * @ORM\Column(type="json", nullable=true)
      */
     private $roles = [];
 
@@ -39,12 +39,12 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     private $password;
 
     /**
-     * @ORM\Column(type="bigint")
+     * @ORM\Column(type="bigint", nullable=false)
      */
     private $phone;
 
     /**
-     * @ORM\Column(type="string", length=255)
+     * @ORM\Column(type="string", nullable=false, length=255)
      */
     private $name;
 
@@ -57,6 +57,11 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
      * @ORM\OneToMany(targetEntity=PostRating::class, mappedBy="user_id")
      */
     private $postRatings;
+
+    /**
+     * @ORM\Column(type="string", nullable=true, unique=true)
+     */
+    private $apiToken;
 
     public function __construct()
     {
@@ -88,7 +93,7 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
      */
     public function getUserIdentifier(): string
     {
-        return (string) $this->email;
+        return (string)$this->email;
     }
 
     /**
@@ -96,7 +101,7 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
      */
     public function getUsername(): string
     {
-        return (string) $this->email;
+        return (string)$this->email;
     }
 
     /**
@@ -128,9 +133,14 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
 
     public function setPassword(string $password): self
     {
-        $this->password = $password;
+        $this->password = password_hash($password, true);
 
         return $this;
+    }
+
+    public function checkPassword(string $password): bool
+    {
+        return password_verify($password, $this->password);
     }
 
     /**
@@ -233,6 +243,18 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
                 $postRating->setUserId(null);
             }
         }
+
+        return $this;
+    }
+
+    public function getApiToken(): ?string
+    {
+        return $this->apiToken;
+    }
+
+    public function setApiToken(?string $apiToken): self
+    {
+        $this->apiToken = $apiToken;
 
         return $this;
     }
