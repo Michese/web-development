@@ -36,7 +36,7 @@ import Input from '@/vue/components/authModal/input/Input.vue';
 import { TInput, TRegisterData, TUser } from '@/types';
 import findBy from '@/helpers/findBy';
 import SecurityApi from '@/api/SecurityApi';
-import { Inject, InjectReactive, Provide } from 'vue-property-decorator';
+import { Inject } from 'vue-property-decorator';
 
 const inputs: TInput[] = [
   {
@@ -81,11 +81,11 @@ const inputs: TInput[] = [
   components: { Input },
 })
 export default class RegisterForm extends Vue {
+  @Inject()
+  setUser!: (user: TUser) => void;
+
   inputValues = inputs.map(({ defaultValue }: TInput) => defaultValue);
   approval = false;
-  // @Inject() readonly user!: TUser | null;
-  @InjectReactive()
-  setUser!: (user: TUser) => void;
 
   get getInputs(): TInput[] {
     return inputs;
@@ -99,16 +99,18 @@ export default class RegisterForm extends Vue {
     if (!this.formIsValid) return;
 
     console.log('onSubmit');
-    const data: TRegisterData = {
+    const formData: TRegisterData = {
       name: this.inputValues[inputs.findIndex(findBy('name', 'name'))],
       email: this.inputValues[inputs.findIndex(findBy('name', 'email'))],
       phone: +this.inputValues[inputs.findIndex(findBy('name', 'phone'))],
       password: this.inputValues[inputs.findIndex(findBy('name', 'password'))],
     };
 
-    const { user } = await SecurityApi.register(data);
-    console.log('setUser', this.setUser);
-    this.setUser(user);
+    const {
+      data: { user },
+    } = await SecurityApi.register(formData);
+    console.log('setUser', this.setUser, user);
+    if (user) this.setUser(user);
     // try {
 
       // console.log(result);
@@ -150,7 +152,6 @@ export default class RegisterForm extends Vue {
 @import '/assets/css/media';
 .register-form {
   padding: 30px 15px 40px;
-  background-color: #c4c970;
   border-radius: 0 0 5px 5px;
   max-height: 60vh;
   overflow-y: auto;
@@ -183,7 +184,6 @@ export default class RegisterForm extends Vue {
   &__footer {
     display: flex;
     flex-direction: column;
-
   }
 
   &__submit {

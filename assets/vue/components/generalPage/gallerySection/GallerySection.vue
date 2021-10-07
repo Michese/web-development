@@ -12,12 +12,14 @@
         <span class="showing-more__text crephusa">Показать еще</span>
       </button>
     </div>
+    <loader />
   </section>
 </template>
 
 <script lang="ts">
 import { Options, Vue } from 'vue-class-component';
 import GalleryCard from '@/vue/components/generalPage/gallerySection/galleryCard/GalleryCard.vue';
+import Loader from '@/vue/components/loader/Loader.vue';
 import { TGalleryItem } from '@/types';
 import imgItem1 from '@/vue/components/generalPage/gallerySection/assets/img-item-1.jpg';
 import imgItem2 from '@/vue/components/generalPage/gallerySection/assets/img-item-2.jpg';
@@ -31,7 +33,7 @@ import imgItem9 from '@/vue/components/generalPage/gallerySection/assets/img-ite
 
 @Options({
   name: 'GallerySection',
-  components: { GalleryCard },
+  components: { GalleryCard, Loader },
 })
 export default class GallerySection extends Vue {
   get items(): TGalleryItem[] {
@@ -122,13 +124,13 @@ export default class GallerySection extends Vue {
   &__list {
     display: grid;
     grid-template-columns: 1fr;
+    grid-gap: 30px;
     margin-bottom: 39px;
   }
 
   &__item {
     display: flex;
     justify-content: center;
-    margin-bottom: 30px;
   }
 
   &__center {
@@ -163,15 +165,6 @@ export default class GallerySection extends Vue {
 
     &__list {
       grid-template-columns: 1fr 1fr;
-      margin-bottom: 39px;
-    }
-
-    &__item:nth-child(2n) {
-      margin: 0 0 30px 5px;
-    }
-
-    &__item:not(:nth-child(2n)) {
-      margin: 0 5px 30px 0;
     }
   }
 }
@@ -182,22 +175,7 @@ export default class GallerySection extends Vue {
 
     &__list {
       grid-template-columns: 1fr 1fr 1fr;
-    }
-
-    &__item:nth-child(3n - 2) {
-      margin: 0 55px 30px 0;
-    }
-
-    &__item:nth-child(3n - 1) {
-      margin: 0 27.5px 30px 27.5px;
-    }
-
-    &__item:nth-child(3n) {
-      margin: 0 0 30px 55px;
-    }
-
-    &__item:not(:nth-child(3n)) {
-      margin: 0 0 30px 5px;
+      grid-gap: 55px 30px;
     }
   }
 }

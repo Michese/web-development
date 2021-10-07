@@ -11,12 +11,12 @@
       </router-link>
 
       <template v-if="!!user">
-        <div class="header-page__dropdown dropdown">
+        <div class="header-page__dropdown dropdown" v-clickoutside="closeDropDown">
           <span class="header-page__auth maria" @click="openDropDown = !openDropDown">
             Здравствуйте, {{ user.name }}
           </span>
           <div class="dropdown__body" v-show="openDropDown">
-            <router-link :to="link">Добавить запись</router-link>
+            <router-link :to="link" class="dropdown__text" @click="closeDropDown">Добавить запись</router-link>
             <span class="dropdown__text" @click="clickLogout">Выйти</span>
           </div>
         </div>
@@ -42,7 +42,7 @@
 
 <script lang="ts">
 import { Options, Vue } from 'vue-class-component';
-import { InjectReactive } from 'vue-property-decorator';
+import { Inject, InjectReactive } from 'vue-property-decorator';
 import AuthModal from '@/vue/components/authModal/AuthModal.vue';
 import { routerEnum } from '@/enums';
 import { TUser } from '@/types';
@@ -54,6 +54,7 @@ import SecurityApi from '@/api/SecurityApi';
 })
 export default class HeaderPage extends Vue {
   @InjectReactive('user') readonly user!: TUser | null;
+  @Inject() setUser!: (user: TUser | null) => void;
 
   openDropDown = false;
 
@@ -61,16 +62,24 @@ export default class HeaderPage extends Vue {
     return routerEnum.creatingPage;
   }
 
-  async clickLogout(): Promise<void> {
-    await SecurityApi.logout();
-  }
-
-  mounted(): void {
-    console.log('user', this.user);
-  }
-
   get linkToGeneralPage(): string {
     return routerEnum.generalPage;
+  }
+
+  async clickLogout(): Promise<void> {
+    const {
+      data: { success },
+    } = await SecurityApi.logout();
+    if (success) this.setUser(null);
+    this.closeDropDown();
+  }
+
+  closeDropDown(): void {
+    if (this.openDropDown) this.openDropDown = false;
+  }
+
+  created(): void {
+    if (!this.user) this.$router.push('/');
   }
 }
 </script>
@@ -153,6 +162,11 @@ export default class HeaderPage extends Vue {
 
   &__text {
     padding: 5px;
+    cursor: pointer;
+
+    &:hover {
+      color: var(--color-yellow);
+    }
   }
 }
 

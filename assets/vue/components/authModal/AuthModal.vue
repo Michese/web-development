@@ -6,7 +6,7 @@
   <teleport to="body">
     <transition name="modal">
       <div v-if="isOpen" v-bodyoverflow class="auth-modal" @click.self="closeModal">
-        <section class="auth-modal__inner">
+        <section class="auth-modal__inner" :class="innerClasses">
           <header class="auth-modal__header">
             <input v-model="view" type="radio" value="LoginForm" id="login" class="auth-modal__radio" />
             <label for="login" class="auth-modal__label auth-modal__label_type_login"><span>Вход</span></label>
@@ -16,7 +16,7 @@
             </label>
           </header>
           <transition name="auth-toggle" mode="out-in">
-            <component :is="view"></component>
+            <component @closeModal="closeModal" :is="view"></component>
           </transition>
         </section>
       </div>
@@ -44,6 +44,13 @@ export default class AuthModal extends Vue {
   closeModal(): void {
     this.isOpen = false;
   }
+  
+  get innerClasses(): { 'auth-modal__inner_bg_login': boolean; 'auth-modal__inner_bg_register': boolean } {
+    return {
+      'auth-modal__inner_bg_login': this.view === 'LoginForm',
+      'auth-modal__inner_bg_register': this.view === 'RegisterForm',
+    };
+  }
 }
 </script>
 
@@ -66,9 +73,18 @@ export default class AuthModal extends Vue {
   }
 
   &__inner {
-    height: 550px;
+    min-height: 550px;
     margin: 10px;
     border-radius: 5px;
+    transition: background-color 0.5s ease;
+
+    &_bg_login {
+      background-color: #f3da6b;
+    }
+
+    &_bg_register {
+      background-color: #c4c970;
+    }
   }
 
   &__header {

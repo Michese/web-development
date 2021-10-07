@@ -14,6 +14,7 @@ const routes = [
     path: routerEnum.detailedPage + '/:post',
     name: 'detailed-page',
     component: DetailedPage,
+    props: true,
   },
   {
     path: routerEnum.creatingPage,

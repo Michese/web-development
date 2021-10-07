@@ -3,15 +3,15 @@ import { TRegisterData, TUser } from '@/types';
 import { TLoginData } from '@/types/TLoginData';
 
 class SecurityApi extends Api {
-  async register(data: TRegisterData): Promise<{ user: TUser }> {
+  async register(data: TRegisterData): Promise<{ data: { user: TUser } }> {
     return this.post('/api/register', data);
   }
 
-  async login(data: TLoginData): Promise<{ user: TUser }> {
+  async login(data: TLoginData): Promise<{ data: { user: TUser } }> {
     return this.post('/api/login', data);
   }
 
-  async logout(): Promise<{ success: boolean; exception?: string }> {
+  async logout(): Promise<{ data: { success: boolean; exception?: string } }> {
     return this.post('/api/logout');
   }
 

@@ -27,7 +27,7 @@
 import { Options, Vue } from 'vue-class-component';
 import Input from '@/vue/components/authModal/input/Input.vue';
 import { TInput, TUser } from '@/types';
-import { Emit, Inject } from 'vue-property-decorator';
+import { Emit, Inject, InjectReactive } from 'vue-property-decorator';
 import { TLoginData } from '@/types/TLoginData';
 import findBy from '@/helpers/findBy';
 import SecurityApi from '@/api/SecurityApi';
@@ -74,24 +74,20 @@ export default class LoginForm extends Vue {
   async onSubmit(): Promise<void> {
     if (!this.formIsValid) return;
 
-    const data: TLoginData = {
+    const formData: TLoginData = {
       email: this.inputValues[inputs.findIndex(findBy('name', 'email'))],
       password: this.inputValues[inputs.findIndex(findBy('name', 'password'))],
     };
 
-    // inputs.forEach((input, index) => {
-    //   data[input.name] = this.inputValues[index];
-    // });
-
-    const { user } = await SecurityApi.login(data);
+    const {
+      data: { user },
+    } = await SecurityApi.login(formData);
 
     if (user) {
       this.setUser(user);
+      this.clearForm();
+      this.closeModal();
     }
-
-    console.log(user);
-
-    this.clearForm();
   }
 
   get formIsValid(): boolean {
@@ -110,7 +106,7 @@ export default class LoginForm extends Vue {
 @import '/assets/css/media';
 .login-form {
   padding: 15px;
-  background-color: #f3da6b;
+  //background-color: #f3da6b;
   border-radius: 0 0 5px 5px;
   max-height: 80vh;
   overflow-y: auto;
