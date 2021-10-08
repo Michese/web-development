@@ -34,8 +34,8 @@ export default class App extends Vue {
     // const result = await HomeApi.getColors();
     // console.log(result);
 
-    const result = await HomeApi.getPosts({ limit: 9, page: 1 });
-    console.log('result', result);
+    // const result = await HomeApi.getPosts({ limit: 9, page: 1 });
+    // console.log('result', result);
   }
 }
 </script>

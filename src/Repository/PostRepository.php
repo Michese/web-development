@@ -44,15 +44,8 @@ class PostRepository extends ServiceEntityRepository
     public function getPosts(int $page, int $limit): array
     {
         $entityManager = $this->getEntityManager();
-
-//        $query = $entityManager->createQuery(
-//            'SELECT post.id, post.author, post.description, post.image, post.created_at FROM App\Entity\Post post
-//            JOIN App\Entity\PostRating post_rating WHERE post_rating.post = post.id'
-//        )
-//            ->setMaxResults($limit)
-//            ->setFirstResult($limit * ( $page - 1 ));
         $query = $entityManager->createQueryBuilder()
-            ->select(['p.id', 'p.author', 'p.description', 'p.image', 'p.created_at', 'avg(pr.rating) as rating'])
+            ->select(['p.id', 'p.title', 'p.author', 'p.description', 'p.image', 'p.created_at', 'avg(pr.rating) as rating'])
             ->from('App\Entity\Post', 'p')
             ->leftJoin('p.postRatings', 'pr')
             ->groupBy('p.id')
@@ -63,32 +56,35 @@ class PostRepository extends ServiceEntityRepository
         return $query->getResult();
     }
 
-    // /**
-    //  * @return Post[] Returns an array of Post objects
-    //  */
-    /*
-    public function findByExampleField($value)
+    /**
+     * @throws \Doctrine\ORM\NonUniqueResultException
+     */
+    public function getPost(int $postId): array
     {
-        return $this->createQueryBuilder('p')
-            ->andWhere('p.exampleField = :val')
-            ->setParameter('val', $value)
-            ->orderBy('p.id', 'ASC')
-            ->setMaxResults(10)
-            ->getQuery()
-            ->getResult()
-        ;
+        $entityManager = $this->getEntityManager();
+        $query = $entityManager->createQueryBuilder()
+            ->select(['p.id', 'p.title', 'p.author', 'p.description', 'p.image', 'count(pr.rating) as countVoted',  'avg(pr.rating) as rating'])
+            ->from('App\Entity\Post', 'p')
+            ->where('p.id=:postId')
+            ->leftJoin('p.postRatings', 'pr')
+            ->groupBy('p.id')
+            ->orderBy('p.created_at', 'DESC')
+            ->setParameter('postId', $postId)
+            ->getQuery();
+        return $query->getOneOrNullResult();
     }
-    */
 
-    /*
-    public function findOneBySomeField($value): ?Post
+    /**
+     * @throws \Doctrine\ORM\NonUniqueResultException
+     */
+    public function getTotalCount(): int
     {
-        return $this->createQueryBuilder('p')
-            ->andWhere('p.exampleField = :val')
-            ->setParameter('val', $value)
+        $entityManager = $this->getEntityManager();
+        $query = $entityManager->createQueryBuilder()
+            ->select('count(p) as count')
+            ->from('App\Entity\Post', 'p')
             ->getQuery()
-            ->getOneOrNullResult()
-        ;
+            ->getOneOrNullResult();
+        return $query['count'];
     }
-    */
 }

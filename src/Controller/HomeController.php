@@ -3,6 +3,7 @@
 namespace App\Controller;
 
 use App\Entity\Post;
+use App\Entity\PostRating;
 use App\Repository\PostRepository;
 use App\Service\ApiTokenService;
 use App\Service\CookieService;
@@ -118,6 +119,7 @@ class HomeController extends AbstractController
             $limit = intval($request->get('limit'));
 
             $result = $this->getDoctrine()->getManager()->getRepository(Post::class)->getPosts($page, $limit);
+            $totalCount = $this->getDoctrine()->getManager()->getRepository(Post::class)->getTotalCount();
 
             $fileManagerService = new FileManagerService();
             foreach ($result as $key => $value) {
@@ -127,6 +129,57 @@ class HomeController extends AbstractController
             return new JsonResponse(['exception' => $exception, "success" => false]);
         }
 
-        return new JsonResponse(['posts' => $result, "success" => true]);
+        return new JsonResponse(['posts' => $result, "success" => true, "totalCount" => $totalCount]);
+    }
+
+    #[Route('/api/getPost', name: 'get_post', methods: ['GET'])]
+    public function getPost(Request $request): Response
+    {
+        try {
+            $postId = intval($request->get('post'));
+
+            $result = $this->getDoctrine()->getManager()->getRepository(Post::class)->getPost($postId);
+
+            $fileManagerService = new FileManagerService();
+            $result['image'] = $fileManagerService->getImage($result['image']);
+
+            $user = $request->getSession()->get('user');
+            if ($user != null) {
+                $result['myRating'] = $this->getDoctrine()->getManager()->getRepository(PostRating::class)->getUserRating($postId, $user['id']);
+            } else {
+                $result['myRating'] = null;
+            }
+        } catch(Exception $exception) {
+            return new JsonResponse(['exception' => $exception, "success" => false]);
+        }
+
+        return new JsonResponse(['detailedPost' => $result, "success" => true]);
+    }
+
+    #[Route('/api/addRating', name: 'add_rating', methods: ['POST'])]
+    public function addRating(Request $request): Response
+    {
+        $cookie = new CookieService();
+
+        if (!$cookie->checkApiToken($request)) {
+            $cookie->clearCookie('apiToken');
+            return new JsonResponse([ "success" => false, "exception" => 'Неверный токен']);
+        }
+
+        $content = json_decode($request->getContent(), true);
+
+        try {
+            $postId = intval($content['post']);
+            $rating = intval($content['rating']);
+            $userId = $request->getSession()->get('user')['id'];
+
+            $this->getDoctrine()->getManager()->getRepository(PostRating::class)->addRating($postId, $userId, $rating);
+            $result =  $this->getDoctrine()->getManager()->getRepository(PostRating::class)->getRating($postId);
+
+        } catch(Exception $exception) {
+            return new JsonResponse(['exception' => $exception, "success" => false]);
+        }
+
+        return new JsonResponse(['rating' => $result['rating'], 'countVoted' => $result['countVoted'], 'myRating' => $rating, "success" => true]);
     }
 }

@@ -54,7 +54,7 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     private $posts;
 
     /**
-     * @ORM\OneToMany(targetEntity=PostRating::class, mappedBy="user_id")
+     * @ORM\OneToMany(targetEntity=PostRating::class, mappedBy="user")
      */
     private $postRatings;
 
@@ -81,7 +81,7 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
 
     public function setEmail(string $email): self
     {
-        $this->email = $email;
+        $this->email = mb_strtolower($email);
 
         return $this;
     }

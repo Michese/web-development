@@ -3,7 +3,7 @@
     <form class="creating-page__container container">
       <header class="creating-page__header">
         <label for="title" class="creating-page__title">
-          <input type="text" class="creating-page__input" :class="{ 'to-up': !!title }" v-model="title" id="title" />
+          <input type="text" class="creating-page__input" :class="{ 'to-up': title }" v-model="title" id="title" />
           <span class="creating-page__placeholder">*Название</span>
         </label>
       </header>
@@ -11,7 +11,63 @@
       <label for="img" class="creating-page__upload upload" :style="uploadStyle">
         <span class="upload__wrapper">
           <span class="upload__placeholder">*Добавьте фотографию</span>
-          <img src="./assets/cloud.svg" alt="cloud" class="upload__img" />
+          <svg
+            class="upload__img"
+            width="50"
+            height="50"
+            viewBox="0 0 50 50"
+            fill="none"
+            xmlns="http://www.w3.org/2000/svg"
+          >
+            <mask id="mask0" style="mask-type: alpha" maskUnits="userSpaceOnUse" x="0" y="0" width="50" height="50">
+              <g clip-path="url(#clip0)">
+                <path
+                  d="M39.2498 14.6016C37.5116 6.15407 29.2543 0.715191 20.8068 2.45345C13.5733 3.94196 8.37159 10.2941 8.33841 17.6789C8.33841 18.0308 8.35295 18.391 8.38418 18.772C3.2382 19.3168 -0.491887 23.9299 0.0528203 29.0759C0.557707 33.8456 4.58304 37.464 9.37942 37.4593H10.4725C10.4476 37.1137 10.4205 36.7701 10.4205 36.4182C10.4205 28.9437 16.4798 22.8842 23.9545 22.8842C31.4291 22.8842 37.4883 28.9437 37.4883 36.4182C37.4883 36.77 37.4613 37.1136 37.4363 37.4593H38.5294C44.8471 37.4766 49.9826 32.369 49.9999 26.0513C50.0165 19.9892 45.301 14.9668 39.2498 14.6016Z"
+                  fill="#BBDEFB"
+                />
+                <path
+                  d="M23.9544 47.87C30.2791 47.87 35.4062 42.7429 35.4062 36.4183C35.4062 30.0937 30.2791 24.9666 23.9544 24.9666C17.6298 24.9666 12.5027 30.0937 12.5027 36.4183C12.5027 42.7429 17.6298 47.87 23.9544 47.87Z"
+                  fill="#4CAF50"
+                />
+                <path
+                  d="M23.9544 43.7057C23.3795 43.7057 22.9133 43.2395 22.9133 42.6646V30.1717C22.9133 29.5968 23.3795 29.1306 23.9544 29.1306C24.5294 29.1306 24.9955 29.5968 24.9955 30.1717V42.6646C24.9954 43.2395 24.5294 43.7057 23.9544 43.7057Z"
+                  fill="#FAFAFA"
+                />
+                <path
+                  d="M23.9544 43.7056C23.6781 43.7061 23.4129 43.5968 23.2173 43.4016L19.053 39.2373C18.6535 38.8238 18.665 38.1647 19.0786 37.7652C19.482 37.3755 20.1216 37.3755 20.5251 37.7652L23.9544 41.1924L27.3816 37.7652C27.7952 37.3657 28.4543 37.3772 28.8537 37.7908C29.2435 38.1942 29.2435 38.8338 28.8537 39.2373L24.6894 43.4016C24.4942 43.5962 24.2299 43.7055 23.9544 43.7056Z"
+                  fill="#FAFAFA"
+                />
+              </g>
+            </mask>
+            <g mask="url(#mask0)"></g>
+            <g clip-path="url(#clip1)">
+              <path
+                d="M39.2498 14.6016C37.5116 6.15407 29.2543 0.715191 20.8068 2.45345C13.5733 3.94196 8.37159 10.2941 8.33841 17.6789C8.33841 18.0308 8.35295 18.391 8.38418 18.772C3.2382 19.3168 -0.491887 23.9299 0.0528203 29.0759C0.557707 33.8456 4.58304 37.464 9.37942 37.4593H10.4725C10.4476 37.1137 10.4205 36.7701 10.4205 36.4182C10.4205 28.9437 16.4798 22.8842 23.9545 22.8842C31.4291 22.8842 37.4883 28.9437 37.4883 36.4182C37.4883 36.77 37.4613 37.1136 37.4363 37.4593H38.5294C44.8471 37.4766 49.9826 32.369 49.9999 26.0513C50.0165 19.9892 45.301 14.9668 39.2498 14.6016Z"
+                fill="#F2F2F0"
+              />
+              <path
+                d="M23.9544 47.87C30.2791 47.87 35.4062 42.7429 35.4062 36.4183C35.4062 30.0937 30.2791 24.9666 23.9544 24.9666C17.6298 24.9666 12.5027 30.0937 12.5027 36.4183C12.5027 42.7429 17.6298 47.87 23.9544 47.87Z"
+                fill="#85881D"
+              />
+              <path
+                d="M23.9544 43.7057C23.3795 43.7057 22.9133 43.2395 22.9133 42.6646V30.1717C22.9133 29.5968 23.3795 29.1306 23.9544 29.1306C24.5294 29.1306 24.9955 29.5968 24.9955 30.1717V42.6646C24.9954 43.2395 24.5294 43.7057 23.9544 43.7057Z"
+                fill="#FAFAFA"
+              />
+              <path
+                d="M23.9544 43.7056C23.6781 43.7061 23.4129 43.5968 23.2173 43.4016L19.053 39.2373C18.6535 38.8238 18.665 38.1647 19.0786 37.7652C19.482 37.3755 20.1216 37.3755 20.5251 37.7652L23.9544 41.1924L27.3816 37.7652C27.7952 37.3657 28.4543 37.3772 28.8537 37.7908C29.2435 38.1942 29.2435 38.8338 28.8537 39.2373L24.6894 43.4016C24.4942 43.5962 24.2299 43.7055 23.9544 43.7056Z"
+                fill="#FAFAFA"
+              />
+            </g>
+            <defs>
+              <clipPath id="clip0">
+                <rect width="50" height="50" fill="white" />
+              </clipPath>
+              <clipPath id="clip1">
+                <rect width="50" height="50" fill="white" />
+              </clipPath>
+            </defs>
+          </svg>
+
           <input type="file" class="upload__input" id="img" accept="image/jpeg" @change="uploadFile" ref="upload" />
           <ul class="upload__hints">
             <li v-for="hint in uploadHints" class="upload__hint crephusa" :key="hint">{{ hint }}</li>
@@ -20,12 +76,12 @@
       </label>
 
       <label for="poem" class="creating-page__poem">
-        <textarea class="creating-page__textarea" :class="{ 'to-up': !!title }" id="poem" v-model="description" />
+        <textarea class="creating-page__textarea" :class="{ 'to-up': !!description }" id="poem" v-model="description" />
         <span class="creating-page__placeholder">Стихотворение</span>
       </label>
 
       <label for="author" class="creating-page__author">
-        <input type="text" class="creating-page__input" :class="{ 'to-up': !!title }" id="author" v-model="author" />
+        <input type="text" class="creating-page__input" :class="{ 'to-up': !!author }" id="author" v-model="author" />
         <span class="creating-page__placeholder">Автор</span>
       </label>
 
@@ -82,14 +138,10 @@ export default class CreatingPage extends Vue {
       data: { success },
     } = await HomeApi.createPost(formData);
 
-    console.log(success);
-
-    this.clearForm();
+    if (success) this.clearForm();
   }
 
   async uploadFile(e: Event): Promise<void> {
-    if ((this.$refs.upload as { value: string }).value) console.log((this.$refs.upload as { value: string }).value);
-
     const { files } = e.target as HTMLInputElement;
 
     if (files) {
@@ -209,7 +261,7 @@ export default class CreatingPage extends Vue {
     border: none;
     outline: none;
     &:focus + .creating-page__placeholder,
-    .to-up + .creating-page__placeholder {
+    &.to-up + .creating-page__placeholder {
       transform: translateY(-1.5em);
     }
   }

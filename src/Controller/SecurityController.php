@@ -23,7 +23,7 @@ class SecurityController extends AbstractController
         $session = new Session();
         try {
             $content = json_decode($request->getContent(), true);
-            $user = $userRepository->getUserByEmail($content['email']);
+            $user = $userRepository->getUserByEmail(mb_strtolower($content['email']));
 
             if ($user->checkPassword($content['password'])) {
                 $apiToken = (new ApiTokenService())->create();
@@ -43,7 +43,7 @@ class SecurityController extends AbstractController
             else {
                 $session->clear();
                 $cookie->clearCookie('apiToken');
-                throw new \PHPUnit\Util\Exception('Неверный логин или пароль!' . password_verify($content['password'], $user->getPassword()) . false);
+                throw new \PHPUnit\Util\Exception('Неверный логин или пароль!');
             }
         } catch (Exception $exception) {
             return new JsonResponse(['exception' => $exception->getMessage(), 'success' => false]);

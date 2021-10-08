@@ -2,6 +2,7 @@
 
 namespace App\Service;
 
+use GdImage;
 use Symfony\Component\HttpFoundation\File\Exception\FileException;
 use Symfony\Component\HttpFoundation\File\UploadedFile;
 
@@ -31,7 +32,7 @@ class FileManagerService
 
     public function imagePostUpload(string $file): string
     {
-        $fileName = uniqid() . '.jpg';
+        $fileName = uniqid();
 
         try {
             $fileDecode = base64_decode($file);

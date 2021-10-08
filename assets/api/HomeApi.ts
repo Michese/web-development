@@ -8,19 +8,30 @@ class HomeApi extends Api {
     return this.get('/api/colors');
   }
 
-  async getPost(postId: number): Promise<{ detailedPost: TDetailedPost; success: boolean }> {
-    return this.get(`api/getPost/${postId}`);
+  async getPost(post: number): Promise<{ detailedPost: TDetailedPost; success: boolean }> {
+    return this.get(`/api/getPost`, { post });
   }
 
   async getPosts(data: {
     limit: number;
     page: number;
-  }): Promise<{ posts: TGalleryItem[]; success: boolean }> {
-    return this.get('api/getPosts', data);
+  }): Promise<{ posts: TGalleryItem[]; success: boolean; totalCount: number }> {
+    return this.get('/api/getPosts', data);
+  }
+
+  async getMyRating(data: { post: string }): Promise<{ myRating: number; success: boolean }> {
+    return this.get('/api/getMyRating', data);
   }
 
   async createPost(data: TCreatePostData): Promise<{ data: { success: boolean } }> {
-    return this.post('api/createPost', data);
+    return this.post('/api/createPost', data);
+  }
+
+  async addRating(data: {
+    post: string;
+    rating: number;
+  }): Promise<{ data: { rating: number; countVoted: number; myRating: number; success: boolean } }> {
+    return this.post('/api/addRating', data);
   }
 }
 export default new HomeApi();

@@ -1,12 +1,13 @@
 <template>
   <section class="detailed-page">
-    <div class="detailed-page__container container">
-      <heart class="detailed-page__heart" :rating="detailedPost.rating" :size="24" />
+    <loader v-if="isLoading" class="detailed-page__loader container" />
+    <div v-else class="detailed-page__container container">
+      <heart class="detailed-page__heart" :rating="rating" :size="24" />
       <header>
         <h2 class="detailed-page__section-caption section-caption">{{ detailedPost.title }}</h2>
       </header>
       <div class="detailed-page__inner">
-        <img :src="detailedPost.image" alt="big-img" class="detailed-page__img" />
+        <img :src="image" alt="big-img" class="detailed-page__img" />
         <p class="detailed-page__description italico">
           {{ detailedPost.description }}
         </p>
@@ -19,14 +20,14 @@
               :key="index"
               class="detailed-page__star"
               :class="{
-                'detailed-page__star_my-rating': index === detailedPost.myRating,
-                'detailed-page__star_change-rating': !detailedPost.myRating,
+                'detailed-page__star_my-rating': index === 6 - detailedPost.myRating,
+                'detailed-page__star_change-rating': isChangingRating,
               }"
               width="48"
               height="48"
               viewBox="0 0 48 48"
               xmlns="http://www.w3.org/2000/svg"
-              @click="addRating(index)"
+              @click="addRating(6 - index)"
             >
               <mask id="mask0" style="mask-type: alpha" maskUnits="userSpaceOnUse" x="0" y="0" width="48" height="48">
                 <g clip-path="url(#clip0)">
@@ -62,55 +63,88 @@
 
 <script lang="ts">
 import { Options, Vue } from 'vue-class-component';
+import { InjectReactive, Prop, Watch } from 'vue-property-decorator';
 import Heart from '@/vue/components/heart/Heart.vue';
+import Loader from '@/vue/components/loader/Loader.vue';
 import { TDetailedPost } from '@/types/TDetailedPost';
-import image from './assets/big-img-item-9.jpg';
-import { InjectReactive, Prop } from 'vue-property-decorator';
 import HomeApi from '@/api/HomeApi';
 import { TUser } from '@/types';
+import { addBse64Naming } from '@/helpers';
 
 @Options({
   name: 'DetailedPage',
-  components: { Heart },
+  components: { Heart, Loader },
 })
 export default class DetailedPage extends Vue {
   @Prop({
-    type: Number,
+    type: String,
     required: true,
   })
-  post!: number;
+  post!: string;
   @InjectReactive('user') user!: TUser | null;
 
-  detailedPost: TDetailedPost | null = {
-    id: 12,
-    user_id: 414,
-    author: 'Валентина Ким',
-    image: image,
-    title: 'Я бываю такая разная',
-    description:
-      'Я бываю такая разная – То капризная, то прекрасная, То страшилище опупенное, То красавица – мисс Вселенная, То\n' +
-      '          покладиста, то с характером, то молчу, то ругаюсь матерно, то в горящие избы на лошади, то отчаянно требую\n' +
-      '          помощи, дверью хлопну – расставлю все точки, то ласкаюсь пушистым комочком, то люблю и тотчас ненавижу, то\n' +
-      '          боюсь высоты, но на крышу выхожу погулять тёмной ночкой, то жена, то примерная дочка, то смеюсь, то рыдаю\n' +
-      '          белугой, то мирюсь, то ругаюсь с подругой. Не больна я, не в психике трещина… Просто Я – стопроцентная\n' +
-      '          ЖЕНЩИНА! (Лариса Рубальская)',
-    created_at: 414,
-    deleted_at: null,
-    rating: 3,
-    myRating: null,
-    countVoted: 10,
-  };
+  @Watch('user') async wUser(): Promise<void> {
+    if (this.user === null && !!this.detailedPost) {
+      this.detailedPost.myRating = null;
+    } else if (this.detailedPost) {
+      this.isLoading = true;
 
-  async addRating(rating: number): Promise<void> {
-    if (this.user && this.detailedPost && this.detailedPost.myRating === null) {
-      this.detailedPost.myRating = rating;
+      try {
+        const { detailedPost } = await HomeApi.getPost(this.post);
+        if (detailedPost) this.detailedPost = detailedPost;
+      } catch (error) {
+        console.error(error);
+      } finally {
+        this.isLoading = false;
+      }
+    }
+  }
+
+  detailedPost: TDetailedPost | null = null;
+  isLoading = false;
+
+  get image(): string {
+    return this.detailedPost ? addBse64Naming(this.detailedPost?.image) : '';
+  }
+
+  get rating(): number {
+    return this.detailedPost?.rating ? Math.round(this.detailedPost.rating) : 0;
+  }
+
+  get isChangingRating(): boolean {
+    return !!this.user && !!this.detailedPost && this.detailedPost?.myRating === null;
+  }
+
+  async addRating(newRating: number): Promise<void> {
+    if (!!this.user && !!this.detailedPost && this.detailedPost.myRating === null) {
+      this.isLoading = true;
+
+      try {
+        const {
+          data: { rating, myRating, countVoted },
+        } = await HomeApi.addRating({ post: this.post, rating: newRating });
+        this.detailedPost.rating = rating;
+        this.detailedPost.myRating = myRating;
+        this.detailedPost.countVoted = countVoted;
+      } catch (error) {
+        console.error(error);
+      }
+
+      this.isLoading = false;
     }
   }
 
   async created(): Promise<void> {
-    // const { detailedPost } = await HomeApi.getPost(this.post);
+    this.isLoading = true;
 
-    // if (detailedPost) this.detailedPost = detailedPost;
+    try {
+      const { detailedPost } = await HomeApi.getPost(this.post);
+      if (detailedPost) this.detailedPost = detailedPost;
+    } catch (error) {
+      console.error(error);
+    } finally {
+      this.isLoading = false;
+    }
   }
 }
 </script>
@@ -124,6 +158,12 @@ export default class DetailedPage extends Vue {
   padding: 150px 15px 60px;
   background-image: url('./assets/promo-background.jpg');
   background-size: cover;
+
+  &__loader {
+    background-color: var(--color-promo-bg);
+    padding: 15px;
+    border-radius: 5px;
+  }
 
   &__container {
     position: relative;
@@ -152,6 +192,7 @@ export default class DetailedPage extends Vue {
   }
 
   &__img {
+    max-height: 500px;
     border-radius: 15px;
     margin-bottom: 10px;
   }
@@ -188,13 +229,17 @@ export default class DetailedPage extends Vue {
     width: 1.11111111em;
     height: 1.11111111em;
     fill: #e5e4d9;
-  }
 
-  &__star_change-rating:hover,
-  &__star_change-rating:hover ~ &__star,
-  &__star_my-rating,
-  &__star_my-rating ~ &__star {
-    fill: #ed8a19;
+    &_change-rating {
+      cursor: pointer;
+    }
+
+    &_change-rating:hover,
+    &_change-rating:hover ~ &,
+    &_my-rating,
+    &_my-rating ~ & {
+      fill: #ed8a19;
+    }
   }
 
   &__followers {

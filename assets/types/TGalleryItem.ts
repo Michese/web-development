@@ -2,9 +2,8 @@ export type TGalleryItem = {
   id: number;
   title: string;
   image: string;
-  rating: number;
+  rating: number | null;
   created_at: {
     date: string;
-    timezone: number;
   };
 };

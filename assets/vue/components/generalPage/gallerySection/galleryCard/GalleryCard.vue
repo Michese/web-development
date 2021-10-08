@@ -1,11 +1,11 @@
 <template>
   <router-link :to="link" class="gallery-card">
     <div class="gallery-card__header">
-      <img :src="item.img" :alt="item.title" class="gallery-card__img" />
-      <heart class="gallery-card__heart" :rating="item.rating" />
+      <img :src="image" :alt="post.title" class="gallery-card__img" />
+      <heart class="gallery-card__heart" :rating="rating" />
     </div>
-    <span class="gallery-card__title oronia">{{ item.title }}</span>
-    <span class="gallery-card__date oronia">{{ item.date }}</span>
+    <span class="gallery-card__title oronia">{{ post.title }}</span>
+    <span class="gallery-card__date oronia">{{ post.created_at.date }}</span>
   </router-link>
 </template>
 
@@ -15,6 +15,7 @@ import { Prop } from 'vue-property-decorator';
 import Heart from '@/vue/components/heart/Heart.vue';
 import { TGalleryItem } from '@/types';
 import { routerEnum } from '@/enums';
+import { addBse64Naming } from '@/helpers';
 
 @Options({
   name: 'GalleryCard',
@@ -25,10 +26,18 @@ export default class GalleryCard extends Vue {
     type: Object,
     required: true,
   })
-  item!: TGalleryItem;
+  post!: TGalleryItem;
 
   get link(): string {
-    return `${routerEnum.detailedPage}/${this.item.id}`;
+    return `${routerEnum.detailedPage}/${this.post.id}`;
+  }
+
+  get rating(): number {
+    return this.post.rating ? Math.round(this.post.rating) : 0;
+  }
+
+  get image(): string {
+    return addBse64Naming(this.post.image);
   }
 }
 </script>
@@ -38,6 +47,8 @@ export default class GalleryCard extends Vue {
   max-width: 300px;
 
   &__header {
+    display: flex;
+    justify-content: center;
     position: relative;
     margin-bottom: 13px;
   }
@@ -49,6 +60,8 @@ export default class GalleryCard extends Vue {
   }
 
   &__img {
+    align-self: center;
+    max-height: 330px;
     border-radius: 15px;
     transition: transform 0.1s linear;
   }
