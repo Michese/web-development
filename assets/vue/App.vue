@@ -13,6 +13,7 @@ import HeaderPage from '@/vue/components/headerPage/HeaderPage.vue';
 import FooterPage from '@/vue/components/footerPage/FooterPage.vue';
 import { TUser } from '@/types';
 import SecurityApi from '@/api/SecurityApi';
+import HomeApi from '@/api/HomeApi';
 
 @Options({
   name: 'App',
@@ -29,6 +30,12 @@ export default class App extends Vue {
   async created(): Promise<void> {
     const { user } = await SecurityApi.getUser();
     if (user) this.setUser(user);
+
+    // const result = await HomeApi.getColors();
+    // console.log(result);
+
+    const result = await HomeApi.getPosts({ limit: 9, page: 1 });
+    console.log('result', result);
   }
 }
 </script>

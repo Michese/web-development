@@ -65,8 +65,9 @@ import { Options, Vue } from 'vue-class-component';
 import Heart from '@/vue/components/heart/Heart.vue';
 import { TDetailedPost } from '@/types/TDetailedPost';
 import image from './assets/big-img-item-9.jpg';
-import { Prop } from 'vue-property-decorator';
+import { InjectReactive, Prop } from 'vue-property-decorator';
 import HomeApi from '@/api/HomeApi';
+import { TUser } from '@/types';
 
 @Options({
   name: 'DetailedPage',
@@ -78,6 +79,7 @@ export default class DetailedPage extends Vue {
     required: true,
   })
   post!: number;
+  @InjectReactive('user') user!: TUser | null;
 
   detailedPost: TDetailedPost | null = {
     id: 12,
@@ -100,8 +102,7 @@ export default class DetailedPage extends Vue {
   };
 
   async addRating(rating: number): Promise<void> {
-    console.log(rating);
-    if (this.detailedPost && this.detailedPost.myRating === null) {
+    if (this.user && this.detailedPost && this.detailedPost.myRating === null) {
       this.detailedPost.myRating = rating;
     }
   }

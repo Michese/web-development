@@ -1,8 +1,8 @@
 <template>
   <section class="gallery-section container">
     <ul class="gallery-section__list">
-      <li v-for="item in items" class="gallery-section__item" :key="item.id">
-        <gallery-card :item="item" />
+      <li v-for="post in posts" class="gallery-section__item" :key="post.id">
+        <gallery-card :item="post" />
       </li>
     </ul>
 
@@ -30,87 +30,89 @@ import imgItem6 from '@/vue/components/generalPage/gallerySection/assets/img-ite
 import imgItem7 from '@/vue/components/generalPage/gallerySection/assets/img-item-7.jpg';
 import imgItem8 from '@/vue/components/generalPage/gallerySection/assets/img-item-8.jpg';
 import imgItem9 from '@/vue/components/generalPage/gallerySection/assets/img-item-9.jpg';
+import HomeApi from '@/api/HomeApi';
 
 @Options({
   name: 'GallerySection',
   components: { GalleryCard, Loader },
 })
 export default class GallerySection extends Vue {
-  get items(): TGalleryItem[] {
-    return [
-      {
-        id: 1,
-        title: 'Человеку надо мало',
-        date: '01.10.2021',
-        img: imgItem1,
-        link: '#',
-        rating: 3,
-      },
-      {
-        id: 2,
-        title: 'Когда мне говорят о красоте',
-        date: '01.10.2021',
-        img: imgItem2,
-        link: '#',
-        rating: 4,
-      },
-      {
-        id: 3,
-        title: 'А полюбят тебя обязательно',
-        date: '30.09.2021',
-        img: imgItem3,
-        link: '#',
-        rating: 4,
-      },
-      {
-        id: 4,
-        title: 'Я сама себя нашла',
-        date: '30.09.2021',
-        img: imgItem4,
-        link: '#',
-        rating: 3,
-      },
-      {
-        id: 5,
-        title: 'Как я нашёл себя',
-        date: '28.09.2021',
-        img: imgItem5,
-        link: '#',
-        rating: 3,
-      },
-      {
-        id: 6,
-        title: 'Жизнь',
-        date: '25.09.2021',
-        img: imgItem6,
-        link: '#',
-        rating: 5,
-      },
-      {
-        id: 7,
-        title: 'Красивая женщина',
-        date: '20.09.2021',
-        img: imgItem7,
-        link: '#',
-        rating: 3,
-      },
-      {
-        id: 8,
-        title: 'Моя душа настроена на осень',
-        date: '15.09.2021',
-        img: imgItem8,
-        link: '#',
-        rating: 4,
-      },
-      {
-        id: 9,
-        title: 'Я бываю такая разная',
-        date: '10.09.2021',
-        img: imgItem9,
-        link: '#',
-        rating: 4,
-      },
-    ];
+  posts: TGalleryItem[] | null = [
+    {
+      id: 1,
+      title: 'Человеку надо мало',
+      date: '01.10.2021',
+      image: imgItem1,
+      rating: 3,
+    },
+    {
+      id: 2,
+      title: 'Когда мне говорят о красоте',
+      date: '01.10.2021',
+      image: imgItem2,
+      rating: 4,
+    },
+    {
+      id: 3,
+      title: 'А полюбят тебя обязательно',
+      date: '30.09.2021',
+      image: imgItem3,
+      rating: 4,
+    },
+    {
+      id: 4,
+      title: 'Я сама себя нашла',
+      date: '30.09.2021',
+      image: imgItem4,
+      rating: 3,
+    },
+    {
+      id: 5,
+      title: 'Как я нашёл себя',
+      date: '28.09.2021',
+      image: imgItem5,
+      rating: 3,
+    },
+    {
+      id: 6,
+      title: 'Жизнь',
+      date: '25.09.2021',
+      image: imgItem6,
+      rating: 5,
+    },
+    {
+      id: 7,
+      title: 'Красивая женщина',
+      date: '20.09.2021',
+      image: imgItem7,
+      rating: 3,
+    },
+    {
+      id: 8,
+      title: 'Моя душа настроена на осень',
+      date: '15.09.2021',
+      image: imgItem8,
+      rating: 4,
+    },
+    {
+      id: 9,
+      title: 'Я бываю такая разная',
+      date: '10.09.2021',
+      image: imgItem9,
+      rating: 4,
+    },
+  ];
+
+  page = 1;
+
+  async created(): Promise<void> {
+    // const posts = await this.getPosts();
+    // if (posts) this.posts = posts;
+  }
+
+  async getPosts(): Promise<TGalleryItem[]> {
+    const { posts } = await HomeApi.getPosts({ limit: 9, page: this.page });
+    return posts;
   }
 }
 </script>

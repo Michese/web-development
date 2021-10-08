@@ -36,7 +36,7 @@ import Input from '@/vue/components/authModal/input/Input.vue';
 import { TInput, TRegisterData, TUser } from '@/types';
 import findBy from '@/helpers/findBy';
 import SecurityApi from '@/api/SecurityApi';
-import { Inject } from 'vue-property-decorator';
+import { Emit, Inject } from 'vue-property-decorator';
 
 const inputs: TInput[] = [
   {
@@ -84,6 +84,10 @@ export default class RegisterForm extends Vue {
   @Inject()
   setUser!: (user: TUser) => void;
 
+  @Emit('closeModal') closeModal(): void {
+    return void 0;
+  }
+
   inputValues = inputs.map(({ defaultValue }: TInput) => defaultValue);
   approval = false;
 
@@ -98,7 +102,6 @@ export default class RegisterForm extends Vue {
   async onSubmit(): Promise<void> {
     if (!this.formIsValid) return;
 
-    console.log('onSubmit');
     const formData: TRegisterData = {
       name: this.inputValues[inputs.findIndex(findBy('name', 'name'))],
       email: this.inputValues[inputs.findIndex(findBy('name', 'email'))],
@@ -109,27 +112,10 @@ export default class RegisterForm extends Vue {
     const {
       data: { user },
     } = await SecurityApi.register(formData);
-    console.log('setUser', this.setUser, user);
-    if (user) this.setUser(user);
-    // try {
-
-      // console.log(result);
-    // } catch (exp) {
-    //   const result = await SecurityApi.logout();
-    //   console.log('logout', result);
-    // }
-
-    // this.clearForm();
-  }
-
-  async created(): Promise<void> {
-    // try {
-    //   const result = await SecurityApi.logout();
-    //   console.log('logout', result);
-    // } catch (err) {
-    //   console.log('err', err);
-    // }
-
+    if (user) {
+      this.setUser(user);
+      this.closeModal();
+    }
   }
 
   get formIsValid(): boolean {

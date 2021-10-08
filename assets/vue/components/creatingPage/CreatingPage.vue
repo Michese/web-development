@@ -12,7 +12,7 @@
         <span class="upload__wrapper">
           <span class="upload__placeholder">*Добавьте фотографию</span>
           <img src="./assets/cloud.svg" alt="cloud" class="upload__img" />
-          <input type="file" class="upload__input" id="img" accept="image/jpeg" @change="uploadFile" />
+          <input type="file" class="upload__input" id="img" accept="image/jpeg" @change="uploadFile" ref="upload" />
           <ul class="upload__hints">
             <li v-for="hint in uploadHints" class="upload__hint crephusa" :key="hint">{{ hint }}</li>
           </ul>
@@ -30,7 +30,9 @@
       </label>
 
       <div class="creating-page__footer">
-        <button type="submit" class="creating-page__submit oronia" @click.prevent="onSubmit" :disabled="!formIsValid">Отправить</button>
+        <button type="submit" class="creating-page__submit oronia" @click.prevent="onSubmit" :disabled="!formIsValid">
+          Отправить
+        </button>
       </div>
     </form>
   </section>
@@ -39,15 +41,20 @@
 <script lang="ts">
 import { Options, Vue } from 'vue-class-component';
 import { toBase64 } from '@/helpers';
+import { InjectReactive } from 'vue-property-decorator';
+import { TUser } from '@/types';
+import HomeApi from '@/api/HomeApi';
+import { TCreatePostData } from '@/types/TCreatePostData';
 
 @Options({
   name: 'CreatingPage',
 })
 export default class CreatingPage extends Vue {
+  @InjectReactive('user') readonly user!: TUser | null;
   title = '';
   description = '';
   author = '';
-  img = '';
+  image = '';
   files: File[] = [];
 
   get uploadHints(): string[] {
@@ -56,31 +63,33 @@ export default class CreatingPage extends Vue {
 
   get uploadStyle(): { 'background-image': string } {
     return {
-      'background-image': `url("${this.img}")`,
+      'background-image': `url("${this.image}")`,
     };
   }
 
-  onSubmit(): void {
-    if (!this.formIsValid) return;
-    const [, encodedStr] = this.img.split(',');
-    const data: {
-      title: string;
-      description?: string;
-      author?: string;
-      img: string;
-    } = {
+  async onSubmit(): Promise<void> {
+    if (!this.formIsValid || !this.user) return;
+    const [, encodedStr] = this.image.split(',');
+    const formData: TCreatePostData = {
       title: this.title,
       description: this.description || undefined,
       author: this.author || undefined,
-      img: encodedStr,
+      image: encodedStr,
+      user_id: this.user.id,
     };
 
-    console.log(data);
+    const {
+      data: { success },
+    } = await HomeApi.createPost(formData);
+
+    console.log(success);
 
     this.clearForm();
   }
 
   async uploadFile(e: Event): Promise<void> {
+    if ((this.$refs.upload as { value: string }).value) console.log((this.$refs.upload as { value: string }).value);
+
     const { files } = e.target as HTMLInputElement;
 
     if (files) {
@@ -90,20 +99,21 @@ export default class CreatingPage extends Vue {
           return;
         }
 
-        this.img = (await toBase64(file)) as string;
+        this.image = (await toBase64(file)) as string;
       }
     }
   }
 
   get formIsValid(): boolean {
-    return !!this.title && !!this.img;
+    return !!this.title && !!this.image;
   }
 
   clearForm(): void {
     this.title = '';
     this.description = '';
-    this.img = '';
+    this.image = '';
     this.author = '';
+    (this.$refs.upload as { value: string }).value = '';
   }
 }
 </script>
@@ -224,8 +234,8 @@ export default class CreatingPage extends Vue {
     }
 
     &:disabled {
-      color: #7C7C7C;
-      background-color: #C9C7C7;
+      color: #7c7c7c;
+      background-color: #c9c7c7;
       box-shadow: none;
       cursor: default;
     }

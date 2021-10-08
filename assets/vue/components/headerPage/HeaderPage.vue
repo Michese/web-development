@@ -77,10 +77,6 @@ export default class HeaderPage extends Vue {
   closeDropDown(): void {
     if (this.openDropDown) this.openDropDown = false;
   }
-
-  created(): void {
-    if (!this.user) this.$router.push('/');
-  }
 }
 </script>
 

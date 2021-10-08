@@ -85,7 +85,6 @@ export default class LoginForm extends Vue {
 
     if (user) {
       this.setUser(user);
-      this.clearForm();
       this.closeModal();
     }
   }

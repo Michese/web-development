@@ -27,7 +27,7 @@ class PostRating
      * @ORM\ManyToOne(targetEntity=Post::class, inversedBy="postRatings")
      * @ORM\JoinColumn(nullable=false)
      */
-    private $post_id;
+    private $post;
 
     /**
      * @ORM\Column(type="smallint")
@@ -53,12 +53,12 @@ class PostRating
 
     public function getPostId(): ?Post
     {
-        return $this->post_id;
+        return $this->post;
     }
 
     public function setPostId(?Post $post_id): self
     {
-        $this->post_id = $post_id;
+        $this->post = $post_id;
 
         return $this;
     }

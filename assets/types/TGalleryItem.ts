@@ -1,8 +1,10 @@
 export type TGalleryItem = {
   id: number;
-  link: string;
   title: string;
-  img: string;
+  image: string;
   rating: number;
-  date: string;
+  created_at: {
+    date: string;
+    timezone: number;
+  };
 };

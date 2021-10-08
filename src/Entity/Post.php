@@ -3,9 +3,11 @@
 namespace App\Entity;
 
 use App\Repository\PostRepository;
+use App\Service\FileManagerService;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
+use Symfony\Component\HttpFoundation\File\UploadedFile;
 
 /**
  * @ORM\Entity(repositoryClass=PostRepository::class)
@@ -45,7 +47,7 @@ class Post
     private $deleted_at;
 
     /**
-     * @ORM\OneToMany(targetEntity=PostRating::class, mappedBy="post_id")
+     * @ORM\OneToMany(targetEntity=PostRating::class, mappedBy="post")
      */
     private $postRatings;
 
@@ -71,12 +73,17 @@ class Post
 
     public function getImage(): ?string
     {
-        return $this->image;
+        $fileManagerService = new FileManagerService();
+        return $fileManagerService->getImage($this->image);
     }
 
+    /**
+     * @throws \Exception
+     */
     public function setImage(string $image): self
     {
-        $this->image = $image;
+        $fileManagerService = new FileManagerService();
+        $this->image = $fileManagerService->imagePostUpload($image);
 
         return $this;
     }
@@ -110,9 +117,13 @@ class Post
         return $this->created_at;
     }
 
-    public function setCreatedAt(\DateTimeImmutable $created_at): self
+    public function setCreatedAt(\DateTimeImmutable $created_at = null): self
     {
-        $this->created_at = $created_at;
+        if ($created_at == null) {
+            $this->created_at = (new \DateTimeImmutable ('now'));
+        } else {
+            $this->created_at = $created_at;
+        }
 
         return $this;
     }
