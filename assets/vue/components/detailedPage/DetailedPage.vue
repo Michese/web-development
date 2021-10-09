@@ -8,7 +8,7 @@
       </header>
       <div class="detailed-page__inner">
         <img :src="image" alt="big-img" class="detailed-page__img" />
-        <p class="detailed-page__description italico">
+        <p v-if="!!detailedPost.description" class="detailed-page__description italico">
           {{ detailedPost.description }}
         </p>
       </div>
@@ -55,7 +55,7 @@
 
           <div class="detailed-page__followers maria">{{ detailedPost.countVoted }}</div>
         </div>
-        <span class="detailed-page__author italico">{{ detailedPost.author }}</span>
+        <span v-if="!!detailedPost.author" class="detailed-page__author italico">{{ detailedPost.author }}</span>
       </footer>
     </div>
   </section>
@@ -156,7 +156,7 @@ export default class DetailedPage extends Vue {
   align-items: center;
   min-height: 100vh;
   padding: 150px 15px 60px;
-  background-image: url('./assets/promo-background.jpg');
+  background-image: url('/assets/assets/promo-background.jpg');
   background-size: cover;
 
   &__loader {
@@ -167,6 +167,7 @@ export default class DetailedPage extends Vue {
 
   &__container {
     position: relative;
+    width: 100%;
     padding: 15px;
     background-color: var(--color-promo-bg);
     border-radius: 5px;
@@ -192,7 +193,9 @@ export default class DetailedPage extends Vue {
   }
 
   &__img {
+    min-height: 220px;
     max-height: 500px;
+    width: 100%;
     border-radius: 15px;
     margin-bottom: 10px;
   }
@@ -244,6 +247,7 @@ export default class DetailedPage extends Vue {
 
   &__followers {
     flex: 1 1;
+    padding: 0.5em 1em;
     text-align: center;
   }
 
@@ -255,6 +259,10 @@ export default class DetailedPage extends Vue {
 
 @include media(sm) {
   .detailed-page {
+    &__container {
+      width: auto;
+    }
+
     &__star {
       width: 48px;
       height: 48px;
@@ -282,11 +290,11 @@ export default class DetailedPage extends Vue {
     &__inner {
       flex-direction: row;
       justify-content: space-between;
+      gap: 50px;
     }
 
     &__img {
       max-width: 465px;
-      margin-right: 50px;
       margin-bottom: 0;
     }
 

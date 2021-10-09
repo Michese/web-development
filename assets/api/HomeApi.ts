@@ -4,10 +4,6 @@ import { TCreatePostData } from '@/types/TCreatePostData';
 import { TGalleryItem } from '@/types';
 
 class HomeApi extends Api {
-  async getColors(): Promise<{ colors: string[] }> {
-    return this.get('/api/colors');
-  }
-
   async getPost(post: string): Promise<{ detailedPost: TDetailedPost; success: boolean }> {
     return this.get(`/api/getPost`, { post });
   }

@@ -3,8 +3,8 @@
     <form class="creating-page__container container">
       <header class="creating-page__header">
         <label for="title" class="creating-page__title">
-          <input type="text" class="creating-page__input" :class="{ 'to-up': title }" v-model="title" id="title" />
-          <span class="creating-page__placeholder">*Название</span>
+          <input type="text" class="creating-page__input" :class="{ 'to-up': !!title }" v-model="title" id="title" />
+          <span class="creating-page__placeholder" :class="{ alert: !title }">*Название</span>
         </label>
       </header>
 
@@ -70,7 +70,14 @@
 
           <input type="file" class="upload__input" id="img" accept="image/jpeg" @change="uploadFile" ref="upload" />
           <ul class="upload__hints">
-            <li v-for="hint in uploadHints" class="upload__hint crephusa" :key="hint">{{ hint }}</li>
+            <li
+              v-for="uploadHint in uploadHints"
+              class="upload__hint crephusa"
+              :key="uploadHint.hint"
+              :class="{ alert: uploadHint.alert }"
+            >
+              {{ uploadHint.hint }}
+            </li>
           </ul>
         </span>
       </label>
@@ -102,6 +109,16 @@ import { TUser } from '@/types';
 import HomeApi from '@/api/HomeApi';
 import { TCreatePostData } from '@/types/TCreatePostData';
 
+enum hintFields {
+  format = 'format',
+  size = 'size',
+}
+
+const hints = {
+  [hintFields.format]: 'в формате .jpg',
+  [hintFields.size]: 'размером не более 3Мб',
+};
+
 @Options({
   name: 'CreatingPage',
 })
@@ -113,8 +130,22 @@ export default class CreatingPage extends Vue {
   image = '';
   files: File[] = [];
 
-  get uploadHints(): string[] {
-    return ['в формате .jpg', 'размером не более 3Мб'];
+  isAlertHints = {
+    [hintFields.format]: true,
+    [hintFields.size]: true,
+  };
+
+  get uploadHints(): { [key: string]: { hint: string; alert: boolean } } {
+    return {
+      [hintFields.format]: {
+        hint: hints[hintFields.format],
+        alert: this.isAlertHints[hintFields.format],
+      },
+      [hintFields.size]: {
+        hint: hints[hintFields.size],
+        alert: this.isAlertHints[hintFields.size],
+      },
+    };
   }
 
   get uploadStyle(): { 'background-image': string } {
@@ -146,8 +177,13 @@ export default class CreatingPage extends Vue {
 
     if (files) {
       for (const file of files) {
-        if (file.size > 3145728) {
-          console.error('Слишком большой файл!');
+        this.isAlertHints[hintFields.size] = file.size > 3145728;
+        this.isAlertHints[hintFields.format] = !/image\/jpe?g/gi.test(file.type);
+
+        if (this.isAlertHints[hintFields.size] || this.isAlertHints[hintFields.format]) {
+          if (this.isAlertHints[hintFields.size]) console.error('Слишком большой файл!');
+          if (this.isAlertHints[hintFields.format]) console.error('Слишком большой файл!');
+          this.image = '';
           return;
         }
 
@@ -157,7 +193,9 @@ export default class CreatingPage extends Vue {
   }
 
   get formIsValid(): boolean {
-    return !!this.title && !!this.image;
+    return (
+      !!this.title && !!this.image && !this.isAlertHints[hintFields.format] && !this.isAlertHints[hintFields.format]
+    );
   }
 
   clearForm(): void {
@@ -166,6 +204,8 @@ export default class CreatingPage extends Vue {
     this.image = '';
     this.author = '';
     (this.$refs.upload as { value: string }).value = '';
+    this.isAlertHints[hintFields.format] = true;
+    this.isAlertHints[hintFields.size] = true;
   }
 }
 </script>
@@ -177,7 +217,7 @@ export default class CreatingPage extends Vue {
   align-items: center;
   min-height: 100vh;
   padding: 150px 15px 60px;
-  background-image: url('./assets/promo-background.jpg');
+  background-image: url('/assets/assets/promo-background.jpg');
   background-size: cover;
 
   &__container {
@@ -337,6 +377,10 @@ export default class CreatingPage extends Vue {
   &:hover &__img {
     animation: to-up-to-down 1.4s infinite ease;
   }
+}
+
+.alert {
+  color: brown;
 }
 @include media(sm) {
   .creating-page {

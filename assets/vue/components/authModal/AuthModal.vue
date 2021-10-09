@@ -73,7 +73,9 @@ export default class AuthModal extends Vue {
   }
 
   &__inner {
-    min-height: 550px;
+    display: flex;
+    flex-direction: column;
+    max-height: 80vh;
     margin: 10px;
     border-radius: 5px;
     transition: background-color 0.5s ease;

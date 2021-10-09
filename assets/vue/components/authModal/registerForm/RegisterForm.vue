@@ -82,47 +82,82 @@
 import { Options, Vue } from 'vue-class-component';
 import Input from '@/vue/components/authModal/input/Input.vue';
 import { TInput, TRegisterData, TUser } from '@/types';
-import findBy from '@/helpers/findBy';
 import SecurityApi from '@/api/SecurityApi';
 import { Emit, Inject } from 'vue-property-decorator';
 
-const inputs: TInput[] = [
-  {
+enum inputFields {
+  name,
+  email,
+  phone,
+  password,
+  confirmedPassword,
+}
+
+const inputs: { [key: string]: TInput } = {
+  [inputFields.name]: {
     type: 'text',
     name: 'name',
     placeholder: 'Имя',
-    pattern: /^[a-zа-яА-ЯёЁ]{4,}$/i,
+    patterns: [
+      {
+        pattern: /^[а-яА-ЯёЁ -]+$/i,
+        alertText: 'Допустимы только русские буквы',
+      },
+      {
+        pattern: /^.{4,}$/i,
+        alertText: 'Минимальная длина - 4 символа',
+      },
+    ],
     defaultValue: '',
   },
-  {
+  [inputFields.email]: {
     type: 'email',
     name: 'email',
     placeholder: 'e-mail',
-    pattern: /^[a-z]+.+@[a-z]{2,}.[a-z]{2,}$/i,
+    patterns: [
+      {
+        pattern: /^[a-z]+.+@[a-z]{2,}.[a-z]{2,}$/i,
+        alertText: 'Некорректный email',
+      },
+    ],
     defaultValue: '',
   },
-  {
+  [inputFields.phone]: {
     type: 'tel',
     name: 'phone',
     placeholder: 'Телефон',
-    pattern: /^\d{11}$/i,
+    patterns: [
+      {
+        pattern: /^\d{11}$/i,
+        alertText: 'Некорректный телефон',
+      },
+    ],
     defaultValue: '',
   },
-  {
+  [inputFields.password]: {
     type: 'password',
     name: 'password',
     placeholder: 'Пароль',
-    pattern: /^(\D+.{5,})|(.{5,}\D+)|(.{3,}\D+.{2,})|(.{2,}\D+.{3,})&/i,
+    patterns: [
+      {
+        pattern: /\D/gi,
+        alertText: 'Не цифра',
+      },
+      {
+        pattern: /^.{6,}$/i,
+        alertText: 'Минимальная длина - 6 символов',
+      },
+    ],
     defaultValue: '',
   },
-  {
+  [inputFields.confirmedPassword]: {
     type: 'password',
-    name: 'repeatedPassword',
+    name: 'confirmedPassword',
     placeholder: 'Повторите пароль',
-    pattern: /^(\D+.{5,})|(.{5,}\D+)|(.{3,}\D+.{2,})|(.{2,}\D+.{3,})&/i,
+    patterns: [],
     defaultValue: '',
   },
-];
+};
 
 @Options({
   name: 'RegisterForm',
@@ -136,11 +171,18 @@ export default class RegisterForm extends Vue {
     return void 0;
   }
 
-  inputValues = inputs.map(({ defaultValue }: TInput) => defaultValue);
+  inputValues = Object.keys(inputs).map((key) => inputs[key].defaultValue);
   approval = false;
 
   get getInputs(): TInput[] {
-    return inputs;
+    inputs[inputFields.confirmedPassword].patterns = [
+      {
+        pattern: new RegExp(`^${this.inputValues[inputFields.password]}$`, 'i'),
+        alertText: 'Пароли на совпадают',
+      },
+    ];
+
+    return Object.keys(inputs).map((key) => inputs[key]);
   }
 
   onInput(index: number, newValue: string): void {
@@ -151,10 +193,10 @@ export default class RegisterForm extends Vue {
     if (!this.formIsValid) return;
 
     const formData: TRegisterData = {
-      name: this.inputValues[inputs.findIndex(findBy('name', 'name'))],
-      email: this.inputValues[inputs.findIndex(findBy('name', 'email'))],
-      phone: +this.inputValues[inputs.findIndex(findBy('name', 'phone'))],
-      password: this.inputValues[inputs.findIndex(findBy('name', 'password'))],
+      name: this.inputValues[inputFields.name],
+      email: this.inputValues[inputFields.email],
+      phone: +this.inputValues[inputFields.phone],
+      password: this.inputValues[inputFields.password],
     };
 
     const {
@@ -169,14 +211,14 @@ export default class RegisterForm extends Vue {
   get formIsValid(): boolean {
     return (
       this.approval &&
-      inputs.every((input: TInput, index: number) => {
-        return input.pattern.test(this.inputValues[index]);
+      this.getInputs.every((input: TInput, index: number) => {
+        return input.patterns.every((test) => test.pattern.test(this.inputValues[index]));
       })
     );
   }
 
   clearForm(): void {
-    this.inputValues = inputs.map(({ defaultValue }: TInput) => defaultValue);
+    this.inputValues = this.getInputs.map(({ defaultValue }: TInput) => defaultValue);
     this.approval = false;
   }
 }
@@ -187,7 +229,6 @@ export default class RegisterForm extends Vue {
 .register-form {
   padding: 30px 15px 40px;
   border-radius: 0 0 5px 5px;
-  max-height: 60vh;
   overflow-y: auto;
 
   &__header {
@@ -196,8 +237,9 @@ export default class RegisterForm extends Vue {
   }
 
   &__inner {
-    display: grid;
-    grid-template-columns: 1fr;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
     text-align: center;
   }
 
@@ -251,15 +293,6 @@ export default class RegisterForm extends Vue {
 @include media(sm) {
   .register-form {
     padding: 40px 25px;
-
-    &__header {
-      justify-content: flex-start;
-    }
-
-    &__inner {
-      grid-template-columns: 1fr 2fr;
-      grid-column-gap: 35px;
-    }
 
     &__submit {
       padding: 11px 40px;

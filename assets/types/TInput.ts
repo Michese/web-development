@@ -2,6 +2,6 @@ export type TInput = {
   type: string;
   name: string;
   placeholder: string;
-  pattern: RegExp;
+  patterns: { pattern: RegExp; alertText: string }[];
   defaultValue: string;
 };

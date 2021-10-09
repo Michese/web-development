@@ -30,7 +30,7 @@ export default class PromoSection extends Vue {}
   justify-content: center;
   align-items: center;
   min-height: 100vh;
-  background-image: url('./assets/promo-background.jpg');
+  background-image: url('/assets/assets/promo-background.jpg');
   background-size: cover;
 
   &__container {

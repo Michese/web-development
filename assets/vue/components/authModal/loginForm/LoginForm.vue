@@ -75,27 +75,46 @@
 import { Options, Vue } from 'vue-class-component';
 import Input from '@/vue/components/authModal/input/Input.vue';
 import { TInput, TUser } from '@/types';
-import { Emit, Inject, InjectReactive } from 'vue-property-decorator';
+import { Emit, Inject } from 'vue-property-decorator';
 import { TLoginData } from '@/types/TLoginData';
 import findBy from '@/helpers/findBy';
 import SecurityApi from '@/api/SecurityApi';
 
-const inputs: TInput[] = [
-  {
+enum inputFields {
+  email,
+  password,
+}
+
+const inputs: { [key: string]: TInput } = {
+  [inputFields.email]: {
     type: 'email',
     name: 'email',
-    placeholder: 'Логин',
-    pattern: /^[a-z]+.+@[a-z]{2,}.[a-z]{2,}$/i,
+    placeholder: 'Email',
+    patterns: [
+      {
+        pattern: /^[a-z]+.+@[a-z]{2,}.[a-z]{2,}$/i,
+        alertText: 'Некорректный email',
+      },
+    ],
     defaultValue: '',
   },
-  {
+  [inputFields.password]: {
     type: 'password',
     name: 'password',
     placeholder: 'Пароль',
-    pattern: /^(\D+.{5,})|(.{5,}\D+)|(.{3,}\D+.{2,})|(.{2,}\D+.{3,})&/i,
+    patterns: [
+      {
+        pattern: /\D/gi,
+        alertText: 'Не цифра',
+      },
+      {
+        pattern: /^.{6,}$/i,
+        alertText: 'Минимальная длина - 6 символов',
+      },
+    ],
     defaultValue: '',
   },
-];
+};
 
 @Options({
   name: 'LoginForm',
@@ -105,14 +124,14 @@ export default class LoginForm extends Vue {
   @Inject()
   setUser!: (user: TUser) => void;
 
-  inputValues = inputs.map(({ defaultValue }: TInput) => defaultValue);
+  inputValues = Object.keys(inputs).map((key) => inputs[key].defaultValue);
 
   @Emit('closeModal') closeModal(): void {
     return void 0;
   }
 
   get getInputs(): TInput[] {
-    return inputs;
+    return Object.keys(inputs).map((key) => inputs[key]);
   }
 
   onInput(index: number, newValue: string): void {
@@ -123,8 +142,8 @@ export default class LoginForm extends Vue {
     if (!this.formIsValid) return;
 
     const formData: TLoginData = {
-      email: this.inputValues[inputs.findIndex(findBy('name', 'email'))],
-      password: this.inputValues[inputs.findIndex(findBy('name', 'password'))],
+      email: this.inputValues[inputFields.email],
+      password: this.inputValues[inputFields.password],
     };
 
     const {
@@ -138,13 +157,13 @@ export default class LoginForm extends Vue {
   }
 
   get formIsValid(): boolean {
-    return inputs.reduce((total: boolean, input: TInput, index: number) => {
-      return total && input.pattern.test(this.inputValues[index]);
-    }, true);
+    return this.getInputs.every((input: TInput, index: number) => {
+      return input.patterns.every((test) => test.pattern.test(this.inputValues[index]));
+    });
   }
 
   clearForm(): void {
-    this.inputValues = inputs.map(({ defaultValue }: TInput) => defaultValue);
+    this.inputValues = this.getInputs.map(({ defaultValue }: TInput) => defaultValue);
   }
 }
 </script>

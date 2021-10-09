@@ -5,16 +5,13 @@ namespace App\Controller;
 use App\Entity\Post;
 use App\Entity\PostRating;
 use App\Repository\PostRepository;
-use App\Service\ApiTokenService;
 use App\Service\CookieService;
 use App\Service\FileManagerService;
-use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
 use PHPUnit\Exception;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
-use Symfony\Component\HttpFoundation\Session\Session;
 use Symfony\Component\Routing\Annotation\Route;
 use Symfony\Component\Validator\Validator\ValidatorInterface;
 
@@ -59,56 +56,6 @@ class HomeController extends AbstractController
         }
 
         return new JsonResponse(["success" => true]);
-    }
-
-    #[Route('/api/colors', name: 'colors_route', methods: ['GET'])]
-    public function colorsAction()
-    {
-//        $repository = $this->getDoctrine()->getRepository(Product::class);
-// искать один Продукт по его основному ключу (обычно "id")
-//        $product = $repository->find($id);
-// искать один Продукт по имени
-//        $product = $repository->findOneBy(['name' => 'Keyboard']);
-// или по имени и цене
-//        $product = $repository->findOneBy([
-//            'name' => 'Keyboard',
-//            'price' => 1999,
-//        ]);
-// искать несколько объектов Продуктов соответствующих имени, упорядоченные по цене
-//        $products = $repository->findBy(
-//            ['name' => 'Keyboard'],
-//            ['price' => 'ASC']
-//        );
-// искать *все* объекты Продуктов
-//        $products = $repository->findAll();
-
-
-
-
-//        Удаление
-//        $entityManager->remove($product);
-//        $entityManager->flush();
-
-
-
-
-//        $entityManager = $this->getEntityManager();
-//
-//        $query = $entityManager->createQuery(
-//            'SELECT p
-//            FROM App\Entity\Product p
-//            WHERE p.price > :price
-//            ORDER BY p.price ASC'
-//        )->setParameter('price', $price);
-
-
-
-//        $product = $productRepository
-//            ->find($id);
-
-        $fileManagerService = new FileManagerService();
-        $image = $fileManagerService->getImage('615f51b8d39ea.jpg');
-        return new JsonResponse(array('image' => $image, "success" => true));
     }
 
     #[Route('/api/getPosts', name: 'get_posts', methods: ['GET'])]

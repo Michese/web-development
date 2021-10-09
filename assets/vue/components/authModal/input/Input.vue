@@ -14,9 +14,12 @@
         <span class="crephusa"><slot></slot></span>
       </div>
     </div>
-    <transition name="">
-      <span v-show="showAlert" class="input__alert crephusa"> Некорректно введены данные </span>
-    </transition>
+    <!--      <span class="input__alert crephusa"> Некорректно введены данные </span>-->
+    <transition-group name="">
+      <ul v-show="!!alertList.length" v-for="alert in alertList" class="input__alert-list" :key="alert">
+        <li class="input__alert-item crephusa">{{ alert }}</li>
+      </ul>
+    </transition-group>
   </label>
 </template>
 
@@ -93,10 +96,9 @@ export default class Input extends Vue {
     return `id-${this.input.type}-${this.input.name}`;
   }
   get inputClasses(): { input__valid: boolean; input__invalid: boolean } {
-    const inputIsValid = this.input.pattern.test(this.value);
     return {
-      input__valid: this.isActivated && inputIsValid,
-      input__invalid: this.isActivated && !inputIsValid,
+      input__valid: !this.alertList.length,
+      input__invalid: !!this.alertList.length,
     };
   }
   get inputInnerClasses(): { 'to-up': boolean } {
@@ -104,8 +106,11 @@ export default class Input extends Vue {
       'to-up': !!this.value,
     };
   }
-  get showAlert(): boolean {
-    return this.isActivated && !this.input.pattern.test(this.value);
+  
+  get alertList(): string[] {
+    return this.isActivated
+      ? this.input.patterns.filter((pattern) => !pattern.pattern.test(this.value)).map((pattern) => pattern.alertText)
+      : [];
   }
 }
 </script>
@@ -147,8 +152,13 @@ export default class Input extends Vue {
     transform: translateY(-1.1em);
   }
 
-  &__alert {
+  &__alert-list {
+    padding: 5px;
+  }
+
+  &__alert-item {
     color: var(--color-alert);
+    text-align: left;
   }
 }
 </style>
