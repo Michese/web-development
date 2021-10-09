@@ -182,4 +182,30 @@ class HomeController extends AbstractController
 
         return new JsonResponse(['rating' => $result['rating'], 'countVoted' => $result['countVoted'], 'myRating' => $rating, "success" => true]);
     }
+
+    #[Route('/api/getMyRating', name: 'get_my_rating', methods: ['GET'])]
+    public function getMyRating(Request $request): Response
+    {
+        $cookie = new CookieService();
+
+        if (!$cookie->checkApiToken($request)) {
+            $cookie->clearCookie('apiToken');
+            return new JsonResponse([ "success" => false, "exception" => 'Неверный токен']);
+        }
+
+        try {
+            $postId = intval($request->get('post'));
+
+            $user = $request->getSession()->get('user');
+            if ($user != null) {
+                $rating = $this->getDoctrine()->getManager()->getRepository(PostRating::class)->getUserRating($postId, $user['id']);
+            } else {
+                $rating = null;
+            }
+        } catch(Exception $exception) {
+            return new JsonResponse(['exception' => $exception, "success" => false]);
+        }
+
+        return new JsonResponse(['myRating' => $rating, "success" => true]);
+    }
 }

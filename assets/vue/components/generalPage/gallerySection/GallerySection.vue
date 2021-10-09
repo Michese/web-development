@@ -103,7 +103,7 @@ export default class GallerySection extends Vue {
 
   &__item {
     display: flex;
-    justify-content: center;
+    flex-direction: column;
   }
 
   &__center {

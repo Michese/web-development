@@ -8,7 +8,7 @@ class HomeApi extends Api {
     return this.get('/api/colors');
   }
 
-  async getPost(post: number): Promise<{ detailedPost: TDetailedPost; success: boolean }> {
+  async getPost(post: string): Promise<{ detailedPost: TDetailedPost; success: boolean }> {
     return this.get(`/api/getPost`, { post });
   }
 

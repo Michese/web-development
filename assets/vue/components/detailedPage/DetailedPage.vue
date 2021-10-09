@@ -84,14 +84,14 @@ export default class DetailedPage extends Vue {
   @InjectReactive('user') user!: TUser | null;
 
   @Watch('user') async wUser(): Promise<void> {
-    if (this.user === null && !!this.detailedPost) {
+    if (this.user === null && !!this.detailedPost && !!this.detailedPost.myRating) {
       this.detailedPost.myRating = null;
-    } else if (this.detailedPost) {
+    } else if (!!this.user && !!this.detailedPost) {
       this.isLoading = true;
 
       try {
-        const { detailedPost } = await HomeApi.getPost(this.post);
-        if (detailedPost) this.detailedPost = detailedPost;
+        const { myRating } = await HomeApi.getMyRating({ post: this.post });
+        if (myRating) this.detailedPost.myRating = myRating;
       } catch (error) {
         console.error(error);
       } finally {

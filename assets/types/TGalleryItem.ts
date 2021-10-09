@@ -5,5 +5,6 @@ export type TGalleryItem = {
   rating: number | null;
   created_at: {
     date: string;
+    timezone_type: number;
   };
 };
