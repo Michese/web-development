@@ -27,7 +27,20 @@ class PostRepository extends ServiceEntityRepository
     public function parseToPost(array $content): Post
     {
         $post = new Post();
+        if (!array_key_exists('title', $content)) {
+            throw new \Exception("Название не найдено!");
+        }
         $post->setTitle($content['title']);
+        if (!array_key_exists('image', $content)) {
+            throw new \Exception("Файл не найден!");
+        }
+        $imageLength = strlen($content['image']);
+        if ($imageLength < 5) {
+            throw new \Exception("Файл не найден!");
+        }
+        if ($imageLength > 3145728) {
+            throw new \Exception("Файл слишком большой!");
+        }
         $post->setImage($content['image']);
         $post->setUserId($content['user_id']);
         $post->setCreatedAt();
