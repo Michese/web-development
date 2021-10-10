@@ -101,7 +101,7 @@ const inputs: { [key: string]: TInput } = {
     patterns: [
       {
         pattern: /^[а-яА-ЯёЁ -]+$/i,
-        alertText: 'Допустимы только русские буквы',
+        alertText: 'Допустимы только буквы кириллицы, пробелы и дефисы',
       },
       {
         pattern: /^.{4,}$/i,
@@ -129,7 +129,7 @@ const inputs: { [key: string]: TInput } = {
     patterns: [
       {
         pattern: /^\d{11}$/i,
-        alertText: 'Некорректный телефон',
+        alertText: 'Некорректный номер телефона',
       },
     ],
     defaultValue: '',
@@ -140,8 +140,8 @@ const inputs: { [key: string]: TInput } = {
     placeholder: 'Пароль',
     patterns: [
       {
-        pattern: /\D/gi,
-        alertText: 'Не цифра',
+        pattern: /[a-zA-Z]/i,
+        alertText: 'Добавьте хотя бы одну латинскую букву',
       },
       {
         pattern: /^.{6,}$/i,

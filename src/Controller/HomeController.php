@@ -19,11 +19,11 @@ use Symfony\Component\Validator\Validator\ValidatorInterface;
 class HomeController extends AbstractController
 {
     #[Route('/', name: 'home'),
-    Route('/{route}', name: 'vue_pages',  requirements: ['route' => '^(?!.*api).+'])]
+        Route('/{route}', name: 'vue_pages', requirements: ['route' => '^(?!.*api).+'])]
     public function index(): Response
     {
         return $this->render('home/index.html.twig', [
-            'base_dir' => realpath($this->getParameter('kernel.project_dir')).DIRECTORY_SEPARATOR,
+            'base_dir' => realpath($this->getParameter('kernel.project_dir')) . DIRECTORY_SEPARATOR,
             'controller_name' => 'HomeController',
         ]);
     }
@@ -35,7 +35,7 @@ class HomeController extends AbstractController
 
         if (!$cookie->checkApiToken($request)) {
             $cookie->clearCookie('apiToken');
-            return new JsonResponse([ "success" => false, "exception" => 'Неверный токен']);
+            return new JsonResponse(["success" => false, "exception" => 'Неверный токен']);
         }
 
         $content = json_decode($request->getContent(), true);
@@ -45,7 +45,7 @@ class HomeController extends AbstractController
 
             $errors = $validator->validate($post);
             if (count($errors) > 0) {
-                return new Response((string) $errors, 400);
+                return new Response((string)$errors, 400);
             }
 
             $entityManager = $this->getDoctrine()->getManager();
@@ -72,7 +72,7 @@ class HomeController extends AbstractController
             foreach ($result as $key => $value) {
                 $result[$key]['image'] = $fileManagerService->getImage($value['image']);
             }
-        } catch(Exception $exception) {
+        } catch (Exception $exception) {
             return new JsonResponse(['exception' => $exception, "success" => false]);
         }
 
@@ -96,7 +96,7 @@ class HomeController extends AbstractController
             } else {
                 $result['myRating'] = null;
             }
-        } catch(Exception $exception) {
+        } catch (Exception $exception) {
             return new JsonResponse(['exception' => $exception, "success" => false]);
         }
 
@@ -110,7 +110,7 @@ class HomeController extends AbstractController
 
         if (!$cookie->checkApiToken($request)) {
             $cookie->clearCookie('apiToken');
-            return new JsonResponse([ "success" => false, "exception" => 'Неверный токен']);
+            return new JsonResponse(["success" => false, "exception" => 'Неверный токен']);
         }
 
         $content = json_decode($request->getContent(), true);
@@ -118,12 +118,15 @@ class HomeController extends AbstractController
         try {
             $postId = intval($content['post']);
             $rating = intval($content['rating']);
+            if ($rating > 5 || $rating < 1) {
+                throw new \PHPUnit\Util\Exception('Рейтинг имеет неверный формат!');
+            }
             $userId = $request->getSession()->get('user')['id'];
 
             $this->getDoctrine()->getManager()->getRepository(PostRating::class)->addRating($postId, $userId, $rating);
-            $result =  $this->getDoctrine()->getManager()->getRepository(PostRating::class)->getRating($postId);
+            $result = $this->getDoctrine()->getManager()->getRepository(PostRating::class)->getRating($postId);
 
-        } catch(Exception $exception) {
+        } catch (Exception $exception) {
             return new JsonResponse(['exception' => $exception, "success" => false]);
         }
 
@@ -137,7 +140,7 @@ class HomeController extends AbstractController
 
         if (!$cookie->checkApiToken($request)) {
             $cookie->clearCookie('apiToken');
-            return new JsonResponse([ "success" => false, "exception" => 'Неверный токен']);
+            return new JsonResponse(["success" => false, "exception" => 'Неверный токен']);
         }
 
         try {
@@ -149,7 +152,7 @@ class HomeController extends AbstractController
             } else {
                 $rating = null;
             }
-        } catch(Exception $exception) {
+        } catch (Exception $exception) {
             return new JsonResponse(['exception' => $exception, "success" => false]);
         }
 

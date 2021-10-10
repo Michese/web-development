@@ -8,9 +8,7 @@
       </header>
       <div class="detailed-page__inner">
         <img :src="image" alt="big-img" class="detailed-page__img" />
-        <p v-if="!!detailedPost.description" class="detailed-page__description italico">
-          {{ detailedPost.description }}
-        </p>
+        <p v-if="!!description" class="detailed-page__description italico" v-html="description" />
       </div>
       <footer class="detailed-page__footer">
         <div class="detailed-page__rating">
@@ -113,6 +111,10 @@ export default class DetailedPage extends Vue {
 
   get isChangingRating(): boolean {
     return !!this.user && !!this.detailedPost && this.detailedPost?.myRating === null;
+  }
+  //
+  get description(): string {
+    return this.detailedPost ? this.detailedPost.description.replaceAll('\n', '<br />') : '';
   }
 
   async addRating(newRating: number): Promise<void> {
@@ -300,6 +302,7 @@ export default class DetailedPage extends Vue {
 
     &__description {
       display: block;
+      width: 100%;
       max-width: 465px;
     }
 

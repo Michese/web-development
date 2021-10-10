@@ -39,8 +39,7 @@ class SecurityController extends AbstractController
                     "success" => true,
                     'user' => $currentUser,
                 ]);
-            }
-            else {
+            } else {
                 $session->clear();
                 $cookie->clearCookie('apiToken');
                 throw new \PHPUnit\Util\Exception('Неверный логин или пароль!');
@@ -59,7 +58,7 @@ class SecurityController extends AbstractController
 
             $errors = $validator->validate($user);
             if (count($errors) > 0) {
-                return new Response((string) $errors, 400);
+                return new Response((string)$errors, 400);
             }
 
             $entityManager = $this->getDoctrine()->getManager();
@@ -96,10 +95,10 @@ class SecurityController extends AbstractController
             $cookie = new CookieService();
             $cookie->clearCookie('apiToken');
         } catch (Exception $exception) {
-            return new JsonResponse([ 'exception' => $exception, 'success' => false ]);
+            return new JsonResponse(['exception' => $exception, 'success' => false]);
         }
 
-        return new JsonResponse([ "success" => true ]);
+        return new JsonResponse(["success" => true]);
     }
 
     #[Route('/api/getUser', name: 'app_get_user', methods: ['GET'])]
@@ -109,10 +108,10 @@ class SecurityController extends AbstractController
         $cookie = new CookieService();
 
         if (!$cookie->checkApiToken($request)) {
-            return new JsonResponse([ "success" => false, "exception" => 'Неверный токен']);
+            return new JsonResponse(["success" => false, "exception" => 'Неверный токен']);
         }
 
         $user = $request->getSession()->get('user');
-        return new JsonResponse([ "success" => true, "user" => $user]);
+        return new JsonResponse(["success" => true, "user" => $user]);
     }
 }

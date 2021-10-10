@@ -77,7 +77,6 @@ import Input from '@/vue/components/authModal/input/Input.vue';
 import { TInput, TUser } from '@/types';
 import { Emit, Inject } from 'vue-property-decorator';
 import { TLoginData } from '@/types/TLoginData';
-import findBy from '@/helpers/findBy';
 import SecurityApi from '@/api/SecurityApi';
 
 enum inputFields {
@@ -103,10 +102,6 @@ const inputs: { [key: string]: TInput } = {
     name: 'password',
     placeholder: 'Пароль',
     patterns: [
-      {
-        pattern: /\D/gi,
-        alertText: 'Не цифра',
-      },
       {
         pattern: /^.{6,}$/i,
         alertText: 'Минимальная длина - 6 символов',
