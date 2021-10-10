@@ -61,6 +61,8 @@ class SecurityController extends AbstractController
                 return new Response((string)$errors, 400);
             }
 
+            $user->setPassword(password_hash($user->getPassword(), true));
+
             $entityManager = $this->getDoctrine()->getManager();
             $entityManager->persist($user);
             $entityManager->flush();
@@ -77,7 +79,7 @@ class SecurityController extends AbstractController
             $cookie->sendCookie('apiToken', $apiToken);
 
         } catch (Exception $exception) {
-            return new JsonResponse(['exception' => $exception, 'success' => false]);
+            return new JsonResponse(['exception' => 'Невалидные данные', 'success' => false]);
         }
 
         return new JsonResponse([

@@ -8,10 +8,20 @@ use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
 use Symfony\Component\Security\Core\User\PasswordAuthenticatedUserInterface;
 use Symfony\Component\Security\Core\User\UserInterface;
+use Symfony\Component\Validator\Constraints as Assert;
+use Symfony\Bridge\Doctrine\Validator\Constraints\UniqueEntity;
 
 /**
  * @ORM\Entity(repositoryClass=UserRepository::class)
  * @ORM\Table(name="`user`")
+ * @UniqueEntity(
+ *     fields="email",
+ *     message="Такой email уже существует!"
+ * )
+ * @UniqueEntity(
+ *     fields="phone",
+ *     message="Такой номер телефона уже существует!"
+ * )
  */
 class User implements UserInterface, PasswordAuthenticatedUserInterface
 {
@@ -24,6 +34,13 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
 
     /**
      * @ORM\Column(type="string", length=180, unique=true, nullable=false)
+     * @Assert\Email(
+     *     message = "Некорректный email",
+     * )
+     * @Assert\Regex(
+     *     pattern="/^[a-z]+.+@[a-z]{2,}.[a-z]{2,}$/i",
+     *     message = "Некорректный email",
+     * )
      */
     private $email;
 
@@ -35,16 +52,36 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     /**
      * @var string The hashed password
      * @ORM\Column(type="string")
+     * @Assert\Length(
+     *      min = 6,
+     *      minMessage = "Ваш пароль должен быть как минимум {{ limit }} символов",
+     * )
+     * @Assert\Regex(
+     *     pattern="/[a-zA-Z]/i",
+     *     message="Добавьте хотя бы одну латинскую букву"
+     * )
      */
     private $password;
 
     /**
      * @ORM\Column(type="bigint", nullable=false)
+     * @Assert\Range(
+     *      min = 89000000000,
+     *      max = 89999999999,
+     *      minMessage = "Некорректный номер телефона!",
+     *      maxMessage = "Некорректный номер телефона!"
+     * )
      */
     private $phone;
 
     /**
      * @ORM\Column(type="string", nullable=false, length=255)
+     * @Assert\Length(
+     *      min = 4,
+     *      max = 20,
+     *      minMessage = "Ваше имя должно быть как минимум {{ limit }} символа",
+     *      maxMessage = "Ваше имя не должно быть длиннее {{ limit }} символов"
+     * )
      */
     private $name;
 
@@ -133,7 +170,7 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
 
     public function setPassword(string $password): self
     {
-        $this->password = password_hash($password, true);
+        $this->password = $password;
 
         return $this;
     }

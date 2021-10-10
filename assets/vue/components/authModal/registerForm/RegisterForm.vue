@@ -128,7 +128,7 @@ const inputs: { [key: string]: TInput } = {
     placeholder: 'Телефон',
     patterns: [
       {
-        pattern: /^\d{11}$/i,
+        pattern: /^89\d{9}$/i,
         alertText: 'Некорректный номер телефона',
       },
     ],
