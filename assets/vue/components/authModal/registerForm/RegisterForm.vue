@@ -107,6 +107,10 @@ const inputs: { [key: string]: TInput } = {
         pattern: /^.{4,}$/i,
         alertText: 'Минимальная длина - 4 символа',
       },
+      {
+        pattern: /^.{0,20}$/i,
+        alertText: 'Максимальная длина - 20 символов',
+      },
     ],
     defaultValue: '',
   },

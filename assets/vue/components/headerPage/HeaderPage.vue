@@ -12,9 +12,9 @@
 
       <template v-if="!!user">
         <div class="header-page__dropdown dropdown" v-clickoutside="closeDropDown">
-          <span class="header-page__auth maria" @click="openDropDown = !openDropDown">
-              Здравствуйте, {{ user.name }}
-            </span>
+          <span class="header-page__auth maria" @click="openDropDown = !openDropDown" :title="user.name">
+            Здравствуйте, {{ user.name }}
+          </span>
           <svg
             width="45"
             height="45"
@@ -140,8 +140,12 @@ export default class HeaderPage extends Vue {
 
   &__auth {
     display: none;
-    color: var(--color-yellow);
+    max-width: 430px;
     margin-right: 8px;
+    color: var(--color-yellow);
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    overflow-x: hidden;
     cursor: pointer;
 
     &:hover {
@@ -210,7 +214,9 @@ export default class HeaderPage extends Vue {
       }
     }
   }
+}
 
+@include media(lg) {
   .logo {
     &__img {
       margin-right: 12px;

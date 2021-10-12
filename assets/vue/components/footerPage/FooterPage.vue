@@ -6,7 +6,7 @@
         Куликов Вадим <br />
         +79046867942
       </a>
-      <a href="mailto:tea-room@mail.ru" class="footer-page__text maria">
+      <a href="tel:+79997501590" class="footer-page__text maria">
         Зубкова Надежда <br />
         +79997501590
       </a>

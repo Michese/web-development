@@ -24,7 +24,7 @@ class HomeController extends AbstractController
     {
         return $this->render('home/index.html.twig', [
             'base_dir' => realpath($this->getParameter('kernel.project_dir')) . DIRECTORY_SEPARATOR,
-            'controller_name' => 'HomeController',
+            'controller_name' => 'Web',
         ]);
     }
 

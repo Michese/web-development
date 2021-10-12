@@ -209,6 +209,8 @@ export default class DetailedPage extends Vue {
     border-radius: 15px;
     background-color: var(--color-green-opacity);
     overflow-y: auto;
+    overflow-x: hidden;
+    overflow-wrap: anywhere;
   }
 
   &__footer {
