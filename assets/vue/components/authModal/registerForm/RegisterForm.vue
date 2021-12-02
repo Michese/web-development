@@ -120,7 +120,7 @@ const inputs: { [key: string]: TInput } = {
     placeholder: 'e-mail',
     patterns: [
       {
-        pattern: /^[a-z]+.+@[a-z]{2,}.[a-z]{2,}$/i,
+        pattern: /^[a-z]+.+@[a-z]{2,}\.[a-z]{2,}$/i,
         alertText: 'Некорректный email',
       },
     ],

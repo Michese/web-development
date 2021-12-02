@@ -5,7 +5,7 @@
       <heart class="gallery-card__heart" :rating="rating" />
     </div>
     <div class="gallery-card__content">
-      <span class="gallery-card__title oronia">{{ post.title }}</span>
+      <span class="gallery-card__title oronia" :title="post.title">{{ post.title }}</span>
       <span class="gallery-card__date oronia">{{ date }}</span>
     </div>
   </router-link>
@@ -54,7 +54,6 @@ export default class GalleryCard extends Vue {
   display: flex;
   flex-direction: column;
   justify-content: space-between;
-  max-width: 300px;
 
   &__header {
     flex: 1 0;
@@ -82,7 +81,14 @@ export default class GalleryCard extends Vue {
   }
 
   &__title {
+    display: -webkit-box;
     margin-bottom: 10px;
+    max-height: 2.6em;
+    overflow-y: hidden;
+    text-overflow: ellipsis;
+    overflow-wrap: break-word;
+    -webkit-line-clamp: 2;
+    -webkit-box-orient: vertical;
   }
 
   &__title,

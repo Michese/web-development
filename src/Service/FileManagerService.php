@@ -16,7 +16,7 @@ class FileManagerService
     /**
      * @param string $postImageDirectory
      */
-    public function __construct(string $postImageDirectory = 'storage/')
+    public function __construct(string $postImageDirectory = "\\storage\\")
     {
         $this->postImageDirectory = $postImageDirectory;
     }
@@ -36,7 +36,7 @@ class FileManagerService
 
         try {
             $fileDecode = base64_decode($file);
-            file_put_contents($this->getPostImageDirectory() . $fileName, $fileDecode);
+            file_put_contents( __DIR__ . $this->getPostImageDirectory() . $fileName, $fileDecode);
         } catch (FileException $exception) {
             throw new \Exception($exception);
         }
@@ -46,7 +46,7 @@ class FileManagerService
 
     public function getImage(string $fileName): string | null
     {
-        $file = file_get_contents($this->getPostImageDirectory() . $fileName);
+        $file = file_get_contents(__DIR__ . $this->getPostImageDirectory() . $fileName);
         return base64_encode($file);
     }
 }

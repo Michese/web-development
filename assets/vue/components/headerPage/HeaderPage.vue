@@ -64,6 +64,7 @@ import AuthModal from '@/vue/components/authModal/AuthModal.vue';
 import { routerEnum } from '@/enums';
 import { TUser } from '@/types';
 import SecurityApi from '@/api/SecurityApi';
+import { TDropdownItem } from '@/vue/components/creatingPage/dropdown/types';
 
 @Options({
   name: 'HeaderPage',

@@ -36,7 +36,7 @@ import Loader from '@/vue/components/loader/Loader.vue';
 import { TGalleryItem } from '@/types';
 import HomeApi from '@/api/HomeApi';
 
-const limit = 9;
+const limit = 3;
 
 @Options({
   name: 'GallerySection',

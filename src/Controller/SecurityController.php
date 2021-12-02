@@ -2,9 +2,12 @@
 
 namespace App\Controller;
 
+use App\Entity\User;
+use App\Repository\RoleRepository;
 use App\Repository\UserRepository;
 use App\Service\ApiTokenService;
 use App\Service\CookieService;
+use Cassandra\Timestamp;
 use PHPUnit\Exception;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\JsonResponse;
@@ -12,6 +15,8 @@ use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpFoundation\Session\Session;
 use Symfony\Component\Routing\Annotation\Route;
+use Symfony\Component\Validator\Constraints\Date;
+use Symfony\Component\Validator\Constraints\DateTime;
 use Symfony\Component\Validator\Validator\ValidatorInterface;
 
 class SecurityController extends AbstractController
@@ -50,11 +55,15 @@ class SecurityController extends AbstractController
     }
 
     #[Route('/api/register', name: 'app_register', methods: ['POST'])]
-    public function register(Request $request, ValidatorInterface $validator, UserRepository $userRepository): Response
+    public function register(Request $request, ValidatorInterface $validator, UserRepository $userRepository, RoleRepository $roleRepository): Response
     {
         $content = json_decode($request->getContent(), true);
         try {
+
             $user = $userRepository->parseToUser($content);
+            $role = $roleRepository->find(1);
+            $user->setLastLoginDate(\time())
+                ->setRole($role);
 
             $errors = $validator->validate($user);
             if (count($errors) > 0) {
@@ -112,8 +121,10 @@ class SecurityController extends AbstractController
         if (!$cookie->checkApiToken($request)) {
             return new JsonResponse(["success" => false, "exception" => 'Неверный токен']);
         }
-
-        $user = $request->getSession()->get('user');
-        return new JsonResponse(["success" => true, "user" => $user]);
+//        $entityManager = $this->getDoctrine()->getManager();
+//        $user = $entityManager->getRepository(User::class)->find($request->getSession()->get('user')['id'])->get();
+//        $user->setLastLoginDate(time());
+//        $entityManager->flush();
+        return new JsonResponse(["success" => true, "user" => $request->getSession()->get('user')]);
     }
 }

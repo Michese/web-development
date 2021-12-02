@@ -4,7 +4,11 @@ namespace App\Controller;
 
 use App\Entity\Post;
 use App\Entity\PostRating;
+use App\Entity\Tag;
+use App\Repository\CommentRepository;
 use App\Repository\PostRepository;
+use App\Repository\TagRepository;
+use App\Repository\UserRepository;
 use App\Service\CookieService;
 use App\Service\FileManagerService;
 use PHPUnit\Exception;
@@ -29,7 +33,7 @@ class HomeController extends AbstractController
     }
 
     #[Route('/api/createPost', name: 'create_post', methods: ['POST'])]
-    public function createPost(Request $request, ValidatorInterface $validator, PostRepository $postRepository): Response
+    public function createPost(Request $request, ValidatorInterface $validator, PostRepository $postRepository, TagRepository $tagRepository): Response
     {
         $cookie = new CookieService();
 
@@ -42,7 +46,8 @@ class HomeController extends AbstractController
 
         try {
             $post = $postRepository->parseToPost($content);
-
+            $tag = $tagRepository->find($content['tag_id']);
+            $post->setTag($tag);
             $errors = $validator->validate($post);
             if (count($errors) > 0) {
                 return new Response((string)$errors, 400);
@@ -157,5 +162,61 @@ class HomeController extends AbstractController
         }
 
         return new JsonResponse(['myRating' => $rating, "success" => true]);
+    }
+
+    #[Route('/api/getComments', name: 'get_comments', methods: ['GET'])]
+    public function getComments(Request $request, CommentRepository $commentRepository): Response
+    {
+        try {
+            $postId = intval($request->get('post'));
+            $comments = $commentRepository->getCommentsByPostId($postId);
+        } catch (Exception $exception) {
+            return new JsonResponse(['exception' => $exception, "success" => false]);
+        }
+
+        return new JsonResponse(['comments' => $comments, "success" => true]);
+    }
+
+    #[Route('/api/createComment', name: 'create_comments', methods: ['POST'])]
+    public function createComment(Request $request, CommentRepository $commentRepository, PostRepository $postRepository, UserRepository $userRepository): Response
+    {
+        $cookie = new CookieService();
+
+        if (!$cookie->checkApiToken($request)) {
+            $cookie->clearCookie('apiToken');
+            return new JsonResponse(["success" => false, "exception" => 'Неверный токен']);
+        }
+
+        $content = json_decode($request->getContent(), true);
+
+        try {
+            $comment = $commentRepository->parseToComment($content);
+            $post = $postRepository->find($content['post_id']);
+            $comment->setPost($post);
+            $user = $userRepository->find($request->getSession()->get('user')['id']);
+            $comment->setUser($user);
+
+            $entityManager = $this->getDoctrine()->getManager();
+            $entityManager->persist($comment);
+            $entityManager->flush();
+
+            $comments = $commentRepository->getCommentsByPostId($post->getId());
+        } catch (Exception $exception) {
+            return new JsonResponse(['exception' => $exception, 'success' => false]);
+        }
+
+        return new JsonResponse(['comments' => $comments, "success" => true]);
+    }
+
+    #[Route('/api/getTags', name: 'get_tags', methods: ['GET'])]
+    public function getTags(Request $request, TagRepository $tagRepository): Response
+    {
+        try {
+            $tags = $tagRepository->getAllTags();
+        } catch (Exception $exception) {
+            return new JsonResponse(['exception' => $exception, "success" => false]);
+        }
+
+        return new JsonResponse(['tags' => $tags, "success" => true]);
     }
 }

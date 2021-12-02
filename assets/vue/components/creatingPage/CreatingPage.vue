@@ -82,6 +82,8 @@
         </span>
       </label>
 
+      <dropdown :select-list="tag.allTags" :selected-item="tag.currentTag" @on-select="onSelectTag" class="creating-page__tag" />
+
       <label for="poem" class="creating-page__poem">
         <textarea class="creating-page__textarea" :class="{ 'to-up': !!description }" id="poem" v-model="description" />
         <span class="creating-page__placeholder">Стихотворение</span>
@@ -108,6 +110,8 @@ import { InjectReactive } from 'vue-property-decorator';
 import { TUser } from '@/types';
 import HomeApi from '@/api/HomeApi';
 import { TCreatePostData } from '@/types/TCreatePostData';
+import Dropdown from '@/vue/components/creatingPage/dropdown/Dropdown.vue';
+import { TDropdownItem } from '@/vue/components/creatingPage/dropdown/types';
 
 enum hintFields {
   format = 'format',
@@ -121,6 +125,7 @@ const hints = {
 
 @Options({
   name: 'CreatingPage',
+  components: { Dropdown },
 })
 export default class CreatingPage extends Vue {
   @InjectReactive('user') readonly user!: TUser | null;
@@ -129,6 +134,13 @@ export default class CreatingPage extends Vue {
   author = '';
   image = '';
   files: File[] = [];
+  tag: {
+    currentTag: TDropdownItem | null;
+    allTags: TDropdownItem[];
+  } = {
+    currentTag: null,
+    allTags: [],
+  };
 
   isAlertHints = {
     [hintFields.format]: true,
@@ -154,6 +166,11 @@ export default class CreatingPage extends Vue {
     };
   }
 
+  async created(): Promise<void> {
+    const { tags } = await HomeApi.getTags();
+    this.tag.allTags = tags;
+  }
+
   async onSubmit(): Promise<void> {
     if (!this.formIsValid || !this.user) return;
     const [, encodedStr] = this.image.split(',');
@@ -163,6 +180,7 @@ export default class CreatingPage extends Vue {
       author: this.author || undefined,
       image: encodedStr,
       user_id: this.user.id,
+      tag_id: this.tag.currentTag!.id,
     };
 
     const {
@@ -194,7 +212,11 @@ export default class CreatingPage extends Vue {
 
   get formIsValid(): boolean {
     return (
-      !!this.title && !!this.image && !this.isAlertHints[hintFields.format] && !this.isAlertHints[hintFields.format]
+      !!this.title &&
+      !!this.image &&
+      !this.isAlertHints[hintFields.format] &&
+      !this.isAlertHints[hintFields.format] &&
+      !!this.tag.currentTag
     );
   }
 
@@ -206,6 +228,10 @@ export default class CreatingPage extends Vue {
     (this.$refs.upload as { value: string }).value = '';
     this.isAlertHints[hintFields.format] = true;
     this.isAlertHints[hintFields.size] = true;
+    this.tag.currentTag = null;
+  }
+  onSelectTag(tag: TDropdownItem): void {
+    this.tag.currentTag = tag;
   }
 }
 </script>
@@ -225,6 +251,7 @@ export default class CreatingPage extends Vue {
     grid-template-areas:
       'header'
       'upload'
+      'tag'
       'poem'
       'author'
       'footer';
@@ -252,6 +279,10 @@ export default class CreatingPage extends Vue {
     flex-direction: column;
     grid-area: poem;
     min-height: 250px;
+  }
+
+  &__tag {
+    grid-area: tag;
   }
 
   &__textarea {
@@ -396,7 +427,9 @@ export default class CreatingPage extends Vue {
       grid-template-areas:
         'header header'
         'upload poem'
+        'upload poem'
         'upload author'
+        'tag author'
         'footer footer';
       grid-template-columns: 1fr minmax(465px, 1fr);
       padding: 29px 65px 65px;

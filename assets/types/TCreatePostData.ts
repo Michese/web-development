@@ -4,4 +4,5 @@ export type TCreatePostData = {
   author?: string;
   image: string;
   user_id: number;
+  tag_id: number;
 };

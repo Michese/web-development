@@ -55,6 +55,26 @@
         </div>
         <span v-if="!!detailedPost.author" class="detailed-page__author italico">{{ detailedPost.author }}</span>
       </footer>
+      <div v-if="user" class="detailed-page__comment-section comment-section">
+        <div class="comment-section__body">
+          <textarea
+            class="comment-section__textarea"
+            id="comment"
+            v-model="commentText"
+            placeholder="Комментарий ..."
+          />
+          <button class="comment-section__button" @click.prevent="sendComment" />
+        </div>
+        <div v-for="comment in comments" :key="comment.id" class="comment-section__comment comment">
+          <header class="comment__header">
+            <span class="comment__author">{{ comment?.user.name }}</span>
+            <span class="comment__date">{{ toDateFormat(comment?.created_at?.date) }}</span>
+          </header>
+          <main class="comment__main">
+            <p class="comment__content">{{ comment.text }}</p>
+          </main>
+        </div>
+      </div>
     </div>
   </section>
 </template>
@@ -67,7 +87,8 @@ import Loader from '@/vue/components/loader/Loader.vue';
 import { TDetailedPost } from '@/types/TDetailedPost';
 import HomeApi from '@/api/HomeApi';
 import { TUser } from '@/types';
-import { addBse64Naming } from '@/helpers';
+import { addBse64Naming, toDateFormat } from '@/helpers';
+import { TComment } from '@/types/TComment';
 
 @Options({
   name: 'DetailedPage',
@@ -78,7 +99,7 @@ export default class DetailedPage extends Vue {
     type: String,
     required: true,
   })
-  post!: string;
+  post!: number;
   @InjectReactive('user') user!: TUser | null;
 
   @Watch('user') async wUser(): Promise<void> {
@@ -98,8 +119,10 @@ export default class DetailedPage extends Vue {
     }
   }
 
+  comments: TComment[] = [];
   detailedPost: TDetailedPost | null = null;
   isLoading = false;
+  commentText = '';
 
   get image(): string {
     return this.detailedPost ? addBse64Naming(this.detailedPost?.image) : '';
@@ -136,12 +159,33 @@ export default class DetailedPage extends Vue {
     }
   }
 
+  async sendComment(): Promise<void> {
+    if (!this.commentText) return;
+
+    const {
+      data: { comments },
+    } = await HomeApi.createComment({
+      text: this.commentText,
+      post_id: this.post,
+    });
+    this.comments = comments;
+    this.commentText = '';
+  }
+
+  toDateFormat(date: string): string {
+    return toDateFormat(date);
+  }
+
   async created(): Promise<void> {
     this.isLoading = true;
 
     try {
-      const { detailedPost } = await HomeApi.getPost(this.post);
+      const [{ detailedPost }, { comments }] = await Promise.all([
+        HomeApi.getPost(this.post),
+        HomeApi.getComments(this.post),
+      ]);
       if (detailedPost) this.detailedPost = detailedPost;
+      if (comments) this.comments = comments;
     } catch (error) {
       console.error(error);
     } finally {
@@ -216,6 +260,7 @@ export default class DetailedPage extends Vue {
   &__footer {
     display: flex;
     flex-direction: column-reverse;
+    margin-bottom: 20px;
   }
 
   &__rating {
@@ -258,6 +303,77 @@ export default class DetailedPage extends Vue {
   &__author {
     align-self: flex-end;
     margin-bottom: 10px;
+  }
+}
+
+.comment-section {
+
+  max-width: 650px;
+
+  &__body {
+    display: flex;
+    align-items: center;
+    gap: 20px;
+    margin-bottom: 10px;
+  }
+
+  &__textarea {
+    flex: 1 1;
+    padding: 15px;
+    width: 100%;
+    max-width: 100%;
+    max-height: 800px;
+    min-height: 80px;
+    color: var(--color-gray);
+    background-color: rgba(157, 161, 87, 0.6);
+    border: none;
+    border-radius: 5px;
+
+    &:focus {
+      outline: 1px solid #464512;
+    }
+  }
+
+  &__button{
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    position: relative;
+    height: 3em;
+    width: 3em;
+    border-radius: 50%;
+    color: rgba(157, 161, 87, 0.6);
+    border: 4px solid currentColor;
+    cursor: pointer;
+
+    &:before {
+      display: block;
+      position: absolute;
+      content: '';
+      height: 1.5em;
+      width: 1.5em;
+      color: currentColor;
+      border-left: 4px solid currentColor;
+      border-bottom: 4px solid currentColor;
+      transform-origin: 40% 55%;
+      transform: rotate(-135deg);
+    }
+    &:hover {
+      color: #464512;
+    }
+  }
+}
+
+.comment {
+  padding-top: 10px;
+  margin-bottom: 15px;
+  border-top: 2px solid rgba(157, 161, 87, 0.6);
+
+  &__header {
+    display: flex;
+    justify-content: space-between;
+    margin-bottom: 5px;
+    font-style: italic;
   }
 }
 
