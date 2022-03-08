@@ -117,7 +117,7 @@ const inputs: { [key: string]: TInput } = {
 })
 export default class LoginForm extends Vue {
   @Inject()
-  setUser!: (user: TUser) => void;
+  setUser!: (user: TUser | undefined) => void;
 
   inputValues = Object.keys(inputs).map((key) => inputs[key].defaultValue);
 
@@ -143,7 +143,10 @@ export default class LoginForm extends Vue {
 
     const {
       data: { user },
-    } = await SecurityApi.login(formData);
+    } = await SecurityApi.login(formData).catch(() => {
+      this.setUser(undefined);
+      return { data: { user: null } };
+    });
 
     if (user) {
       this.setUser(user);

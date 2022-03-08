@@ -20,16 +20,20 @@ import HomeApi from '@/api/HomeApi';
   components: { HeaderPage, FooterPage },
 })
 export default class App extends Vue {
-  @ProvideReactive('user') user: TUser | null = null;
+  @ProvideReactive('user') user?: TUser | null = null;
 
   @Provide()
-  setUser(user: TUser): void {
+  setUser(user: TUser | undefined): void {
     this.user = user;
   }
 
   async created(): Promise<void> {
-    const { user } = await SecurityApi.getUser();
+    const { user } = await SecurityApi.getUser().catch(() => {
+      this.setUser(undefined);
+      return { user: undefined };
+    });
     if (user) this.setUser(user);
+    else this.setUser(undefined);
   }
 }
 </script>

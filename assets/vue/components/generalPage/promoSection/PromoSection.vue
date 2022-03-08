@@ -11,6 +11,14 @@
       </p>
       <span class="promo-section__author maria">(Е. Винокур)</span>
     </div>
+    <a href="#gallery-section">
+      <svg class="double-arrows" viewBox="0 0 50 50" xml:space="preserve" xmlns="http://www.w3.org/2000/svg">
+        <g>
+          <polygon points="48.707,19.353 47.293,17.94 25,40.232 2.707,17.94 1.293,19.353 25,43.06" />
+          <polygon points="48.707,8.353 47.293,6.94 25,29.232 2.707,6.94 1.293,8.353 25,32.06" />
+        </g>
+      </svg>
+    </a>
   </section>
 </template>
 
@@ -27,7 +35,8 @@ export default class PromoSection extends Vue {}
 @import '/assets/css/media';
 .promo-section {
   display: flex;
-  justify-content: center;
+  flex-direction: column;
+  justify-content: space-evenly;
   align-items: center;
   min-height: 100vh;
   background-image: url('/assets/assets/promo-background.jpg');
@@ -42,7 +51,7 @@ export default class PromoSection extends Vue {}
     flex-direction: column;
     align-items: flex-start;
     padding: 15px;
-    margin: 0 5px;
+    margin: 0 5px 30px;
     background-color: var(--color-promo-bg);
     border-radius: 5px;
   }
@@ -64,11 +73,20 @@ export default class PromoSection extends Vue {}
   }
 }
 
+.double-arrows {
+  background-color: #fff;
+  padding: 10px;
+  border-radius: 50%;
+  height: 140px;
+  fill: var(--color-orange);
+  animation: to-up-to-down 1.4s infinite ease;
+}
+
 @include media(sm) {
   .promo-section {
     &__inner {
       padding: 25px;
-      margin: 0;
+      margin: 0 0 30px;
     }
 
     &__section-caption {

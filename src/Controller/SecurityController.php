@@ -32,6 +32,10 @@ class SecurityController extends AbstractController
 
             if ($user->checkPassword($content['password'])) {
                 $apiToken = (new ApiTokenService())->create();
+                $user->setLastLoginDate(new \DateTimeImmutable ('now'));
+                $entityManager = $this->getDoctrine()->getManager();
+                $entityManager->persist($user);
+                $entityManager->flush();
 
                 $currentUser = $userRepository->parseToArray($user);
                 $session->start();
@@ -62,7 +66,7 @@ class SecurityController extends AbstractController
 
             $user = $userRepository->parseToUser($content);
             $role = $roleRepository->find(1);
-            $user->setLastLoginDate(\time())
+            $user->setLastLoginDate((new \DateTimeImmutable ('now')))
                 ->setRole($role);
 
             $errors = $validator->validate($user);

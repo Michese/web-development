@@ -169,7 +169,7 @@ const inputs: { [key: string]: TInput } = {
 })
 export default class RegisterForm extends Vue {
   @Inject()
-  setUser!: (user: TUser) => void;
+  setUser!: (user: TUser | undefined) => void;
 
   @Emit('closeModal') closeModal(): void {
     return void 0;
@@ -182,7 +182,7 @@ export default class RegisterForm extends Vue {
     inputs[inputFields.confirmedPassword].patterns = [
       {
         pattern: new RegExp(`^${this.inputValues[inputFields.password]}$`, 'i'),
-        alertText: 'Пароли на совпадают',
+        alertText: 'Пароли не совпадают',
       },
     ];
 
@@ -205,7 +205,10 @@ export default class RegisterForm extends Vue {
 
     const {
       data: { user },
-    } = await SecurityApi.register(formData);
+    } = await SecurityApi.register(formData).catch(() => {
+      this.setUser(undefined);
+      return { data: { user: undefined } };
+    });
     if (user) {
       this.setUser(user);
       this.closeModal();

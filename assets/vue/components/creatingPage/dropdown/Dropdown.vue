@@ -81,6 +81,7 @@ export default class Dropdown extends Vue {
     border-radius: 50%;
     color: #e5e4d9;
     border: 2px solid currentColor;
+    box-shadow: 0 0 2px rgb(70, 69, 18);
 
     &:before {
       display: block;

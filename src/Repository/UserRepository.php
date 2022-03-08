@@ -59,6 +59,8 @@ class UserRepository extends ServiceEntityRepository implements PasswordUpgrader
             'email' => $user->getEmail(),
             'name' => $user->getName(),
             'phone' => $user->getPhone(),
+            'last_login_date' => $user->getLastLoginDate(),
+            'role' => $user->getRole()->getTitle(),
         ];
     }
 

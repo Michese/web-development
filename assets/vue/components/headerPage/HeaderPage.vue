@@ -34,6 +34,7 @@
             />
           </svg>
           <div class="dropdown__body" v-show="openDropDown">
+            <router-link :to="linkToProfile" class="dropdown__text" @click="closeDropDown">Личный кабинет</router-link>
             <router-link :to="link" class="dropdown__text" @click="closeDropDown">Добавить запись</router-link>
             <span class="dropdown__text" @click="clickLogout">Выйти</span>
           </div>
@@ -71,13 +72,17 @@ import { TDropdownItem } from '@/vue/components/creatingPage/dropdown/types';
   components: { AuthModal },
 })
 export default class HeaderPage extends Vue {
-  @InjectReactive('user') readonly user!: TUser | null;
-  @Inject() setUser!: (user: TUser | null) => void;
+  @InjectReactive('user') readonly user?: TUser | null;
+  @Inject() setUser!: (user: TUser | undefined) => void;
 
   openDropDown = false;
 
   get link(): string {
     return routerEnum.creatingPage;
+  }
+
+  get linkToProfile(): string {
+    return routerEnum.profile;
   }
 
   get linkToGeneralPage(): string {
@@ -88,7 +93,7 @@ export default class HeaderPage extends Vue {
     const {
       data: { success },
     } = await SecurityApi.logout();
-    if (success) this.setUser(null);
+    if (success) this.setUser(undefined);
     this.closeDropDown();
   }
 

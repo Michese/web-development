@@ -56,11 +56,12 @@ class HomeController extends AbstractController
             $entityManager = $this->getDoctrine()->getManager();
             $entityManager->persist($post);
             $entityManager->flush();
+
         } catch (Exception $exception) {
             return new JsonResponse(['exception' => $exception, 'success' => false]);
         }
 
-        return new JsonResponse(["success" => true]);
+        return new JsonResponse(["success" => true, "postId" => $post->getId()]);
     }
 
     #[Route('/api/getPosts', name: 'get_posts', methods: ['GET'])]
@@ -69,9 +70,17 @@ class HomeController extends AbstractController
         try {
             $page = intval($request->get('page'));
             $limit = intval($request->get('limit'));
+            $isProfile = boolval($request->get('isProfile'));
+            $search = $request->get('search');
+            $user_id = -1;
 
-            $result = $this->getDoctrine()->getManager()->getRepository(Post::class)->getPosts($page, $limit);
-            $totalCount = $this->getDoctrine()->getManager()->getRepository(Post::class)->getTotalCount();
+            if ($isProfile) {
+                $user = $request->getSession()->get('user');
+                $user_id = $user['id'];
+            }
+
+            $result = $this->getDoctrine()->getManager()->getRepository(Post::class)->getPosts($page, $limit, $search, $user_id);
+            $totalCount = $this->getDoctrine()->getManager()->getRepository(Post::class)->getTotalCount($search, $user_id);
 
             $fileManagerService = new FileManagerService();
             foreach ($result as $key => $value) {

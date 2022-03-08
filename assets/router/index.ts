@@ -3,6 +3,7 @@ import { createWebHistory, createRouter } from 'vue-router';
 import GeneralPage from '@/vue/components/generalPage/GeneralPage.vue';
 import DetailedPage from '@/vue/components/detailedPage/DetailedPage.vue';
 import CreatingPage from '@/vue/components/creatingPage/CreatingPage.vue';
+import Profile from '@/vue/components/profile/Profile.vue';
 
 const routes = [
   {
@@ -20,6 +21,11 @@ const routes = [
     path: routerEnum.creatingPage,
     name: 'creating-page',
     component: CreatingPage,
+  },
+  {
+    path: routerEnum.profile,
+    name: 'profile',
+    component: Profile,
   },
 ];
 

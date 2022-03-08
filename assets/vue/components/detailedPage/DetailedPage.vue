@@ -7,8 +7,20 @@
         <h2 class="detailed-page__section-caption section-caption">{{ detailedPost.title }}</h2>
       </header>
       <div class="detailed-page__inner">
-        <img :src="image" alt="big-img" class="detailed-page__img" />
-        <p v-if="!!description" class="detailed-page__description italico" v-html="description" />
+        <img :src="image" alt="big-img" class="detailed-page__img" @click="openApproximation" />
+
+        <teleport to="body">
+          <transition name="approximation">
+            <div class="approximation" v-if="showApproximation" v-bodyoverflow @click.stop="closeApproximation">
+              <img :src="image" alt="full-img" class="approximation__full-image" />
+            </div>
+          </transition>
+        </teleport>
+
+        <div class="detailed-page__content">
+          <strong v-if="!!detailedPost.author" class="detailed-page__author italico">{{ detailedPost.author }}</strong>
+          <p v-if="!!description" class="detailed-page__description italico" v-html="description" />
+        </div>
       </div>
       <footer class="detailed-page__footer">
         <div class="detailed-page__rating">
@@ -53,10 +65,10 @@
 
           <div class="detailed-page__followers maria">{{ detailedPost.countVoted }}</div>
         </div>
-        <span v-if="!!detailedPost.author" class="detailed-page__author italico">{{ detailedPost.author }}</span>
+        <span v-if="!!detailedPost.author" class="detailed-page__user italico">{{ detailedPost.name }}</span>
       </footer>
-      <div v-if="user" class="detailed-page__comment-section comment-section">
-        <div class="comment-section__body">
+      <div class="detailed-page__comment-section comment-section">
+        <div v-if="user" class="comment-section__body">
           <textarea
             class="comment-section__textarea"
             id="comment"
@@ -67,7 +79,7 @@
         </div>
         <div v-for="comment in comments" :key="comment.id" class="comment-section__comment comment">
           <header class="comment__header">
-            <span class="comment__author">{{ comment?.user.name }}</span>
+            <span class="comment__author">{{ comment.user.name + (comment.user.id === user?.id ? ' (Вы)' : '') }}</span>
             <span class="comment__date">{{ toDateFormat(comment?.created_at?.date) }}</span>
           </header>
           <main class="comment__main">
@@ -95,12 +107,17 @@ import { TComment } from '@/types/TComment';
   components: { Heart, Loader },
 })
 export default class DetailedPage extends Vue {
+  @InjectReactive('user') user!: TUser | null;
+  comments: TComment[] = [];
+  detailedPost: TDetailedPost | null = null;
+  isLoading = false;
+  showApproximation = false;
+  commentText = '';
   @Prop({
     type: String,
     required: true,
   })
   post!: number;
-  @InjectReactive('user') user!: TUser | null;
 
   @Watch('user') async wUser(): Promise<void> {
     if (this.user === null && !!this.detailedPost && !!this.detailedPost.myRating) {
@@ -118,11 +135,6 @@ export default class DetailedPage extends Vue {
       }
     }
   }
-
-  comments: TComment[] = [];
-  detailedPost: TDetailedPost | null = null;
-  isLoading = false;
-  commentText = '';
 
   get image(): string {
     return this.detailedPost ? addBse64Naming(this.detailedPost?.image) : '';
@@ -174,6 +186,14 @@ export default class DetailedPage extends Vue {
 
   toDateFormat(date: string): string {
     return toDateFormat(date);
+  }
+
+  openApproximation(): void {
+    this.showApproximation = true;
+  }
+
+  closeApproximation(): void {
+    this.showApproximation = false;
   }
 
   async created(): Promise<void> {
@@ -244,6 +264,21 @@ export default class DetailedPage extends Vue {
     width: 100%;
     border-radius: 15px;
     margin-bottom: 10px;
+    cursor: pointer;
+    &:hover {
+      box-shadow: 0 0 5px rgba(0, 0, 0, 0.6);
+    }
+  }
+
+  &__content {
+    display: flex;
+    flex-direction: column;
+  }
+
+  &__author {
+    align-self: center;
+    margin-bottom: 10px;
+    font-weight: 700;
   }
 
   &__description {
@@ -300,7 +335,7 @@ export default class DetailedPage extends Vue {
     text-align: center;
   }
 
-  &__author {
+  &__user {
     align-self: flex-end;
     margin-bottom: 10px;
   }
@@ -364,6 +399,34 @@ export default class DetailedPage extends Vue {
   }
 }
 
+.approximation-enter-active,
+.approximation-leave-active {
+  transition: transform 0.2s ease;
+}
+
+.approximation-enter-from,
+.approximation-leave-to {
+  transform: scale(0);
+}
+
+.approximation {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  position: fixed;
+  top: 0;
+  right: 0;
+  bottom: 0;
+  left: 0;
+  z-index: 100;
+  background-color: rgba(59, 59, 59, 0.8);
+
+  &__full-image {
+    max-height: 80vh;
+    max-width: 90vw;
+  }
+}
+
 .comment {
   padding-top: 10px;
   margin-bottom: 15px;
@@ -403,13 +466,14 @@ export default class DetailedPage extends Vue {
     }
 
     &__heart {
-      top: 14px;
-      left: 65px;
+      top: 5px;
+      left: 5px;
     }
 
     &__inner {
       flex-direction: row;
       justify-content: space-between;
+      align-items: flex-start;
       gap: 50px;
     }
 
@@ -434,7 +498,7 @@ export default class DetailedPage extends Vue {
       max-width: 465px;
     }
 
-    &__author {
+    &__user{
       margin-bottom: 0;
     }
   }

@@ -91,7 +91,7 @@
 
       <label for="author" class="creating-page__author">
         <input type="text" class="creating-page__input" :class="{ 'to-up': !!author }" id="author" v-model="author" />
-        <span class="creating-page__placeholder">Автор</span>
+        <span class="creating-page__placeholder">Автор произведения</span>
       </label>
 
       <div class="creating-page__footer">
@@ -106,12 +106,13 @@
 <script lang="ts">
 import { Options, Vue } from 'vue-class-component';
 import { toBase64 } from '@/helpers';
-import { InjectReactive } from 'vue-property-decorator';
+import { InjectReactive, Watch } from 'vue-property-decorator';
 import { TUser } from '@/types';
 import HomeApi from '@/api/HomeApi';
 import { TCreatePostData } from '@/types/TCreatePostData';
 import Dropdown from '@/vue/components/creatingPage/dropdown/Dropdown.vue';
 import { TDropdownItem } from '@/vue/components/creatingPage/dropdown/types';
+import { routerEnum } from '@/enums';
 
 enum hintFields {
   format = 'format',
@@ -128,7 +129,7 @@ const hints = {
   components: { Dropdown },
 })
 export default class CreatingPage extends Vue {
-  @InjectReactive('user') readonly user!: TUser | null;
+  @InjectReactive('user') readonly user?: TUser | null;
   title = '';
   description = '';
   author = '';
@@ -146,6 +147,10 @@ export default class CreatingPage extends Vue {
     [hintFields.format]: true,
     [hintFields.size]: true,
   };
+
+  @Watch('user', { immediate: true }) wUser(): void {
+    if (this.user === undefined) this.$router.push(routerEnum.generalPage);
+  }
 
   get uploadHints(): { [key: string]: { hint: string; alert: boolean } } {
     return {
@@ -184,10 +189,13 @@ export default class CreatingPage extends Vue {
     };
 
     const {
-      data: { success },
+      data: { success, postId },
     } = await HomeApi.createPost(formData);
 
-    if (success) this.clearForm();
+    if (success) {
+      this.clearForm();
+      await this.$router.push(`${routerEnum.detailedPage}/${postId}`);
+    }
   }
 
   async uploadFile(e: Event): Promise<void> {
@@ -250,8 +258,8 @@ export default class CreatingPage extends Vue {
     display: grid;
     grid-template-areas:
       'header'
-      'upload'
       'tag'
+      'upload'
       'poem'
       'author'
       'footer';
@@ -311,6 +319,7 @@ export default class CreatingPage extends Vue {
     padding: 52px 15px 29px;
     border-radius: 15px;
     box-sizing: content-box;
+    box-shadow: inset 0 0 10px rgba(0, 0, 0, 0.5);
   }
 
   &__placeholder {
@@ -333,7 +342,8 @@ export default class CreatingPage extends Vue {
     outline: none;
     &:focus + .creating-page__placeholder,
     &.to-up + .creating-page__placeholder {
-      transform: translateY(-1.5em);
+      transform: translateY(-3em);
+      font-size: 0.7em;
     }
   }
 
@@ -426,10 +436,10 @@ export default class CreatingPage extends Vue {
     &__container {
       grid-template-areas:
         'header header'
-        'upload poem'
+        'tag poem'
         'upload poem'
         'upload author'
-        'tag author'
+        'upload author'
         'footer footer';
       grid-template-columns: 1fr minmax(465px, 1fr);
       padding: 29px 65px 65px;

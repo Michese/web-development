@@ -101,6 +101,9 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
      */
     private $comments;
 
+    /**
+     * @ORM\Column(type="datetime_immutable")
+     */
     private $last_login_date;
 
     /**
@@ -317,12 +320,12 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
         return $this;
     }
 
-    public function getLastLoginDate()
+    public function getLastLoginDate(): ?\DateTimeImmutable
     {
         return $this->last_login_date;
     }
 
-    public function setLastLoginDate($last_login_date): self
+    public function setLastLoginDate(\DateTimeImmutable $last_login_date): self
     {
         $this->last_login_date = $last_login_date;
 

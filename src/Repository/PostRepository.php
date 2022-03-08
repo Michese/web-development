@@ -55,17 +55,25 @@ class PostRepository extends ServiceEntityRepository
     /**
      * @return Post[]
      */
-    public function getPosts(int $page, int $limit): array
+    public function getPosts(int $page, int $limit, string $search = "", int $user_id = -1): array
     {
         $entityManager = $this->getEntityManager();
-        $query = $entityManager->createQueryBuilder()
-            ->select(['p.id', 'p.title', 'p.author', 'p.description', 'p.image', 'p.created_at', 'avg(pr.rating) as rating'])
+        $cb = $entityManager->createQueryBuilder();
+        $query = $cb
+            ->select(['p.id', 'p.title', 'p.author', 'p.description', 'p.image', 't.title as tag', 'p.created_at', 'avg(pr.rating) as rating'])
             ->from('App\Entity\Post', 'p')
+            ->innerJoin('p.tag', 't')
             ->leftJoin('p.postRatings', 'pr')
+            ->where(
+                $cb->expr()->like('p.title', ':search')
+            )
+            ->andWhere('p.user_id=:user_id or -1 = :user_id')
             ->groupBy('p.id')
             ->orderBy('p.created_at', 'DESC')
             ->setMaxResults($limit)
             ->setFirstResult($limit * ( $page - 1 ))
+            ->setParameter('search', "%$search%")
+            ->setParameter('user_id', $user_id)
             ->getQuery();
         return $query->getResult();
     }
@@ -77,10 +85,11 @@ class PostRepository extends ServiceEntityRepository
     {
         $entityManager = $this->getEntityManager();
         $query = $entityManager->createQueryBuilder()
-            ->select(['p.id', 'p.title', 'p.author', 'p.description', 'p.image', 'count(pr.rating) as countVoted',  'avg(pr.rating) as rating'])
+            ->select(['p.id', 'p.title', 'p.author', 'p.description', 'p.image', 'u.name', 'count(pr.rating) as countVoted',  'avg(pr.rating) as rating'])
             ->from('App\Entity\Post', 'p')
-            ->where('p.id=:postId')
+            ->innerJoin('App\Entity\User', 'u', 'WITH', 'u.id = p.user_id')
             ->leftJoin('p.postRatings', 'pr')
+            ->where('p.id=:postId')
             ->groupBy('p.id')
             ->orderBy('p.created_at', 'DESC')
             ->setParameter('postId', $postId)
@@ -91,12 +100,19 @@ class PostRepository extends ServiceEntityRepository
     /**
      * @throws \Doctrine\ORM\NonUniqueResultException
      */
-    public function getTotalCount(): int
+    public function getTotalCount(string $search = "", int $user_id = -1): int
     {
         $entityManager = $this->getEntityManager();
-        $query = $entityManager->createQueryBuilder()
+        $cb = $entityManager->createQueryBuilder();
+        $query = $cb
             ->select('count(p) as count')
             ->from('App\Entity\Post', 'p')
+            ->where(
+                $cb->expr()->like('p.title', ':search')
+            )
+            ->andWhere('p.user_id=:user_id or -1 = :user_id')
+            ->setParameter('search', "%$search%")
+            ->setParameter('user_id', $user_id)
             ->getQuery()
             ->getOneOrNullResult();
         return $query['count'];

@@ -10,4 +10,5 @@ export type TDetailedPost = {
   rating: number;
   myRating: number | null;
   countVoted: number;
+  name: string;
 };

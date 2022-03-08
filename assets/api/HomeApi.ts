@@ -13,6 +13,8 @@ class HomeApi extends Api {
   async getPosts(data: {
     limit: number;
     page: number;
+    search?: string;
+    isProfile?: 0 | 1;
   }): Promise<{ posts: TGalleryItem[]; success: boolean; totalCount: number }> {
     return this.get('/api/getPosts', data);
   }
@@ -29,7 +31,7 @@ class HomeApi extends Api {
     return this.post('/api/createComment', data);
   }
 
-  async createPost(data: TCreatePostData): Promise<{ data: { success: boolean } }> {
+  async createPost(data: TCreatePostData): Promise<{ data: { success: boolean; postId: number } }> {
     return this.post('/api/createPost', data);
   }
 

@@ -1,5 +1,26 @@
 <template>
-  <section class="gallery-section container">
+  <section class="gallery-section container" id="gallery-section">
+    <div class="gallery-section__search search">
+      <input type="text" class="search__input" id="search" placeholder="Поиск" v-model="search" @change="searchApply" />
+      <button class="search__button" @click.prevent="searchApply">
+        <svg class="search__image" xmlns="http://www.w3.org/2000/svg" width="20px" height="20px" viewBox="0 0 512 512">
+          <g>
+            <path
+              d="M493.25,402.75L393.094,302.562C407.625,274.172,416,242.094,416,208C416,93.125,322.875,0,208,0C93.109,0,0,93.125,0,208
+		s93.109,208,208,208c33.953,0,65.906-8.312,94.219-22.719c-0.031,0-0.094,0.031-0.125,0.062c0.156-0.094,0.344-0.156,0.531-0.25
+		L402.75,493.25c25.031,25,65.562,25,90.5,0C518.25,468.281,518.25,427.75,493.25,402.75z M48,208c0-88.219,71.781-160,160-160
+		c88.219,0,160,71.781,160,160s-71.781,160-160,160S48,296.219,48,208z M459.312,436.656c-6.25,6.25-16.375,6.25-22.625,0
+		l-45.25-45.25c-6.25-6.25-6.25-16.375,0-22.625s16.375-6.25,22.625,0l45.25,45.25C465.594,420.281,465.594,430.406,459.312,436.656
+		z"
+            />
+          </g>
+        </svg>
+      </button>
+    </div>
+
+    <div v-if="!!user" class="gallery-section__center">
+      <router-link :to="link" class="gallery-section__add-button" @click.prevent>Добавить запись</router-link>
+    </div>
     <ul class="gallery-section__list">
       <li v-for="post in posts" class="gallery-section__item" :key="post.id">
         <gallery-card :post="post" />
@@ -33,8 +54,10 @@
 import { Options, Vue } from 'vue-class-component';
 import GalleryCard from '@/vue/components/generalPage/gallerySection/galleryCard/GalleryCard.vue';
 import Loader from '@/vue/components/loader/Loader.vue';
-import { TGalleryItem } from '@/types';
+import { TGalleryItem, TUser } from '@/types';
 import HomeApi from '@/api/HomeApi';
+import { routerEnum } from '@/enums';
+import { InjectReactive, Prop } from 'vue-property-decorator';
 
 const limit = 3;
 
@@ -43,27 +66,53 @@ const limit = 3;
   components: { GalleryCard, Loader },
 })
 export default class GallerySection extends Vue {
+  @InjectReactive('user') readonly user!: TUser | null;
+  @Prop({
+    type: Boolean,
+    required: false,
+    default: () => false,
+  })
+  isProfile!: boolean;
+
   posts: TGalleryItem[] | null = null;
   isLoading = false;
   page = 1;
   totalCount = 0;
+  search = '';
+
+  get link(): string {
+    return routerEnum.creatingPage;
+  }
 
   async created(): Promise<void> {
-    this.isLoading = true;
+    const { posts, totalCount } = await this.getPosts(this.page);
+    this.posts = posts ?? ([] as TGalleryItem[]);
+    this.totalCount = totalCount;
+  }
 
-    try {
-      const { posts, totalCount } = await this.getPosts(this.page);
-      this.posts = posts ?? ([] as TGalleryItem[]);
+  async searchApply(): Promise<void> {
+    this.page = 1;
+    this.posts = [];
+    this.totalCount = 0;
+    const { posts, totalCount } = await this.getPosts(this.page);
+
+    if (totalCount && posts) {
       this.totalCount = totalCount;
-    } catch (error) {
-      console.error(error);
+      this.posts = posts;
     }
-
-    this.isLoading = false;
   }
 
   async getPosts(page: number): Promise<{ posts: TGalleryItem[]; totalCount: number }> {
-    const { posts, totalCount } = await HomeApi.getPosts({ limit: limit, page });
+    this.isLoading = true;
+    const { posts, totalCount } = await HomeApi.getPosts({
+      limit: limit,
+      page,
+      isProfile: this.isProfile ? 1 : 0,
+      search: this.search,
+    }).finally(() => {
+      this.isLoading = false;
+    });
+
     return { posts, totalCount };
   }
 
@@ -94,6 +143,29 @@ export default class GallerySection extends Vue {
   min-height: 100vh;
   padding: 15px;
 
+  &__search {
+    margin-bottom: 20px;
+  }
+
+  &__center {
+    display: flex;
+    justify-content: center;
+  }
+
+  &__add-button {
+    padding: 11px 40px;
+    margin-bottom: 20px;
+    background-color: rgba(157, 161, 87, 0.72);
+    box-shadow: 0 0 4px rgba(0, 0, 0, 0.25);
+    border-radius: 5px;
+    color: var(--color-dark-green);
+    cursor: pointer;
+
+    &:hover {
+      box-shadow: 0 0 100px #fff;
+    }
+  }
+
   &__list {
     display: grid;
     grid-template-columns: 1fr;
@@ -109,6 +181,41 @@ export default class GallerySection extends Vue {
   &__center {
     display: flex;
     justify-content: center;
+  }
+}
+
+.search {
+  display: flex;
+  &__input {
+    flex: 1 1;
+    padding: 10px 15px;
+    background-color: rgba(157, 161, 87, 0.72);
+    color: var(--color-dark-green);
+    border: none;
+    border-radius: 15px;
+    box-shadow: inset 0 0 10px rgba(0, 0, 0, 0.5);
+    &:focus {
+      outline: 1px solid var(--color-dark-green);
+    }
+
+    &::placeholder {
+      color: var(--color-green);
+    }
+  }
+
+  &__button {
+    flex: 0 0 40px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    cursor: pointer;
+  }
+
+  &__image {
+    fill: rgba(157, 161, 87, 0.72);
+    &:hover {
+      fill: var(--color-dark-green);
+    }
   }
 }
 
@@ -135,6 +242,7 @@ export default class GallerySection extends Vue {
 @include media(sm) {
   .gallery-section {
     padding: 40px 15px 25px;
+    margin-top: -25px;
 
     &__list {
       grid-template-columns: 1fr 1fr;
@@ -144,7 +252,8 @@ export default class GallerySection extends Vue {
 
 @include media(lg) {
   .gallery-section {
-    padding: 134px 15px 25px;
+    padding: 114px 15px 25px;
+    margin-top: -100px;
 
     &__list {
       grid-template-columns: 1fr 1fr 1fr;
