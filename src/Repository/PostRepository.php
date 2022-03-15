@@ -77,18 +77,6 @@ ORDER BY p.created_at DESC";
         $stmt->bindParam(':post_id', $postId, PDO::PARAM_INT);
         $stmt->execute();
         return $stmt->fetch(PDO::FETCH_ASSOC);
-//        $entityManager = $this->getEntityManager();
-//        $query = $entityManager->createQueryBuilder()
-//            ->select(['p.id', 'p.title', 'p.author', 'p.description', 'p.image', 'u.name', 'count(pr.rating) as countVoted',  'avg(pr.rating) as rating'])
-//            ->from('App\Entity\Post', 'p')
-//            ->innerJoin('App\Entity\User', 'u', 'WITH', 'u.id = p.user_id')
-//            ->leftJoin('p.postRatings', 'pr')
-//            ->where('p.id=:postId')
-//            ->groupBy('p.id')
-//            ->orderBy('p.created_at', 'DESC')
-//            ->setParameter('postId', $postId)
-//            ->getQuery();
-//        return $query->getOneOrNullResult();
     }
 
     public function getTotalCount(string $search = "", int $user_id = -1): int
@@ -101,20 +89,6 @@ WHERE p.title LIKE :search AND (p.user_id=:user_id OR -1 = :user_id)";
         $stmt->bindParam(':user_id', $user_id, PDO::PARAM_INT);
         $stmt->execute();
         return $stmt->fetch(PDO::FETCH_ASSOC)['count'];
-//        $entityManager = $this->getEntityManager();
-//        $cb = $entityManager->createQueryBuilder();
-//        $query = $cb
-//            ->select('count(p) as count')
-//            ->from('App\Entity\Post', 'p')
-//            ->where(
-//                $cb->expr()->like('p.title', ':search')
-//            )
-//            ->andWhere('p.user_id=:user_id or -1 = :user_id')
-//            ->setParameter('search', "%$search%")
-//            ->setParameter('user_id', $user_id)
-//            ->getQuery()
-//            ->getOneOrNullResult();
-//        return $query['count'];
     }
 
     public function createPost(Post $post, int $tagId): int

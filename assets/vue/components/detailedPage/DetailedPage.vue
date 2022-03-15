@@ -147,7 +147,7 @@ export default class DetailedPage extends Vue {
   get isChangingRating(): boolean {
     return !!this.user && !!this.detailedPost && this.detailedPost?.myRating === null;
   }
-  //
+
   get description(): string {
     return this.detailedPost ? this.detailedPost.description.replaceAll('\n', '<br />') : '';
   }

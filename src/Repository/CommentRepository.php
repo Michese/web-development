@@ -14,17 +14,6 @@ class CommentRepository extends BaseRepository
         $stmt->bindParam(':post_id', $postId, PDO::PARAM_INT);
         $stmt->execute();
         return $stmt->fetchAll(PDO::FETCH_ASSOC);
-
-//        $entityManager = $this->getEntityManager();
-//        $rsm = new ResultSetMappingBuilder($entityManager);
-//        $rsm->addRootEntityFromClassMetadata('App\Entity\Comment', 'comment');
-//        $rsm->addJoinedEntityFromClassMetadata('App\Entity\User', 'user', 'comment', 'user', array(
-//            'id' => 'user_id',
-//        ));
-//        return $entityManager->createNativeQuery(
-//            'SELECT `comment`.*, `user`.name FROM `comment` INNER JOIN `user` on `user`.id = `comment`.user_id WHERE `comment`.post_id = :post_id AND `comment`.deleted_at IS NULL ORDER BY created_at DESC', $rsm)
-//            ->setParameters(['post_id' => $postId])
-//            ->getArrayResult();
     }
 
     public function parseToComment(array $content): Comment

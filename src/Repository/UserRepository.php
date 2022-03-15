@@ -46,11 +46,6 @@ class UserRepository extends BaseRepository
         $stmt->bindParam(':api_token', $apiToken);
         $stmt->execute();
         return $stmt->fetchObject(PDO::FETCH_ASSOC);
-//        return $this->createQuery(
-//            'SELECT *
-//            FROM user
-//            WHERE p.api_token = :api_token'
-//        )->setParameter('api_token', $apiToken);
     }
 
     #[Pure] #[ArrayShape(['id' => "int|null", 'email' => "null|string", 'name' => "null|string", 'phone' => "null|string", 'last_login_date' => "\DateTimeImmutable|null", 'role' => "null|string"])]

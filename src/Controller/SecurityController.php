@@ -16,7 +16,6 @@ use Symfony\Component\Routing\Annotation\Route;
 
 class SecurityController extends BaseController
 {
-//    #[Route('/api/login', name: 'app_login', methods: ['POST'])]
     public function login(): Response
     {
         $cookie = new CookieService();
@@ -29,10 +28,6 @@ class SecurityController extends BaseController
             if ($user->checkPassword($content['password'])) {
                 $apiToken = (new ApiTokenService())->create();
                 $user->setLastLoginDate(new \DateTimeImmutable('now'));
-
-//                $entityManager = $this->getDoctrine()->getManager();
-//                $entityManager->persist($user);
-//                $entityManager->flush();
                 $currentUser = $userRepository->parseToArray($user);
 
                 $session->start();
@@ -55,21 +50,16 @@ class SecurityController extends BaseController
         }
     }
 
-//    #[Route('/api/register', name: 'app_register', methods: ['POST'])]
     public function register(): Response
     {
         $content = json_decode($this->request->getContent(), true);
         try {
             $userRepository = new UserRepository();
             $user = $userRepository->parseToUser($content);
-            $role = (new RoleRepository())->find(1); // TODO find
+            $role = (new RoleRepository())->find(1);
             $user->setLastLoginDate((new \DateTimeImmutable('now')))
                 ->setRole($role);
             $user->setPassword(password_hash($user->getPassword(), true));
-
-//            $entityManager = $this->getDoctrine()->getManager();
-//            $entityManager->persist($user);
-//            $entityManager->flush();
 
             $apiToken = (new ApiTokenService())->create();
             $currentUser = $userRepository->parseToArray($user);
@@ -91,7 +81,6 @@ class SecurityController extends BaseController
         ]);
     }
 
-//    #[Route('/api/logout', name: 'app_logout', methods: ['POST'])]
     public function logout(): Response
     {
         try {
@@ -106,10 +95,9 @@ class SecurityController extends BaseController
         return new JsonResponse(["success" => true]);
     }
 
-//    #[Route('/api/getUser', name: 'app_get_user', methods: ['GET'])]
+
     public function getCurrentUser(): Response
     {
-//        $this->request;
         $cookie = new CookieService();
 
         if (!$cookie->checkApiToken($this->request)) {

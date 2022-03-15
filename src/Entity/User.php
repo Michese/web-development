@@ -221,9 +221,4 @@ class User
 
         return $this;
     }
-
-    public function getRoles()
-    {
-        // TODO: Implement getRoles() method.
-    }
 }

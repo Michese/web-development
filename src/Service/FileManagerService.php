@@ -2,10 +2,8 @@
 
 namespace App\Service;
 
-use GdImage;
 use JetBrains\PhpStorm\Pure;
 use Symfony\Component\HttpFoundation\File\Exception\FileException;
-use Symfony\Component\HttpFoundation\File\UploadedFile;
 
 class FileManagerService
 {
@@ -37,7 +35,7 @@ class FileManagerService
 
         try {
             $fileDecode = base64_decode($file);
-            file_put_contents( __DIR__ . $this->getPostImageDirectory() . $fileName, $fileDecode);
+            file_put_contents(__DIR__ . $this->getPostImageDirectory() . $fileName, $fileDecode);
         } catch (FileException $exception) {
             throw new \Exception($exception);
         }

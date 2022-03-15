@@ -112,7 +112,6 @@ class Post
     public function removePostRating(PostRating $postRating): self
     {
         if ($this->postRatings->removeElement($postRating)) {
-            // set the owning side to null (unless already changed)
             if ($postRating->getPostId() === $this) {
                 $postRating->setPostId(null);
             }
@@ -158,7 +157,6 @@ class Post
     public function removeComment(Comment $comment): self
     {
         if ($this->comments->removeElement($comment)) {
-            // set the owning side to null (unless already changed)
             if ($comment->getPost() === $this) {
                 $comment->setPost(null);
             }

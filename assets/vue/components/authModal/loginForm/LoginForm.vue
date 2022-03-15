@@ -170,7 +170,6 @@ export default class LoginForm extends Vue {
 @import '/assets/css/media';
 .login-form {
   padding: 15px;
-  //background-color: #f3da6b;
   border-radius: 0 0 5px 5px;
   max-height: 80vh;
   overflow-y: auto;

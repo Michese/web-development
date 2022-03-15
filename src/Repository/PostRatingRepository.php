@@ -26,15 +26,6 @@ GROUP BY pr.post_id";
         $stmt->bindParam(':post_id', $postId, PDO::PARAM_INT);
         $stmt->execute();
         return $stmt->fetch(PDO::FETCH_ASSOC);
-//        $entityManager = $this->getEntityManager();
-//        $query = $entityManager->createQueryBuilder()
-//            ->select(['avg(pr.rating) as rating', 'count(pr.rating) as countVoted'])
-//            ->from('App\Entity\PostRating', 'pr')
-//            ->where('pr.post=:post_id')
-//            ->groupBy('pr.post')
-//            ->setParameter('post_id', $postId)
-//            ->getQuery();
-//        return $query->getOneOrNullResult();
     }
 
     public function getUserRating(int $postId, int $userId): int | null
@@ -53,21 +44,5 @@ WHERE pr.post_id=:post_id AND pr.user_id=:user_id";
             $result = null;
         }
         return $result;
-
-//        $entityManager = $this->getEntityManager();
-//        $query = $entityManager->createQueryBuilder()
-//            ->select('pr.rating as myRating')
-//            ->from('App\Entity\PostRating', 'pr')
-//            ->where('pr.post=:post_id')
-//            ->andWhere('pr.user=:user_id')
-//            ->setParameters(['post_id' => $postId, 'user_id' => $userId])
-//            ->getQuery()
-//            ->getOneOrNullResult();
-//        if ($query != null) {
-//            $result = $query['myRating'];
-//        } else {
-//            $result = null;
-//        }
-//        return $result;
     }
 }
