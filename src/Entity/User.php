@@ -12,111 +12,28 @@ use Symfony\Component\Security\Core\User\UserInterface;
 use Symfony\Component\Validator\Constraints as Assert;
 use Symfony\Bridge\Doctrine\Validator\Constraints\UniqueEntity;
 
-/**
- * @ORM\Entity(repositoryClass=UserRepository::class)
- * @ORM\Table(name="`user`")
- * @UniqueEntity(
- *     fields="email",
- *     message="Такой email уже существует!"
- * )
- * @UniqueEntity(
- *     fields="phone",
- *     message="Такой номер телефона уже существует!"
- * )
- */
-class User implements UserInterface, PasswordAuthenticatedUserInterface
+class User
 {
-    /**
-     * @ORM\Id
-     * @ORM\GeneratedValue
-     * @ORM\Column(type="integer", nullable=false)
-     */
     private $id;
-
-    /**
-     * @ORM\Column(type="string", length=180, unique=true, nullable=false)
-     * @Assert\Email(
-     *     message = "Некорректный email",
-     * )
-     * @Assert\Regex(
-     *     pattern="/^[a-z]+.+@[a-z]{2,}.[a-z]{2,}$/i",
-     *     message = "Некорректный email",
-     * )
-     */
     private $email;
-
-    /**
-     * @var string The hashed password
-     * @ORM\Column(type="string")
-     * @Assert\Length(
-     *      min = 6,
-     *      minMessage = "Ваш пароль должен быть как минимум {{ limit }} символов",
-     * )
-     * @Assert\Regex(
-     *     pattern="/[a-zA-Z]/i",
-     *     message="Добавьте хотя бы одну латинскую букву"
-     * )
-     */
     private $password;
-
-    /**
-     * @ORM\Column(type="bigint", nullable=false)
-     * @Assert\Range(
-     *      min = 89000000000,
-     *      max = 89999999999,
-     *      minMessage = "Некорректный номер телефона!",
-     *      maxMessage = "Некорректный номер телефона!"
-     * )
-     */
     private $phone;
-
-    /**
-     * @ORM\Column(type="string", nullable=false, length=255)
-     * @Assert\Length(
-     *      min = 4,
-     *      max = 20,
-     *      minMessage = "Ваше имя должно быть как минимум {{ limit }} символа",
-     *      maxMessage = "Ваше имя не должно быть длиннее {{ limit }} символов"
-     * )
-     */
     private $name;
-
-    /**
-     * @ORM\OneToMany(targetEntity=Post::class, mappedBy="author")
-     */
     private $posts;
-
-    /**
-     * @ORM\OneToMany(targetEntity=PostRating::class, mappedBy="user")
-     */
     private $postRatings;
-
-    /**
-     * @ORM\Column(type="string", nullable=true, unique=true)
-     */
     private $apiToken;
-
-    /**
-     * @ORM\OneToMany(targetEntity=Comment::class, mappedBy="user")
-     */
     private $comments;
-
-    /**
-     * @ORM\Column(type="datetime_immutable")
-     */
     private $last_login_date;
-
-    /**
-     * @ORM\ManyToOne(targetEntity=Role::class, inversedBy="users")
-     * @ORM\JoinColumn(nullable=false)
-     */
     private $role;
 
     public function __construct()
     {
-        $this->posts = new ArrayCollection();
-        $this->postRatings = new ArrayCollection();
-        $this->comments = new ArrayCollection();
+    }
+
+    public function setId(int $id): self
+    {
+        $this->id = $id;
+        return $this;
     }
 
     public function getId(): ?int
@@ -174,24 +91,9 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
         return password_verify($password, $this->password);
     }
 
-    /**
-     * Returning a salt is only needed, if you are not using a modern
-     * hashing algorithm (e.g. bcrypt or sodium) in your security.yaml.
-     *
-     * @see UserInterface
-     */
     public function getSalt(): ?string
     {
         return null;
-    }
-
-    /**
-     * @see UserInterface
-     */
-    public function eraseCredentials()
-    {
-        // If you store any temporary, sensitive data on the user, clear it here
-        // $this->plainPassword = null;
     }
 
     public function getPhone(): ?string
@@ -218,14 +120,6 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
         return $this;
     }
 
-    /**
-     * @return Collection|Post[]
-     */
-    public function getPosts(): Collection
-    {
-        return $this->posts;
-    }
-
     public function addPost(Post $post): self
     {
         if (!$this->posts->contains($post)) {
@@ -246,14 +140,6 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
         }
 
         return $this;
-    }
-
-    /**
-     * @return Collection|PostRating[]
-     */
-    public function getPostRatings(): Collection
-    {
-        return $this->postRatings;
     }
 
     public function addPostRating(PostRating $postRating): self
@@ -288,14 +174,6 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
         $this->apiToken = $apiToken;
 
         return $this;
-    }
-
-    /**
-     * @return Collection|Comment[]
-     */
-    public function getComments(): Collection
-    {
-        return $this->comments;
     }
 
     public function addComment(Comment $comment): self
@@ -337,7 +215,7 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
         return $this->role;
     }
 
-    public function setRole(?Role $role): self
+    public function setRole(Role $role): self
     {
         $this->role = $role;
 

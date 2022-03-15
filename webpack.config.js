@@ -28,8 +28,8 @@ Encore.setOutputPath('public/build/')
     runtimeCompilerBuild: true,
   })
   .enableTypeScriptLoader()
-    .addAliases({
-        '@': '/assets'
-    });
+  .addAliases({
+    '@': '/assets',
+  });
 
 module.exports = Encore.getWebpackConfig();

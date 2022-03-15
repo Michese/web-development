@@ -2,46 +2,13 @@
 
 namespace App\Entity;
 
-use App\Repository\CommentRepository;
-use Doctrine\ORM\Mapping as ORM;
-
-/**
- * @ORM\Entity(repositoryClass=CommentRepository::class)
- */
 class Comment
 {
-    /**
-     * @ORM\Id
-     * @ORM\GeneratedValue
-     * @ORM\Column(type="integer")
-     */
     private $id;
-
-    /**
-     * @ORM\ManyToOne(targetEntity=Post::class, inversedBy="comments")
-     * @ORM\JoinColumn(nullable=false)
-     */
     private $post;
-
-    /**
-     * @ORM\ManyToOne(targetEntity=User::class, inversedBy="comments")
-     * @ORM\JoinColumn(nullable=false)
-     */
     private $user;
-
-    /**
-     * @ORM\Column(type="text")
-     */
     private $text;
-
-    /**
-     * @ORM\Column(type="datetime")
-     */
     private $created_at;
-
-    /**
-     * @ORM\Column(type="datetime", nullable=true)
-     */
     private $deleted_at;
 
     public function getId(): ?int

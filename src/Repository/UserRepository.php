@@ -3,55 +3,57 @@
 namespace App\Repository;
 
 use App\Entity\User;
-use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
-use Doctrine\Persistence\ManagerRegistry;
 use JetBrains\PhpStorm\ArrayShape;
-use Symfony\Component\Security\Core\Exception\UnsupportedUserException;
-use Symfony\Component\Security\Core\User\PasswordAuthenticatedUserInterface;
-use Symfony\Component\Security\Core\User\PasswordUpgraderInterface;
+use JetBrains\PhpStorm\Pure;
+use PDO;
 
-/**
- * @method User|null find($id, $lockMode = null, $lockVersion = null)
- * @method User|null findOneBy(array $criteria, array $orderBy = null)
- * @method User[]    findAll()
- * @method User[]    findBy(array $criteria, array $orderBy = null, $limit = null, $offset = null)
- */
-class UserRepository extends ServiceEntityRepository implements PasswordUpgraderInterface
+
+class UserRepository extends BaseRepository
 {
-    public function __construct(ManagerRegistry $registry)
+    public function find(int $userId): User
     {
-        parent::__construct($registry, User::class);
-    }
+        $sql = "SELECT `user`.* FROM user WHERE user.id = :user_id";
+        $stmt = $this->dbh->prepare($sql);
+        $stmt->bindParam(':user_id', $userId);
+        $stmt->execute();
+        $userArray = $stmt->fetch(PDO::FETCH_ASSOC);
+        $user = $this->parseToUser($userArray);
 
-    /**
-     * Used to upgrade (rehash) the user's password automatically over time.
-     */
-    public function upgradePassword(PasswordAuthenticatedUserInterface $user, string $newHashedPassword): void
-    {
-        if (!$user instanceof User) {
-            throw new UnsupportedUserException(sprintf('Instances of "%s" are not supported.', \get_class($user)));
-        }
-
-        $user->setPassword($newHashedPassword);
-        $this->_em->persist($user);
-        $this->_em->flush();
+        $roleRepository = new RoleRepository();
+        $role = $roleRepository->find($userArray['role_id']);
+        $user->setRole($role);
+        return $user;
     }
 
     public function getUserByEmail(string $email): User
     {
-        return $this->findOneBy(['email' => $email]);
+        $sql = "SELECT * FROM user WHERE user.email = :email";
+        $stmt = $this->dbh->prepare($sql);
+        $stmt->bindParam(':email', $email);
+        $stmt->execute();
+        $userArray = $stmt->fetch(PDO::FETCH_ASSOC);
+        $user = $this->parseToUser($userArray);
+        $roleRepository = new RoleRepository();
+        $role = $roleRepository->find($userArray['role_id']);
+        $user->setRole($role);
+        return $user;
     }
 
     public function getUserByApiToken(string $apiToken): User
     {
-        return $this->createQuery(
-            'SELECT *
-            FROM user
-            WHERE p.api_token = :api_token'
-        )->setParameter('api_token', $apiToken);
+        $sql = "SELECT * FROM user WHERE p.api_token = :api_token";
+        $stmt = $this->dbh->prepare($sql);
+        $stmt->bindParam(':api_token', $apiToken);
+        $stmt->execute();
+        return $stmt->fetchObject(PDO::FETCH_ASSOC);
+//        return $this->createQuery(
+//            'SELECT *
+//            FROM user
+//            WHERE p.api_token = :api_token'
+//        )->setParameter('api_token', $apiToken);
     }
 
-    #[ArrayShape(['apiToken' => "null|string", 'email' => "null|string", 'name' => "null|string", 'phone' => "null|string"])]
+    #[Pure] #[ArrayShape(['id' => "int|null", 'email' => "null|string", 'name' => "null|string", 'phone' => "null|string", 'last_login_date' => "\DateTimeImmutable|null", 'role' => "null|string"])]
     public function parseToArray(User $user): array
     {
         return [
@@ -71,35 +73,7 @@ class UserRepository extends ServiceEntityRepository implements PasswordUpgrader
         $user->setEmail($content['email']);
         $user->setPassword($content['password']);
         $user->setPhone($content['phone']);
+        $user->setId($content['id']);
         return $user;
     }
-
-    // /**
-    //  * @return User[] Returns an array of User objects
-    //  */
-    /*
-    public function findByExampleField($value)
-    {
-        return $this->createQueryBuilder('u')
-            ->andWhere('u.exampleField = :val')
-            ->setParameter('val', $value)
-            ->orderBy('u.id', 'ASC')
-            ->setMaxResults(10)
-            ->getQuery()
-            ->getResult()
-        ;
-    }
-    */
-
-    /*
-    public function findOneBySomeField($value): ?User
-    {
-        return $this->createQueryBuilder('u')
-            ->andWhere('u.exampleField = :val')
-            ->setParameter('val', $value)
-            ->getQuery()
-            ->getOneOrNullResult()
-        ;
-    }
-    */
 }

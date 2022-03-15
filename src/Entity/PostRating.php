@@ -2,37 +2,11 @@
 
 namespace App\Entity;
 
-use App\Repository\PostRatingRepository;
-use Doctrine\ORM\Mapping as ORM;
-use Symfony\Component\Validator\Constraints as Assert;
-
-/**
- * @ORM\Entity(repositoryClass=PostRatingRepository::class)
- */
 class PostRating
 {
-    /**
-     * @ORM\Id
-     * @ORM\GeneratedValue
-     * @ORM\Column(type="integer")
-     */
     private $id;
-
-    /**
-     * @ORM\ManyToOne(targetEntity=User::class, inversedBy="postRatings")
-     * @ORM\JoinColumn(nullable=false)
-     */
     private $user;
-
-    /**
-     * @ORM\ManyToOne(targetEntity=Post::class, inversedBy="postRatings")
-     * @ORM\JoinColumn(nullable=false)
-     */
     private $post;
-
-    /**
-     * @ORM\Column(type="smallint")
-     */
     private $rating;
 
     public function getId(): ?int

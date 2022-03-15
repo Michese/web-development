@@ -3,15 +3,13 @@
 namespace App\Service;
 
 use GdImage;
+use JetBrains\PhpStorm\Pure;
 use Symfony\Component\HttpFoundation\File\Exception\FileException;
 use Symfony\Component\HttpFoundation\File\UploadedFile;
 
 class FileManagerService
 {
-    /**
-     * @var string
-     */
-    private $postImageDirectory;
+    private string $postImageDirectory;
 
     /**
      * @param string $postImageDirectory
@@ -30,6 +28,9 @@ class FileManagerService
     }
 
 
+    /**
+     * @throws \Exception
+     */
     public function imagePostUpload(string $file): string
     {
         $fileName = uniqid();
@@ -44,7 +45,7 @@ class FileManagerService
         return $fileName;
     }
 
-    public function getImage(string $fileName): string | null
+    #[Pure] public function getImage(string $fileName): string | null
     {
         $file = file_get_contents(__DIR__ . $this->getPostImageDirectory() . $fileName);
         return base64_encode($file);

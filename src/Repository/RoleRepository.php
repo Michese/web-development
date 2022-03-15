@@ -3,48 +3,25 @@
 namespace App\Repository;
 
 use App\Entity\Role;
-use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
-use Doctrine\Persistence\ManagerRegistry;
+use PDO;
 
-/**
- * @method Role|null find($id, $lockMode = null, $lockVersion = null)
- * @method Role|null findOneBy(array $criteria, array $orderBy = null)
- * @method Role[]    findAll()
- * @method Role[]    findBy(array $criteria, array $orderBy = null, $limit = null, $offset = null)
- */
-class RoleRepository extends ServiceEntityRepository
+class RoleRepository extends BaseRepository
 {
-    public function __construct(ManagerRegistry $registry)
+    public function find(int $roleId): Role
     {
-        parent::__construct($registry, Role::class);
+        $sql = "SELECT * FROM role WHERE role.id = :role_id";
+        $stmt = $this->dbh->prepare($sql);
+        $stmt->bindParam(':role_id', $roleId);
+        $stmt->execute();
+        return $this->arrayToRole($stmt->fetch(PDO::FETCH_ASSOC));
     }
 
-    // /**
-    //  * @return Role[] Returns an array of Role objects
-    //  */
-    /*
-    public function findByExampleField($value)
+    private function arrayToRole(array $content): Role
     {
-        return $this->createQueryBuilder('r')
-            ->andWhere('r.exampleField = :val')
-            ->setParameter('val', $value)
-            ->orderBy('r.id', 'ASC')
-            ->setMaxResults(10)
-            ->getQuery()
-            ->getResult()
-        ;
+        $role = new Role();
+        $role->setTitle($content['title']);
+        $role->setId($content['id']);
+        return $role;
     }
-    */
 
-    /*
-    public function findOneBySomeField($value): ?Role
-    {
-        return $this->createQueryBuilder('r')
-            ->andWhere('r.exampleField = :val')
-            ->setParameter('val', $value)
-            ->getQuery()
-            ->getOneOrNullResult()
-        ;
-    }
-    */
 }

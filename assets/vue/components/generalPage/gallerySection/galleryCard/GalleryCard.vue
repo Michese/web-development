@@ -55,7 +55,7 @@ export default class GalleryCard extends Vue {
   }
 
   get date(): string {
-    return toDateFormat(this.post.created_at.date);
+    return toDateFormat(this.post.created_at);
   }
 }
 </script>

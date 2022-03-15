@@ -4,8 +4,5 @@ export type TGalleryItem = {
   image: string;
   rating: number | null;
   tag: string;
-  created_at: {
-    date: string;
-    timezone_type: number;
-  };
+  created_at: string;
 };

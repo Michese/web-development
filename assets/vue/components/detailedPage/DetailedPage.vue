@@ -79,8 +79,8 @@
         </div>
         <div v-for="comment in comments" :key="comment.id" class="comment-section__comment comment">
           <header class="comment__header">
-            <span class="comment__author">{{ comment.user.name + (comment.user.id === user?.id ? ' (Вы)' : '') }}</span>
-            <span class="comment__date">{{ toDateFormat(comment?.created_at?.date) }}</span>
+            <span class="comment__author">{{ comment.userName + (comment.userId === user?.id ? ' (Вы)' : '') }}</span>
+            <span class="comment__date">{{ toDateFormat(comment?.created_at) }}</span>
           </header>
           <main class="comment__main">
             <p class="comment__content">{{ comment.text }}</p>

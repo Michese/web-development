@@ -1,11 +1,7 @@
 export type TComment = {
   id: number;
-  user: {
-    id: number;
-    name: string;
-  };
+  userId: number;
+  userName: string;
   text: string;
-  created_at: {
-    date: string;
-  };
+  created_at: string;
 };

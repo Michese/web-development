@@ -2,90 +2,33 @@
 
 namespace App\Entity;
 
-use App\Repository\PostRepository;
 use App\Service\FileManagerService;
-use Doctrine\Common\Collections\ArrayCollection;
-use Doctrine\Common\Collections\Collection;
-use Doctrine\ORM\Mapping as ORM;
-use Symfony\Component\HttpFoundation\File\UploadedFile;
-use Symfony\Component\Validator\Constraints as Assert;
 
-/**
- * @ORM\Entity(repositoryClass=PostRepository::class)
- */
 class Post
 {
-    /**
-     * @ORM\Id
-     * @ORM\GeneratedValue
-     * @ORM\Column(type="integer")
-     */
     private $id;
-
-    /**
-     * @ORM\Column(type="string", length=1023)
-     */
     private $image;
-
-    /**
-     * @ORM\Column(type="string", length=255)
-     * @Assert\Length(
-     *      min = 1,
-     *      minMessage = "Название должно быть как минимум из {{ limit }} символа",
-     * )
-     */
     private $title;
-
-    /**
-     * @ORM\Column(type="string", length=0, nullable=true)
-     */
     private $description;
-
-    /**
-     * @ORM\Column(type="datetime_immutable")
-     */
     private $created_at;
-
-    /**
-     * @ORM\Column(type="datetime_immutable", nullable=true)
-     */
     private $deleted_at;
-
-    /**
-     * @ORM\OneToMany(targetEntity=PostRating::class, mappedBy="post")
-     */
     private $postRatings;
-
-    /**
-     * @ORM\Column(type="string", length=255, nullable=true)
-     */
     private $author;
-
-    /**
-     * @ORM\Column(type="bigint")
-     */
     private $user_id;
-
-    /**
-     * @ORM\OneToMany(targetEntity=Comment::class, mappedBy="post", orphanRemoval=true)
-     */
     private $comments;
-
-    /**
-     * @ORM\ManyToOne(targetEntity=Tag::class, inversedBy="posts")
-     * @ORM\JoinColumn(nullable=false)
-     */
     private $tag;
 
     public function __construct()
-    {
-        $this->postRatings = new ArrayCollection();
-        $this->comments = new ArrayCollection();
-    }
+    {}
 
     public function getId(): ?int
     {
         return $this->id;
+    }
+
+    public function getNameFileImage(): string
+    {
+        return $this->image;
     }
 
     public function getImage(): ?string
@@ -101,7 +44,6 @@ class Post
     {
         $fileManagerService = new FileManagerService();
         $this->image = $fileManagerService->imagePostUpload($image);
-
         return $this;
     }
 
@@ -157,14 +99,6 @@ class Post
         return $this;
     }
 
-    /**
-     * @return Collection|PostRating[]
-     */
-    public function getPostRatings(): Collection
-    {
-        return $this->postRatings;
-    }
-
     public function addPostRating(PostRating $postRating): self
     {
         if (!$this->postRatings->contains($postRating)) {
@@ -209,14 +143,6 @@ class Post
         $this->user_id = $user_id;
 
         return $this;
-    }
-
-    /**
-     * @return Collection|Comment[]
-     */
-    public function getComments(): Collection
-    {
-        return $this->comments;
     }
 
     public function addComment(Comment $comment): self

@@ -3,78 +3,46 @@
 namespace App\Repository;
 
 use App\Entity\Comment;
-use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
-use Doctrine\ORM\Query\ResultSetMappingBuilder;
-use Doctrine\Persistence\ManagerRegistry;
+use PDO;
 
-/**
- * @method Comment|null find($id, $lockMode = null, $lockVersion = null)
- * @method Comment|null findOneBy(array $criteria, array $orderBy = null)
- * @method Comment[]    findAll()
- * @method Comment[]    findBy(array $criteria, array $orderBy = null, $limit = null, $offset = null)
- */
-class CommentRepository extends ServiceEntityRepository
+class CommentRepository extends BaseRepository
 {
-    public function __construct(ManagerRegistry $registry)
+    public function getCommentsByPostId(int $postId): array
     {
-        parent::__construct($registry, Comment::class);
-    }
+        $sql = "SELECT `comment`.*, `user`.name as userName, `user`.id as userId FROM `comment` INNER JOIN `user` on `user`.id = `comment`.user_id WHERE `comment`.post_id = :post_id AND `comment`.deleted_at IS NULL ORDER BY created_at DESC";
+        $stmt = $this->dbh->prepare($sql);
+        $stmt->bindParam(':post_id', $postId, PDO::PARAM_INT);
+        $stmt->execute();
+        return $stmt->fetchAll(PDO::FETCH_ASSOC);
 
-    public function getCommentsByPostId(int $postId): array {
-        $entityManager = $this->getEntityManager();
-        $rsm = new ResultSetMappingBuilder($entityManager);
-        $rsm->addRootEntityFromClassMetadata('App\Entity\Comment', 'comment');
-        $rsm->addJoinedEntityFromClassMetadata('App\Entity\User', 'user', 'comment', 'user', array(
-            'id' => 'user_id',
-        ));
-        return $entityManager->createNativeQuery(
-            'SELECT `comment`.*, `user`.name FROM `comment` INNER JOIN `user` on `user`.id = `comment`.user_id WHERE `comment`.post_id = :post_id AND `comment`.deleted_at IS NULL ORDER BY created_at DESC', $rsm)
-            ->setParameters(['post_id' => $postId])
-            ->getArrayResult();
-//        return $entityManager->createQueryBuilder()
-//            ->select('com.user_id, com.text, com.created_at')
-//            ->from('App\Entity\Comment', 'com')
-//            ->where('com.post=:post_id')
-//            ->andWhere('com.deleted_at IS NULL')
+//        $entityManager = $this->getEntityManager();
+//        $rsm = new ResultSetMappingBuilder($entityManager);
+//        $rsm->addRootEntityFromClassMetadata('App\Entity\Comment', 'comment');
+//        $rsm->addJoinedEntityFromClassMetadata('App\Entity\User', 'user', 'comment', 'user', array(
+//            'id' => 'user_id',
+//        ));
+//        return $entityManager->createNativeQuery(
+//            'SELECT `comment`.*, `user`.name FROM `comment` INNER JOIN `user` on `user`.id = `comment`.user_id WHERE `comment`.post_id = :post_id AND `comment`.deleted_at IS NULL ORDER BY created_at DESC', $rsm)
 //            ->setParameters(['post_id' => $postId])
-//            ->getQuery()
-//            ->getResult();
+//            ->getArrayResult();
     }
 
     public function parseToComment(array $content): Comment
     {
         $comment = new Comment();
         $comment->setText($content['text']);
-        $comment->setCreatedAt((new \DateTimeImmutable ('now')));
+        $comment->setCreatedAt((new \DateTimeImmutable('now')));
         return $comment;
     }
 
-    // /**
-    //  * @return Comment[] Returns an array of Comment objects
-    //  */
-    /*
-    public function findByExampleField($value)
+    public function createComment(Comment $comment, int $postId, int $userId): void
     {
-        return $this->createQueryBuilder('c')
-            ->andWhere('c.exampleField = :val')
-            ->setParameter('val', $value)
-            ->orderBy('c.id', 'ASC')
-            ->setMaxResults(10)
-            ->getQuery()
-            ->getResult()
-        ;
+        $sql = "INSERT INTO comment (post_id, user_id, text) VALUES (:post_id, :user_id, :text)";
+        $text = $comment->getText();
+        $stmt = $this->dbh->prepare($sql);
+        $stmt->bindParam(':post_id', $postId, PDO::PARAM_INT);
+        $stmt->bindParam(':user_id', $userId, PDO::PARAM_INT);
+        $stmt->bindParam(':text', $text);
+        $stmt->execute();
     }
-    */
-
-    /*
-    public function findOneBySomeField($value): ?Comment
-    {
-        return $this->createQueryBuilder('c')
-            ->andWhere('c.exampleField = :val')
-            ->setParameter('val', $value)
-            ->getQuery()
-            ->getOneOrNullResult()
-        ;
-    }
-    */
 }

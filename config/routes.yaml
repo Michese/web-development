@@ -1,3 +1,57 @@
-#index:
-#    path: /
-#    controller: App\Controller\DefaultController::index
+index1:
+    path: /
+    controller: App\Controller\HomeController::index
+
+index2:
+    path: /{route}
+    controller: App\Controller\HomeController::index
+    requirements:
+        route: '^(?!.*api).+'
+
+getPosts:
+    path: /api/getPosts
+    controller: App\Controller\HomeController::getPosts
+
+getPost:
+    path: /api/getPost
+    controller: App\Controller\HomeController::getPost
+
+getComments:
+    path: /api/getComments
+    controller: App\Controller\HomeController::getComments
+
+addRating:
+    path: /api/addRating
+    controller: App\Controller\HomeController::addRating
+
+getMyRating:
+    path: /api/getMyRating
+    controller: App\Controller\HomeController::getMyRating
+
+createPost:
+    path: /api/createPost
+    controller: App\Controller\HomeController::createPost
+
+createComment:
+    path: /api/createComment
+    controller: App\Controller\HomeController::createComment
+
+getTags:
+    path: /api/getTags
+    controller: App\Controller\HomeController::getTags
+
+getUser:
+    path: /api/getUser
+    controller: App\Controller\SecurityController::getCurrentUser
+
+login:
+    path: /api/login
+    controller: App\Controller\SecurityController::login
+
+register:
+    path: /api/register
+    controller: App\Controller\SecurityController::register
+
+logout:
+    path: /api/logout
+    controller: App\Controller\SecurityController::logout
