@@ -4,7 +4,8 @@ namespace App\Repository;
 
 use App\Entity\Comment;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
-use Doctrine\ORM\Query\ResultSetMappingBuilder;
+use Doctrine\ORM\OptimisticLockException;
+use Doctrine\ORM\ORMException;
 use Doctrine\Persistence\ManagerRegistry;
 
 /**
@@ -20,33 +21,47 @@ class CommentRepository extends ServiceEntityRepository
         parent::__construct($registry, Comment::class);
     }
 
-    public function getCommentsByPostId(int $postId): array {
-        $entityManager = $this->getEntityManager();
-        $rsm = new ResultSetMappingBuilder($entityManager);
-        $rsm->addRootEntityFromClassMetadata('App\Entity\Comment', 'comment');
-        $rsm->addJoinedEntityFromClassMetadata('App\Entity\User', 'user', 'comment', 'user', array(
-            'id' => 'user_id',
-        ));
-        return $entityManager->createNativeQuery(
-            'SELECT `comment`.*, `user`.name FROM `comment` INNER JOIN `user` on `user`.id = `comment`.user_id WHERE `comment`.post_id = :post_id AND `comment`.deleted_at IS NULL ORDER BY created_at DESC', $rsm)
-            ->setParameters(['post_id' => $postId])
-            ->getArrayResult();
-//        return $entityManager->createQueryBuilder()
-//            ->select('com.user_id, com.text, com.created_at')
-//            ->from('App\Entity\Comment', 'com')
-//            ->where('com.post=:post_id')
-//            ->andWhere('com.deleted_at IS NULL')
-//            ->setParameters(['post_id' => $postId])
-//            ->getQuery()
-//            ->getResult();
+    /**
+     * @throws ORMException
+     * @throws OptimisticLockException
+     */
+    public function add(Comment $entity, bool $flush = true): void
+    {
+        $this->_em->persist($entity);
+        if ($flush) {
+            $this->_em->flush();
+        }
     }
 
-    public function parseToComment(array $content): Comment
+    /**
+     * @throws ORMException
+     * @throws OptimisticLockException
+     */
+    public function remove(Comment $entity, bool $flush = true): void
     {
-        $comment = new Comment();
-        $comment->setText($content['text']);
-        $comment->setCreatedAt((new \DateTimeImmutable ('now')));
-        return $comment;
+        $this->_em->remove($entity);
+        if ($flush) {
+            $this->_em->flush();
+        }
+    }
+
+    public function getAllComments(int $postId): array
+    {
+        $entityManager = $this->getEntityManager();
+        $cb = $entityManager->createQueryBuilder();
+        $query = $cb
+            ->select(['comment.id', 'comment.created_at', 'comment.text', 'user.first_name'])
+            ->from('App\Entity\Comment', 'comment')
+            ->innerJoin('comment.user', 'user')
+            ->where('comment.deleted_at IS NULL')
+            ->andWhere('comment.new = :post_id')
+            ->orderBy('comment.created_at', 'DESC')
+//            ->setMaxResults($limit)
+//            ->setFirstResult($limit * ( $page - 1 ))
+//            ->setParameter('search', "%$search%")
+            ->setParameter('post_id', $postId)
+            ->getQuery();
+        return $query->getResult();
     }
 
     // /**

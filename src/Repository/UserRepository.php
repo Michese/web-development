@@ -4,11 +4,9 @@ namespace App\Repository;
 
 use App\Entity\User;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
+use Doctrine\ORM\OptimisticLockException;
+use Doctrine\ORM\ORMException;
 use Doctrine\Persistence\ManagerRegistry;
-use JetBrains\PhpStorm\ArrayShape;
-use Symfony\Component\Security\Core\Exception\UnsupportedUserException;
-use Symfony\Component\Security\Core\User\PasswordAuthenticatedUserInterface;
-use Symfony\Component\Security\Core\User\PasswordUpgraderInterface;
 
 /**
  * @method User|null find($id, $lockMode = null, $lockVersion = null)
@@ -16,7 +14,7 @@ use Symfony\Component\Security\Core\User\PasswordUpgraderInterface;
  * @method User[]    findAll()
  * @method User[]    findBy(array $criteria, array $orderBy = null, $limit = null, $offset = null)
  */
-class UserRepository extends ServiceEntityRepository implements PasswordUpgraderInterface
+class UserRepository extends ServiceEntityRepository
 {
     public function __construct(ManagerRegistry $registry)
     {
@@ -24,54 +22,27 @@ class UserRepository extends ServiceEntityRepository implements PasswordUpgrader
     }
 
     /**
-     * Used to upgrade (rehash) the user's password automatically over time.
+     * @throws ORMException
+     * @throws OptimisticLockException
      */
-    public function upgradePassword(PasswordAuthenticatedUserInterface $user, string $newHashedPassword): void
+    public function add(User $entity, bool $flush = true): void
     {
-        if (!$user instanceof User) {
-            throw new UnsupportedUserException(sprintf('Instances of "%s" are not supported.', \get_class($user)));
+        $this->_em->persist($entity);
+        if ($flush) {
+            $this->_em->flush();
         }
-
-        $user->setPassword($newHashedPassword);
-        $this->_em->persist($user);
-        $this->_em->flush();
     }
 
-    public function getUserByEmail(string $email): User
+    /**
+     * @throws ORMException
+     * @throws OptimisticLockException
+     */
+    public function remove(User $entity, bool $flush = true): void
     {
-        return $this->findOneBy(['email' => $email]);
-    }
-
-    public function getUserByApiToken(string $apiToken): User
-    {
-        return $this->createQuery(
-            'SELECT *
-            FROM user
-            WHERE p.api_token = :api_token'
-        )->setParameter('api_token', $apiToken);
-    }
-
-    #[ArrayShape(['apiToken' => "null|string", 'email' => "null|string", 'name' => "null|string", 'phone' => "null|string"])]
-    public function parseToArray(User $user): array
-    {
-        return [
-            'id' => $user->getId(),
-            'email' => $user->getEmail(),
-            'name' => $user->getName(),
-            'phone' => $user->getPhone(),
-            'last_login_date' => $user->getLastLoginDate(),
-            'role' => $user->getRole()->getTitle(),
-        ];
-    }
-
-    public function parseToUser(array $content): User
-    {
-        $user = new User();
-        $user->setName($content['name']);
-        $user->setEmail($content['email']);
-        $user->setPassword($content['password']);
-        $user->setPhone($content['phone']);
-        return $user;
+        $this->_em->remove($entity);
+        if ($flush) {
+            $this->_em->flush();
+        }
     }
 
     // /**
