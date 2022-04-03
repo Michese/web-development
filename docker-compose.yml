@@ -1,8 +1,5 @@
 version: '3'
 
-networks:
-  webapp:
-
 services:
   nginx:
     image: nginx:stable-alpine
@@ -18,8 +15,7 @@ services:
     depends_on:
       - php
       - database
-    networks:
-      - webapp
+      - init_php
 
   php:
     build:
@@ -27,24 +23,33 @@ services:
       dockerfile: ./docker/fpm/Dockerfile
     container_name: ${APP_NAME}_php
     volumes:
-      - ./:/var/www/html
       - app-data:/var/www/html
+    ports:
+      - 8177:9000
     depends_on:
       - database
-    networks:
-      - webapp
+      - init_php
+
+  init_php:
+    build:
+      context: .
+      dockerfile: ./docker/init/Dockerfile
+    container_name: ${APP_NAME}_init
+    depends_on: 
+      - database
+    volumes:
+      - app-data:/var/www/html
 
   database:
     image: mysql:8.0
     container_name: ${APP_NAME}_mysql
-    command: --default-authentication-plugin=mysql_native_password
     restart: always
     environment:
-      MYSQL_ROOT_PASSWORD: ${DB_PASSWORD}
+      - MYSQL_ROOT_PASSWORD=${DB_PASSWORD}
+    ports:
+      - 3306:3306
     volumes:
       - ./docker/mysql:/var/lib/mysql
-    networks:
-      - webapp
 
 volumes:
   app-data:
