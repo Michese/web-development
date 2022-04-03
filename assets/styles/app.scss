@@ -1,1 +1,24 @@
 @import "~bootstrap";
+
+
+:root {
+  --custom-blue: #53709C;
+  --custom-yellow: #F4E284;
+  --custom-gray: #DDDFE0;
+}
+
+.bg-custom-yellow {
+  background-color: var(--custom-yellow);
+}
+
+.bg-custom-blue {
+  background-color: var(--custom-blue);
+}
+
+.text-custom-blue {
+  color: var(--custom-blue);
+}
+
+.bg-custom-gray {
+  background-color: var(--custom-gray);
+}

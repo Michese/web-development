@@ -1,5 +1,5 @@
 <template>
-  <div v-if="isLoading" class="container">
+  <div v-if="isLoading" class="container spinner-container">
     <mim-spinner />
   </div>
   <slot v-else />
@@ -37,6 +37,8 @@ export default {
 }
 </script>
 
-<style scoped>
-
+<style lang="scss" scoped>
+.spinner-container {
+  height: 300px;
+}
 </style>

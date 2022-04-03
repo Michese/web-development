@@ -1,9 +1,7 @@
 <template>
-<!--  <h2>Hello</h2>-->
   <mim-wrapper >
     <mim-header />
     <router-view />
-<!--    <mim-main />-->
     <mim-footer />
   </mim-wrapper>
 </template>
@@ -20,6 +18,6 @@ export default {
 }
 </script>
 
-<style scoped>
+<style lang="scss" scoped>
 
 </style>

@@ -1,11 +1,10 @@
 <template>
-  <div class="card offset-1 mb-3">
+  <div class="card mb-3 card_custom">
     <div class="card-body">
       <h5 class="card-title">{{ newItem.title }}</h5>
       <h6 class="card-subtitle mb-2 text-muted">{{ newItem.description }}</h6>
       <p class="card-text">{{ newItem.text }}</p>
       <router-link :to="`/news/${newItem.id}`" class="card-link">Перейти</router-link>
-<!--      <a href="#" class="card-link">Another link</a>-->
     </div>
   </div>
 </template>
@@ -22,8 +21,16 @@ export default {
 }
 </script>
 
-<style scoped>
+<style lang="scss" scoped>
 .card {
-  /*width: 22em;*/
+  &_custom {
+    border: 3px solid var(--custom-blue);
+    border-right-width: 50px;
+    transition: box-shadow linear 0.1s;
+
+    &:hover {
+      box-shadow: 0 0 5px black;
+    }
+  }
 }
 </style>
