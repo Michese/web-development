@@ -11,7 +11,7 @@ services:
     volumes:
       - ./docker/nginx/default.conf:/etc/nginx/conf.d/default.conf:rw
       - ./docker/logs/nginx:/var/logs/nginx:rw
-      - app-data:/var/www/html
+      - .:/var/www/html
     depends_on:
       - php
       - database
@@ -23,9 +23,7 @@ services:
       dockerfile: ./docker/fpm/Dockerfile
     container_name: ${APP_NAME}_php
     volumes:
-      - app-data:/var/www/html
-    ports:
-      - 8177:9000
+      - .:/var/www/html
     depends_on:
       - database
       - init_php
@@ -38,7 +36,7 @@ services:
     depends_on: 
       - database
     volumes:
-      - app-data:/var/www/html
+      - .:/var/www/html
 
   database:
     image: mysql:8.0
@@ -47,7 +45,7 @@ services:
     environment:
       - MYSQL_ROOT_PASSWORD=${DB_PASSWORD}
     ports:
-      - 3306:3306
+      - 7028:3306
     volumes:
       - ./docker/mysql:/var/lib/mysql
 
