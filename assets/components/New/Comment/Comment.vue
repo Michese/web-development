@@ -25,7 +25,7 @@ export default {
   },
   computed: {
     createdAt() {
-      return this.item?.created_at?.date ? new Date(this.item.created_at.date).toLocaleString() : '';
+      return this.item?.createdAt?.date ? new Date(this.item.createdAt.date).toLocaleString() : '';
     }
   }
 }

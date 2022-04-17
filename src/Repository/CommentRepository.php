@@ -50,12 +50,12 @@ class CommentRepository extends ServiceEntityRepository
         $entityManager = $this->getEntityManager();
         $cb = $entityManager->createQueryBuilder();
         $query = $cb
-            ->select(['comment.id', 'comment.created_at', 'comment.text', 'user.first_name'])
+            ->select(['comment.id', 'comment.createdAt', 'comment.text', 'user.firstName'])
             ->from('App\Entity\Comment', 'comment')
-            ->innerJoin('comment.user', 'user')
-            ->where('comment.deleted_at IS NULL')
+            ->innerJoin('comment.userId', 'user')
+            ->where('comment.deletedAt IS NULL')
             ->andWhere('comment.new = :post_id')
-            ->orderBy('comment.created_at', 'DESC')
+            ->orderBy('comment.createdAt', 'DESC')
 //            ->setMaxResults($limit)
 //            ->setFirstResult($limit * ( $page - 1 ))
 //            ->setParameter('search', "%$search%")

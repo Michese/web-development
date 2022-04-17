@@ -6,79 +6,53 @@ use App\Repository\UserRepository;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
+use Symfony\Component\Security\Core\User\PasswordAuthenticatedUserInterface;
+use Symfony\Component\Security\Core\User\UserInterface;
 
 #[ORM\Entity(repositoryClass: UserRepository::class)]
-class User implements \Symfony\Component\Security\Core\User\PasswordAuthenticatedUserInterface
+class User implements UserInterface, PasswordAuthenticatedUserInterface
 {
     #[ORM\Id]
     #[ORM\GeneratedValue]
     #[ORM\Column(type: 'integer')]
     private $id;
 
-    #[ORM\Column(type: 'string', length: 255)]
-    private $first_name;
-
-    #[ORM\Column(type: 'string', length: 255)]
-    private $last_name;
-
-    #[ORM\Column(type: 'string', length: 255)]
+    #[ORM\Column(type: 'string', length: 180, unique: true)]
     private $email;
 
-    #[ORM\Column(type: 'bigint', nullable: true)]
-    private $phone;
+    #[ORM\Column(type: 'json')]
+    private $roles = [];
 
-    #[ORM\ManyToOne(targetEntity: Role::class)]
-    #[ORM\JoinColumn(nullable: false)]
-    private $role;
-
-    #[ORM\Column(type: 'string', length: 255, nullable: true)]
-    private $api_token;
-
-    #[ORM\OneToMany(mappedBy: 'admin', targetEntity: NewItem::class, orphanRemoval: true)]
-    private $news;
-
-    #[ORM\OneToMany(mappedBy: 'admin', targetEntity: Comment::class)]
-    private $adminComments;
-
-    #[ORM\Column(type: 'string', length: 255)]
+    #[ORM\Column(type: 'string')]
     private $password;
 
-    #[ORM\Column(type: 'datetime')]
-    private $last_day_visit;
+    #[ORM\Column(type: 'string', length: 255)]
+    private $firstName;
+
+    #[ORM\Column(type: 'string', length: 255)]
+    private $lastName;
+
+    #[ORM\Column(type: 'bigint')]
+    private $phone;
+
+    #[ORM\Column(type: 'datetime_immutable')]
+    private $lastDayVisit;
+
+    #[ORM\OneToMany(mappedBy: 'adminId', targetEntity: NewItem::class)]
+    private $newItems;
+
+    #[ORM\OneToMany(mappedBy: 'userId', targetEntity: Comment::class)]
+    private $comments;
 
     public function __construct()
     {
-        $this->news = new ArrayCollection();
-        $this->adminComments = new ArrayCollection();
+        $this->newItems = new ArrayCollection();
+        $this->comments = new ArrayCollection();
     }
 
     public function getId(): ?int
     {
         return $this->id;
-    }
-
-    public function getFirstName(): ?string
-    {
-        return $this->first_name;
-    }
-
-    public function setFirstName(string $first_name): self
-    {
-        $this->first_name = $first_name;
-
-        return $this;
-    }
-
-    public function getLastName(): ?string
-    {
-        return $this->last_name;
-    }
-
-    public function setLastName(string $last_name): self
-    {
-        $this->last_name = $last_name;
-
-        return $this;
     }
 
     public function getEmail(): ?string
@@ -93,103 +67,39 @@ class User implements \Symfony\Component\Security\Core\User\PasswordAuthenticate
         return $this;
     }
 
-    public function getPhone(): ?string
+    /**
+     * A visual identifier that represents this user.
+     *
+     * @see UserInterface
+     */
+    public function getUserIdentifier(): string
     {
-        return $this->phone;
+        return (string) $this->email;
     }
 
-    public function setPhone(?string $phone): self
+    /**
+     * @see UserInterface
+     */
+    public function getRoles(): array
     {
-        $this->phone = $phone;
+        $roles = $this->roles;
+        // guarantee every user at least has ROLE_USER
+        $roles[] = 'ROLE_USER';
 
-        return $this;
+        return array_unique($roles);
     }
 
-    public function getRole(): ?Role
+    public function setRoles(array $roles): self
     {
-        return $this->role;
-    }
-
-    public function setRole(?Role $role): self
-    {
-        $this->role = $role;
-
-        return $this;
-    }
-
-    public function getApiToken(): ?string
-    {
-        return $this->api_token;
-    }
-
-    public function setApiToken(?string $api_token): self
-    {
-        $this->api_token = $api_token;
+        $this->roles = $roles;
 
         return $this;
     }
 
     /**
-     * @return Collection<int, NewItem>
+     * @see PasswordAuthenticatedUserInterface
      */
-    public function getNews(): Collection
-    {
-        return $this->news;
-    }
-
-    public function addNews(NewItem $news): self
-    {
-        if (!$this->news->contains($news)) {
-            $this->news[] = $news;
-            $news->setAdmin($this);
-        }
-
-        return $this;
-    }
-
-    public function removeNews(NewItem $news): self
-    {
-        if ($this->news->removeElement($news)) {
-            // set the owning side to null (unless already changed)
-            if ($news->getAdmin() === $this) {
-                $news->setAdmin(null);
-            }
-        }
-
-        return $this;
-    }
-
-    /**
-     * @return Collection<int, Comment>
-     */
-    public function getAdminComments(): Collection
-    {
-        return $this->adminComments;
-    }
-
-    public function addAdminComment(Comment $adminComment): self
-    {
-        if (!$this->adminComments->contains($adminComment)) {
-            $this->adminComments[] = $adminComment;
-            $adminComment->setAdmin($this);
-        }
-
-        return $this;
-    }
-
-    public function removeAdminComment(Comment $adminComment): self
-    {
-        if ($this->adminComments->removeElement($adminComment)) {
-            // set the owning side to null (unless already changed)
-            if ($adminComment->getAdmin() === $this) {
-                $adminComment->setAdmin(null);
-            }
-        }
-
-        return $this;
-    }
-
-    public function getPassword(): ?string
+    public function getPassword(): string
     {
         return $this->password;
     }
@@ -201,14 +111,119 @@ class User implements \Symfony\Component\Security\Core\User\PasswordAuthenticate
         return $this;
     }
 
-    public function getLastDayVisit(): ?\DateTimeInterface
+    /**
+     * @see UserInterface
+     */
+    public function eraseCredentials()
     {
-        return $this->last_day_visit;
+        // If you store any temporary, sensitive data on the user, clear it here
+        // $this->plainPassword = null;
     }
 
-    public function setLastDayVisit(\DateTimeInterface $last_day_visit): self
+    public function getFirstName(): ?string
     {
-        $this->last_day_visit = $last_day_visit;
+        return $this->firstName;
+    }
+
+    public function setFirstName(string $firstName): self
+    {
+        $this->firstName = $firstName;
+
+        return $this;
+    }
+
+    public function getLastName(): ?string
+    {
+        return $this->lastName;
+    }
+
+    public function setLastName(string $lastName): self
+    {
+        $this->lastName = $lastName;
+
+        return $this;
+    }
+
+    public function getPhone(): ?string
+    {
+        return $this->phone;
+    }
+
+    public function setPhone(string $phone): self
+    {
+        $this->phone = $phone;
+
+        return $this;
+    }
+
+    public function getLastDayVisit(): ?\DateTimeInterface
+    {
+        return $this->lastDayVisit;
+    }
+
+    public function setLastDayVisit(\DateTimeInterface $lastDayVisit): self
+    {
+        $this->lastDayVisit = $lastDayVisit;
+
+        return $this;
+    }
+
+    /**
+     * @return Collection<int, NewItem>
+     */
+    public function getNewItems(): Collection
+    {
+        return $this->newItems;
+    }
+
+    public function addNewItem(NewItem $newItem): self
+    {
+        if (!$this->newItems->contains($newItem)) {
+            $this->newItems[] = $newItem;
+            $newItem->setAdminId($this);
+        }
+
+        return $this;
+    }
+
+    public function removeNewItem(NewItem $newItem): self
+    {
+        if ($this->newItems->removeElement($newItem)) {
+            // set the owning side to null (unless already changed)
+            if ($newItem->getAdminId() === $this) {
+                $newItem->setAdminId(null);
+            }
+        }
+
+        return $this;
+    }
+
+    /**
+     * @return Collection<int, Comment>
+     */
+    public function getComments(): Collection
+    {
+        return $this->comments;
+    }
+
+    public function addComment(Comment $comment): self
+    {
+        if (!$this->comments->contains($comment)) {
+            $this->comments[] = $comment;
+            $comment->setUserId($this);
+        }
+
+        return $this;
+    }
+
+    public function removeComment(Comment $comment): self
+    {
+        if ($this->comments->removeElement($comment)) {
+            // set the owning side to null (unless already changed)
+            if ($comment->getUserId() === $this) {
+                $comment->setUserId(null);
+            }
+        }
 
         return $this;
     }

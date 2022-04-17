@@ -13,17 +13,18 @@ class Comment
     #[ORM\Column(type: 'integer')]
     private $id;
 
-    #[ORM\ManyToOne(targetEntity: User::class)]
-    private $user;
+    #[ORM\ManyToOne(targetEntity: User::class, inversedBy: 'comments')]
+    #[ORM\JoinColumn(nullable: false)]
+    private $userId;
 
-    #[ORM\ManyToOne(targetEntity: User::class, inversedBy: 'adminComments')]
-    private $admin;
+    #[ORM\ManyToOne(targetEntity: User::class)]
+    private $adminId;
 
     #[ORM\Column(type: 'datetime_immutable')]
-    private $created_at;
+    private $createdAt;
 
     #[ORM\Column(type: 'datetime_immutable', nullable: true)]
-    private $deleted_at;
+    private $deletedAt;
 
     #[ORM\Column(type: 'text')]
     private $text;
@@ -37,50 +38,50 @@ class Comment
         return $this->id;
     }
 
-    public function getUser(): ?User
+    public function getUserId(): ?User
     {
-        return $this->user;
+        return $this->userId;
     }
 
-    public function setUser(?User $user): self
+    public function setUserId(?User $userId): self
     {
-        $this->user = $user;
+        $this->userId = $userId;
 
         return $this;
     }
 
-    public function getAdmin(): ?User
+    public function getAdminId(): ?User
     {
-        return $this->admin;
+        return $this->adminId;
     }
 
-    public function setAdmin(?User $admin): self
+    public function setAdminId(?User $adminId): self
     {
-        $this->admin = $admin;
+        $this->adminId = $adminId;
 
         return $this;
     }
 
     public function getCreatedAt(): ?\DateTimeImmutable
     {
-        return $this->created_at;
+        return $this->createdAt;
     }
 
-    public function setCreatedAt(\DateTimeImmutable $created_at): self
+    public function setCreatedAt(\DateTimeImmutable $createdAt): self
     {
-        $this->created_at = $created_at;
+        $this->createdAt = $createdAt;
 
         return $this;
     }
 
-    public function getDeletedAt(): ?\DateTimeImmutable
+    public function getDeltedAt(): ?\DateTimeImmutable
     {
-        return $this->deleted_at;
+        return $this->deltedAt;
     }
 
-    public function setDeletedAt(?\DateTimeImmutable $deleted_at): self
+    public function setDeltedAt(?\DateTimeImmutable $deltedAt): self
     {
-        $this->deleted_at = $deleted_at;
+        $this->deltedAt = $deltedAt;
 
         return $this;
     }

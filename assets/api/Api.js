@@ -1,7 +1,7 @@
 import axios from 'axios';
 
 const config = {
-    headers: { 'Content-Type': 'application/json' },
+    // headers: { 'Content-Type': 'application/json' },
     timeout: 30000,
 };
 
@@ -23,7 +23,12 @@ export class Api {
     post(url, data) {
         return new Promise((resolve, reject) => {
             axios
-                .post(url, data, config)
+                .post(url, data, {
+                    headers: {
+                        'Content-Type': 'application/json',
+                        "Access-Control-Allow-Origin": "*",
+                    }
+                })
                 .then(
                     (response) => resolve(response),
                     (err) => {

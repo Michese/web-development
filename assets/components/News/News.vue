@@ -3,8 +3,32 @@
     <div v-if="isLoading" class="spinner-container">
       <mim-spinner/>
     </div>
-    <div v-else class="cards row row-cols-4 justify-content-around">
-      <news-card v-for="(newItem, index) in news" :key="`new_${index}`" :new-item="newItem"/>
+    <div class="news">
+      <div id="carouselExampleControls" class="news__carousel carousel slide mt-2 mb-2" data-bs-ride="carousel">
+        <div class="carousel-inner">
+          <div class="carousel-item active">
+            <img src="./images/1.jpg" class="carousel__image d-block w-100" alt="...">
+          </div>
+          <div class="carousel-item">
+            <img src="./images/1.jpg" class="carousel__image d-block w-100" alt="...">
+          </div>
+          <div class="carousel-item">
+            <img src="./images/1.jpg" class="carousel__image d-block w-100" alt="...">
+          </div>
+        </div>
+        <button class="carousel-control-prev" type="button" data-bs-target="#carouselExampleControls" data-bs-slide="prev">
+          <span class="carousel-control-prev-icon" aria-hidden="true"></span>
+          <span class="visually-hidden">Previous</span>
+        </button>
+        <button class="carousel-control-next" type="button" data-bs-target="#carouselExampleControls" data-bs-slide="next">
+          <span class="carousel-control-next-icon" aria-hidden="true"></span>
+          <span class="visually-hidden">Next</span>
+        </button>
+      </div>
+
+      <div v-else class="cards row row-cols-4 justify-content-around">
+        <news-card v-for="(newItem, index) in news" :key="`new_${index}`" :new-item="newItem"/>
+      </div>
     </div>
   </section>
 </template>
@@ -31,9 +55,21 @@ export default {
 }
 </script>
 
-<style scoped>
+<style lang="scss" scoped>
 .spinner-container {
   height: 300px;
+}
+
+//.news {
+//  &__carousel {
+//    max-height: 400px;
+//  }
+//}
+
+.carousel {
+  &__image {
+    max-height: 600px;
+  }
 }
 
 .cards {

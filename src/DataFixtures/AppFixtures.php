@@ -23,30 +23,18 @@ class AppFixtures extends Fixture
     {
         $dataFixtures = new DataFixtures();
 
-        $adminRole = new Role();
-        $adminRole->setTitle('Администратор');
-
-
-        $userRole = new Role();
-        $userRole->setTitle('Пользователь');
-
-
-
-        $userVadim = $dataFixtures->userVadim($adminRole);
+        $userVadim = $dataFixtures->userVadim();
         $password = $this->hasher->hashPassword($userVadim, 'qwer1234');
         $userVadim->setPassword($password);
 
-        $userHope = $dataFixtures->userHope($adminRole);
-        $password = $this->hasher->hashPassword($userHope, '123456');
+        $userHope = $dataFixtures->userHope();
+        $password = $this->hasher->hashPassword($userHope, 'qwer1234');
         $userHope->setPassword($password);
 
         $firstCatNew = $dataFixtures->firstCatNew($userVadim);
         $secondCatNew = $dataFixtures->secondCatNew($userVadim);
         $thirdCatNew = $dataFixtures->thirdCatNew($userHope);
 
-
-        $manager->persist($adminRole);
-        $manager->persist($userRole);
         $manager->persist($userVadim);
         $manager->persist($userHope);
         $manager->persist($firstCatNew);

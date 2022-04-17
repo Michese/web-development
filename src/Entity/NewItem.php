@@ -18,26 +18,26 @@ class NewItem
     #[ORM\Column(type: 'string', length: 255)]
     private $title;
 
-    #[ORM\Column(type: 'string', length: 1023, nullable: true)]
+    #[ORM\Column(type: 'string', length: 1023)]
     private $description;
 
     #[ORM\Column(type: 'text')]
     private $text;
 
     #[ORM\Column(type: 'datetime_immutable')]
-    private $created_at;
+    private $createdAt;
 
     #[ORM\Column(type: 'datetime_immutable', nullable: true)]
-    private $deleted_at;
+    private $deletedAt;
 
-    #[ORM\Column(type: 'bigint')]
+    #[ORM\Column(type: 'integer')]
     private $views;
 
-    #[ORM\ManyToOne(targetEntity: User::class, inversedBy: 'news')]
+    #[ORM\ManyToOne(targetEntity: User::class, inversedBy: 'newItems')]
     #[ORM\JoinColumn(nullable: false)]
-    private $admin;
+    private $adminId;
 
-    #[ORM\OneToMany(mappedBy: 'new', targetEntity: Comment::class, orphanRemoval: true)]
+    #[ORM\OneToMany(mappedBy: 'new', targetEntity: Comment::class)]
     private $comments;
 
     public function __construct()
@@ -67,7 +67,7 @@ class NewItem
         return $this->description;
     }
 
-    public function setDescription(?string $description): self
+    public function setDescription(string $description): self
     {
         $this->description = $description;
 
@@ -88,48 +88,48 @@ class NewItem
 
     public function getCreatedAt(): ?\DateTimeImmutable
     {
-        return $this->created_at;
+        return $this->createdAt;
     }
 
-    public function setCreatedAt(\DateTimeImmutable $created_at): self
+    public function setCreatedAt(\DateTimeImmutable $createdAt): self
     {
-        $this->created_at = $created_at;
+        $this->createdAt = $createdAt;
 
         return $this;
     }
 
     public function getDeletedAt(): ?\DateTimeImmutable
     {
-        return $this->deleted_at;
+        return $this->deletedAt;
     }
 
-    public function setDeletedAt(?\DateTimeImmutable $deleted_at): self
+    public function setDeletedAt(\DateTimeImmutable $deletedAt): self
     {
-        $this->deleted_at = $deleted_at;
+        $this->deletedAt = $deletedAt;
 
         return $this;
     }
 
-    public function getViews(): ?string
+    public function getViews(): ?int
     {
         return $this->views;
     }
 
-    public function setViews(string $views): self
+    public function setViews(int $views): self
     {
         $this->views = $views;
 
         return $this;
     }
 
-    public function getAdmin(): ?User
+    public function getAdminId(): ?User
     {
-        return $this->admin;
+        return $this->adminId;
     }
 
-    public function setAdmin(?User $admin): self
+    public function setAdminId(?User $adminId): self
     {
-        $this->admin = $admin;
+        $this->adminId = $adminId;
 
         return $this;
     }

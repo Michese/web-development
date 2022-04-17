@@ -12,10 +12,10 @@
       <div class="card-body">
         <h3 class="card-title">{{ this.newItem.title }}</h3>
         <h5 class="card-title">{{ this.newItem.description }}</h5>
-        <p class="card-text" v-html="this.newItem.text"/>
+        <p class="card-text text-start" v-html="this.newItem.text"/>
       </div>
-      <div class="card-footer text-muted">
-        {{ this.newItem.admin_name }}
+      <div class="card-footer text-muted text-end">
+        {{ this.newItem.adminName }}
       </div>
     </div>
     <div v-if="newItem" class="comments d-flex flex-column w-100">
@@ -56,7 +56,7 @@ export default {
   },
   computed: {
     createdAt() {
-      return this.newItem ? new Date(this.newItem.created_at.date).toLocaleString() : '';
+      return this.newItem ? new Date(this.newItem.createdAt.date).toLocaleString() : '';
     }
   },
   inject: ['user'],

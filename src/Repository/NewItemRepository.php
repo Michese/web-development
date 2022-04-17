@@ -51,11 +51,11 @@ class NewItemRepository extends ServiceEntityRepository
         $entityManager = $this->getEntityManager();
         $cb = $entityManager->createQueryBuilder();
         $query = $cb
-            ->select(['item.id', 'item.title', 'item.description', 'item.created_at'])
+            ->select(['item.id', 'item.title', 'item.description', 'item.createdAt'])
             ->from('App\Entity\NewItem', 'item')
-            ->where('item.deleted_at IS NULL')
+            ->where('item.deletedAt IS NULL')
 //            ->andWhere('p.user_id=:user_id or -1 = :user_id')
-            ->orderBy('item.created_at', 'DESC')
+            ->orderBy('item.createdAt', 'DESC')
 //            ->setMaxResults($limit)
 //            ->setFirstResult($limit * ( $page - 1 ))
 //            ->setParameter('search', "%$search%")
@@ -69,17 +69,17 @@ class NewItemRepository extends ServiceEntityRepository
         $entityManager = $this->getEntityManager();
         $cb = $entityManager->createQueryBuilder();
         $query = $cb
-            ->select(['item.title', 'item.description', 'item.text', 'item.created_at', 'item.views'])
+            ->select(['item.title', 'item.description', 'item.text', 'item.createdAt', 'item.views'])
             ->from('App\Entity\NewItem', 'item')
             ->where('item.id = :new_id')
-            ->andWhere('item.deleted_at IS NULL')
+            ->andWhere('item.deletedAt IS NULL')
             ->setParameter('new_id', $id)
 //            ->setParameter('user_id', $user_id)
             ->getQuery();
         return $query->getResult();
     }
 
-    #[ArrayShape(['id' => "int|null", 'title' => "null|string", 'description' => "null|string", 'text' => "null|string", 'created_at' => "\DateTimeImmutable|null", 'views' => "null|string", 'admin_name' => "null|string", 'admin_id' => "int|null"])]
+    #[ArrayShape(['id' => "int|null", 'title' => "null|string", 'description' => "null|string", 'text' => "null|string", 'createdAt' => "\DateTimeImmutable|null", 'views' => "null|string", 'admin_name' => "null|string", 'adminId' => "int|null"])]
     public function toArray(NewItem $new): array
     {
         $newArray = [
@@ -87,12 +87,12 @@ class NewItemRepository extends ServiceEntityRepository
             'title' => $new->getTitle(),
             'description' => $new->getDescription(),
             'text' => $new->getText(),
-            'created_at' => $new->getCreatedAt(),
+            'createdAt' => $new->getCreatedAt(),
             'views' => $new->getViews(),
         ];
-        if ($new->getAdmin()) {
-            $newArray['admin_id'] = $new->getAdmin()->getId();
-            $newArray['admin_name'] = $new->getAdmin()->getFirstName() . ' ' . $new->getAdmin()->getLastName();
+        if ($new->getAdminId()) {
+            $newArray['adminId'] = $new->getAdminId()->getId();
+            $newArray['adminName'] = $new->getAdminId()->getFirstName() . ' ' . $new->getAdminId()->getLastName();
         }
 
         return $newArray;
