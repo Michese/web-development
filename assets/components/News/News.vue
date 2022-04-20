@@ -3,7 +3,7 @@
     <div v-if="isLoading" class="spinner-container">
       <mim-spinner/>
     </div>
-    <div class="news">
+    <div v-else class="news">
       <div id="carouselExampleControls" class="news__carousel carousel slide mt-2 mb-2" data-bs-ride="carousel">
         <div class="carousel-inner">
           <div class="carousel-item active">
@@ -26,7 +26,7 @@
         </button>
       </div>
 
-      <div v-else class="cards row row-cols-4 justify-content-around">
+      <div class="cards row row-cols-4 gap-1 justify-content-around">
         <news-card v-for="(newItem, index) in news" :key="`new_${index}`" :new-item="newItem"/>
       </div>
     </div>

@@ -4,11 +4,11 @@
     <form action="#" method="post" class="user-login__form d-flex flex-column align-items-center" @submit.prevent="onSubmit">
       <div class="input-group mb-3">
         <span class="input-group-text" id="basic-addon1">@</span>
-        <input type="email" name="email" class="form-control" placeholder="Электронная почта" aria-label="email" aria-describedby="email">
+        <input v-model="username" type="email" name="username" class="form-control" placeholder="Электронная почта" aria-label="email" aria-describedby="email">
       </div>
 
       <div class="input-group mb-3">
-        <input type="password" name="password" class="form-control" placeholder="Пароль" aria-label="password" aria-describedby="password">
+        <input v-model="password" type="password" name="password" class="form-control" placeholder="Пароль" aria-label="password" aria-describedby="password">
       </div>
 
       <input type="submit" value="Войти" class="btn btn-primary">
@@ -17,23 +17,40 @@
 </template>
 
 <script>
-import UserApi from "../../../api/UserApi";
+import {userSymbol} from "../../../store";
 
 export default {
   name: "UserLogin",
-  methods: {
-    async onSubmit({ target }) {
-      const data = new FormData(target);
-      const response = await UserApi.login({
-        username: 'michese@mail.ru',
-        password: 'qwer1234',
-      });
-      console.log('response', response);
+  inject: {
+    stateUser: {
+      from: userSymbol,
     }
   },
-  async created() {
-    console.log(await UserApi.getUser());
+  data: () => ({
+    username: '',
+    password: '',
+  }),
+  watch: {
+    user: {
+      immediate: true,
+      handler() {
+        if (this.user) this.$router.push({ name: 'Home' });
+      }
+    }
   },
+  methods: {
+    async onSubmit() {
+      await this.stateUser.loginUser({
+        username: this.username,
+        password: this.password,
+      })
+    }
+  },
+  computed: {
+    user() {
+      return this.stateUser.state.user;
+    }
+  }
 }
 </script>
 

@@ -1,28 +1,28 @@
-import { Api } from '@/api/Api';
+import { Api } from './Api';
 
 class NewsApi extends Api {
     async getNews() {
-        return this.get(`/api/getNews`);
+        return this.get(`/api/new`);
     }
 
     async getNew(newId) {
-        return this.get(`/api/getNew/${newId}`);
+        return this.get(`/api/new/${newId}`);
     }
 
     async createNew(data) {
-        return this.post(`/api/createNew`, data);
+        return this.post(`/api/new`, data);
     }
 
-    async createComment(data) {
-        return this.post(`/api/createComment`, data);
+    async createComment(newId, data) {
+        return this.post(`/api/new/${newId}/comment`, data);
     }
 
-    async approveComment(commentId) {
-        return this.put(`/api/approveComment/${commentId}`);
+    async approveComment(newId, commentId) {
+        return this.patch(`/api/new/${newId}/comment/${commentId}`);
     }
 
-    async deleteComment(commentId) {
-        return this.delete(`/api/deleteComment/${commentId}`);
+    async deleteComment(newId, commentId) {
+        return this.delete(`/api/new/${newId}/comment/${commentId}`);
     }
 }
 

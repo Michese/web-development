@@ -6,34 +6,25 @@
 </template>
 
 <script>
-import UserApi from "../../../api/UserApi";
 import MimSpinner from "../../../ui/MimSpinner/MimSpinner";
+import {userSymbol} from "../../../store";
 
 export default {
   name: "MimWrapper",
   components: {MimSpinner},
   data: () => ({
     isLoading: true,
-    user: null,
   }),
+  inject: {
+    stateUser: {
+      from: userSymbol,
+    }
+  },
   async created() {
-    await this.getUser();
+    await this.stateUser.fetchUser().finally(() => {
+      this.isLoading = false;
+    });
   },
-  methods: {
-    async getUser() {
-      this.isLoading = true;
-      this.user = (await UserApi.getUser().finally(() => {
-        this.isLoading = false;
-        return {user: null};
-      })).user
-    }
-  },
-  provide() {
-    return {
-      user: this.user,
-      getUser: this.getUser,
-    }
-  }
 }
 </script>
 

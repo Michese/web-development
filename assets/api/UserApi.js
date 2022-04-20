@@ -14,7 +14,7 @@ class UserApi extends Api {
     }
 
     async logout() {
-        return this.post('/api/logout');
+        return this.get('/api/logout');
     }
 }
 

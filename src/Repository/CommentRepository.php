@@ -3,6 +3,8 @@
 namespace App\Repository;
 
 use App\Entity\Comment;
+use App\Entity\NewItem;
+use App\Entity\User;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
 use Doctrine\ORM\OptimisticLockException;
 use Doctrine\ORM\ORMException;
@@ -45,51 +47,13 @@ class CommentRepository extends ServiceEntityRepository
         }
     }
 
-    public function getAllComments(int $postId): array
+    public function createComment(User $user, NewItem $new, array $params): Comment
     {
-        $entityManager = $this->getEntityManager();
-        $cb = $entityManager->createQueryBuilder();
-        $query = $cb
-            ->select(['comment.id', 'comment.createdAt', 'comment.text', 'user.firstName'])
-            ->from('App\Entity\Comment', 'comment')
-            ->innerJoin('comment.userId', 'user')
-            ->where('comment.deletedAt IS NULL')
-            ->andWhere('comment.new = :post_id')
-            ->orderBy('comment.createdAt', 'DESC')
-//            ->setMaxResults($limit)
-//            ->setFirstResult($limit * ( $page - 1 ))
-//            ->setParameter('search', "%$search%")
-            ->setParameter('post_id', $postId)
-            ->getQuery();
-        return $query->getResult();
+        $comment = new Comment();
+        $comment->setCreatedAt(new \DateTimeImmutable('now'))
+            ->setUser($user)
+            ->setNew($new)
+            ->setText($params["text"]);
+        return $comment;
     }
-
-    // /**
-    //  * @return Comment[] Returns an array of Comment objects
-    //  */
-    /*
-    public function findByExampleField($value)
-    {
-        return $this->createQueryBuilder('c')
-            ->andWhere('c.exampleField = :val')
-            ->setParameter('val', $value)
-            ->orderBy('c.id', 'ASC')
-            ->setMaxResults(10)
-            ->getQuery()
-            ->getResult()
-        ;
-    }
-    */
-
-    /*
-    public function findOneBySomeField($value): ?Comment
-    {
-        return $this->createQueryBuilder('c')
-            ->andWhere('c.exampleField = :val')
-            ->setParameter('val', $value)
-            ->getQuery()
-            ->getOneOrNullResult()
-        ;
-    }
-    */
 }

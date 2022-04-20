@@ -38,6 +38,10 @@ const routes = [
         name: 'UserRegister',
         component: defineComponent(UserRegister),
     },
+    {
+        path: '/*',
+        redirect: { name: 'home' }
+    }
     // {
     //     path: routerEnum.detailedPage + '/:post',
     //     name: 'detailed-page',

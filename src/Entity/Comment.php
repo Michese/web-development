@@ -4,6 +4,7 @@ namespace App\Entity;
 
 use App\Repository\CommentRepository;
 use Doctrine\ORM\Mapping as ORM;
+use Symfony\Component\Serializer\Annotation\Groups;
 
 #[ORM\Entity(repositoryClass: CommentRepository::class)]
 class Comment
@@ -11,53 +12,58 @@ class Comment
     #[ORM\Id]
     #[ORM\GeneratedValue]
     #[ORM\Column(type: 'integer')]
-    private $id;
+    #[Groups(['new'])]
+    private int $id;
 
     #[ORM\ManyToOne(targetEntity: User::class, inversedBy: 'comments')]
     #[ORM\JoinColumn(nullable: false)]
-    private $userId;
+    #[Groups(['new'])]
+    private ?User $user;
 
     #[ORM\ManyToOne(targetEntity: User::class)]
-    private $adminId;
+    #[Groups(['new'])]
+    private ?User $admin;
 
     #[ORM\Column(type: 'datetime_immutable')]
-    private $createdAt;
+    #[Groups(['new'])]
+    private ?\DateTimeImmutable $createdAt;
 
     #[ORM\Column(type: 'datetime_immutable', nullable: true)]
-    private $deletedAt;
+    private ?\DateTimeImmutable $deletedAt;
 
     #[ORM\Column(type: 'text')]
-    private $text;
+    #[Groups(['new'])]
+    private ?string $text;
 
     #[ORM\ManyToOne(targetEntity: NewItem::class, inversedBy: 'comments')]
     #[ORM\JoinColumn(nullable: false)]
-    private $new;
+    private ?NewItem $new;
 
     public function getId(): ?int
     {
         return $this->id;
     }
 
-    public function getUserId(): ?User
+    public function getUser(): ?User
     {
-        return $this->userId;
+        return $this->user;
     }
 
-    public function setUserId(?User $userId): self
+    public function setUser(?User $user): self
     {
-        $this->userId = $userId;
+        $this->user = $user;
 
         return $this;
     }
 
-    public function getAdminId(): ?User
+    public function getAdmin(): ?User
     {
-        return $this->adminId;
+        return $this->admin;
     }
 
-    public function setAdminId(?User $adminId): self
+    public function setAdmin(?User $admin): self
     {
-        $this->adminId = $adminId;
+        $this->admin = $admin;
 
         return $this;
     }
@@ -74,14 +80,14 @@ class Comment
         return $this;
     }
 
-    public function getDeltedAt(): ?\DateTimeImmutable
+    public function getDeletedAt(): ?\DateTimeImmutable
     {
-        return $this->deltedAt;
+        return $this->deletedAt;
     }
 
-    public function setDeltedAt(?\DateTimeImmutable $deltedAt): self
+    public function setDeletedAt(?\DateTimeImmutable $deletedAt): self
     {
-        $this->deltedAt = $deltedAt;
+        $this->deletedAt = $deletedAt;
 
         return $this;
     }

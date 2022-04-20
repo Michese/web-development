@@ -1057,12 +1057,12 @@ sys|schema||mysql.sys|localhost|TRIGGER|G</Grants>
       <Position>1</Position>
       <SequenceIdentity>null</SequenceIdentity>
     </column>
-    <column id="289" parent="284" name="user_id_id">
+    <column id="289" parent="284" name="user_id">
       <DataType>int|0s</DataType>
       <NotNull>1</NotNull>
       <Position>2</Position>
     </column>
-    <column id="290" parent="284" name="admin_id_id">
+    <column id="290" parent="284" name="admin_id">
       <DataType>int|0s</DataType>
       <Position>3</Position>
     </column>
@@ -1087,13 +1087,13 @@ sys|schema||mysql.sys|localhost|TRIGGER|G</Grants>
       <NotNull>1</NotNull>
       <Position>7</Position>
     </column>
-    <foreign-key id="295" parent="284" name="FK_9474526C9D86650F">
-      <ColNames>user_id_id</ColNames>
+    <foreign-key id="295" parent="284" name="FK_9474526CA76ED395">
+      <ColNames>user_id</ColNames>
       <RefColNames>id</RefColNames>
       <RefTableName>user</RefTableName>
     </foreign-key>
-    <foreign-key id="296" parent="284" name="FK_9474526CDF6E65AD">
-      <ColNames>admin_id_id</ColNames>
+    <foreign-key id="296" parent="284" name="FK_9474526C642B8210">
+      <ColNames>admin_id</ColNames>
       <RefColNames>id</RefColNames>
       <RefTableName>user</RefTableName>
     </foreign-key>
@@ -1102,12 +1102,12 @@ sys|schema||mysql.sys|localhost|TRIGGER|G</Grants>
       <RefColNames>id</RefColNames>
       <RefTableName>new_item</RefTableName>
     </foreign-key>
-    <index id="298" parent="284" name="IDX_9474526C9D86650F">
-      <ColNames>user_id_id</ColNames>
+    <index id="298" parent="284" name="IDX_9474526CA76ED395">
+      <ColNames>user_id</ColNames>
       <Type>btree</Type>
     </index>
-    <index id="299" parent="284" name="IDX_9474526CDF6E65AD">
-      <ColNames>admin_id_id</ColNames>
+    <index id="299" parent="284" name="IDX_9474526C642B8210">
+      <ColNames>admin_id</ColNames>
       <Type>btree</Type>
     </index>
     <index id="300" parent="284" name="IDX_9474526CBD06B3B3">
@@ -1143,7 +1143,7 @@ sys|schema||mysql.sys|localhost|TRIGGER|G</Grants>
       <Position>1</Position>
       <SequenceIdentity>null</SequenceIdentity>
     </column>
-    <column id="307" parent="286" name="admin_id_id">
+    <column id="307" parent="286" name="admin_id">
       <DataType>int|0s</DataType>
       <NotNull>1</NotNull>
       <Position>2</Position>
@@ -1179,13 +1179,13 @@ sys|schema||mysql.sys|localhost|TRIGGER|G</Grants>
       <NotNull>1</NotNull>
       <Position>8</Position>
     </column>
-    <foreign-key id="314" parent="286" name="FK_EBF691C3DF6E65AD">
-      <ColNames>admin_id_id</ColNames>
+    <foreign-key id="314" parent="286" name="FK_EBF691C3642B8210">
+      <ColNames>admin_id</ColNames>
       <RefColNames>id</RefColNames>
       <RefTableName>user</RefTableName>
     </foreign-key>
-    <index id="315" parent="286" name="IDX_EBF691C3DF6E65AD">
-      <ColNames>admin_id_id</ColNames>
+    <index id="315" parent="286" name="IDX_EBF691C3642B8210">
+      <ColNames>admin_id</ColNames>
       <Type>btree</Type>
     </index>
     <key id="316" parent="286" name="PRIMARY">

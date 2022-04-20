@@ -64,7 +64,7 @@ class DataFixtures
 Теперь Мотимару имеет на канале 1,4 миллиона подписчиков и быстро набирает на каждом видео миллионы просмотров.')
             ->setViews(0)
             ->setCreatedAt(new \DateTimeImmutable('now'))
-            ->setAdminId($user);
+            ->setAdmin($user);
         return $catNew;
     }
 
@@ -80,7 +80,7 @@ class DataFixtures
 На первом этапе исследователи записали на диктофон голос хозяина или знакомого кошке человека. На аудио произносилась кличка кошки, а также 4 похожих по звучанию слова. Далее задачу усложнили, и люди на записи называли имена других кошек. В конце эксперимента кличку называл совсем незнакомый кошке человек.')
             ->setViews(0)
             ->setCreatedAt(new \DateTimeImmutable('now'))
-            ->setAdminId($user);
+            ->setAdmin($user);
         return $catNew;
     }
 
@@ -98,17 +98,17 @@ class DataFixtures
 Ветклиника будет рада и просто добровольцам, которые будут приходить погладить котиков. Ветеринары также сообщили, что всем бездомным животным в клинике нужна постоянная семья.')
             ->setViews(0)
             ->setCreatedAt(new \DateTimeImmutable('now'))
-            ->setAdminId($user);
+            ->setAdmin($user);
         return $catNew;
     }
 
     public function firstComment(User $admin, NewItem $new): Comment
     {
         $comment = new Comment();
-        $comment->setAdminId($admin)
+        $comment->setAdmin($admin)
             ->setCreatedAt(new \DateTimeImmutable('now'))
             ->setNew($new)
-            ->setUserId($admin)
+            ->setUser($admin)
             ->setText("Это лучший котик!");
         return $comment;
     }
@@ -116,10 +116,10 @@ class DataFixtures
     public function secondComment(User $admin, NewItem $new): Comment
     {
         $comment = new Comment();
-        $comment->setAdminId($admin)
+        $comment->setAdmin($admin)
             ->setCreatedAt(new \DateTimeImmutable('now'))
             ->setNew($new)
-            ->setUserId($admin)
+            ->setUser($admin)
             ->setText("Aaaaa люблю котов!");
         return $comment;
     }
@@ -127,10 +127,10 @@ class DataFixtures
     public function thirdComment(User $admin, NewItem $new): Comment
     {
         $comment = new Comment();
-        $comment->setAdminId($admin)
+        $comment->setAdmin($admin)
             ->setCreatedAt(new \DateTimeImmutable('now'))
             ->setNew($new)
-            ->setUserId($admin)
+            ->setUser($admin)
             ->setText("Это же кооооотик :3");
         return $comment;
     }
@@ -138,10 +138,10 @@ class DataFixtures
     public function fourthComment(User $admin, NewItem $new): Comment
     {
         $comment = new Comment();
-        $comment->setAdminId($admin)
+        $comment->setAdmin($admin)
             ->setCreatedAt(new \DateTimeImmutable('now'))
             ->setNew($new)
-            ->setUserId($admin)
+            ->setUser($admin)
             ->setText("Почему тут одни коты >_> \n Видимо я не туда попал <_<");
         return $comment;
     }
@@ -149,10 +149,10 @@ class DataFixtures
     public function fifthComment(User $admin, NewItem $new): Comment
     {
         $comment = new Comment();
-        $comment->setAdminId($admin)
+        $comment->setAdmin($admin)
             ->setCreatedAt(new \DateTimeImmutable('now'))
             ->setNew($new)
-            ->setUserId($admin)
+            ->setUser($admin)
             ->setText("Всем по котикам :3");
         return $comment;
     }

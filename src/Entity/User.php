@@ -6,17 +6,22 @@ use App\Repository\UserRepository;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
+use JetBrains\PhpStorm\ArrayShape;
+use JetBrains\PhpStorm\Pure;
 use Symfony\Component\Security\Core\User\PasswordAuthenticatedUserInterface;
 use Symfony\Component\Security\Core\User\UserInterface;
+use Symfony\Component\Serializer\Annotation\Groups;
 
 #[ORM\Entity(repositoryClass: UserRepository::class)]
 class User implements UserInterface, PasswordAuthenticatedUserInterface
 {
+    #[Groups(['user', 'new'])]
     #[ORM\Id]
     #[ORM\GeneratedValue]
     #[ORM\Column(type: 'integer')]
     private $id;
 
+    #[Groups(['user'])]
     #[ORM\Column(type: 'string', length: 180, unique: true)]
     private $email;
 
@@ -26,35 +31,59 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     #[ORM\Column(type: 'string')]
     private $password;
 
+    #[Groups(['user', 'new'])]
     #[ORM\Column(type: 'string', length: 255)]
     private $firstName;
 
+    #[Groups(['user', 'new'])]
     #[ORM\Column(type: 'string', length: 255)]
     private $lastName;
 
+    #[Groups(['user'])]
     #[ORM\Column(type: 'bigint')]
     private $phone;
 
+    #[Groups(['user'])]
     #[ORM\Column(type: 'datetime_immutable')]
     private $lastDayVisit;
 
-    #[ORM\OneToMany(mappedBy: 'adminId', targetEntity: NewItem::class)]
+    #[ORM\OneToMany(mappedBy: 'admin', targetEntity: NewItem::class)]
     private $newItems;
 
-    #[ORM\OneToMany(mappedBy: 'userId', targetEntity: Comment::class)]
+    #[ORM\OneToMany(mappedBy: 'user', targetEntity: Comment::class)]
     private $comments;
 
-    public function __construct()
+
+    #[ArrayShape(["id" => "int|null", "firstName" => "null|string", "email" => "null|string", "lastName" => "null|string", "phone" => "null|string", "lastDayVisit" => "\DateTimeInterface|null", "roles" => "array|string[]"])] public function toArray(): array
+    {
+        return [
+            "id" => $this->getId(),
+            "firstName" => $this->getFirstName(),
+            "email" => $this->getEmail(),
+            "lastName" => $this->getFirstName(),
+            "phone" => $this->getPhone(),
+            "lastDayVisit" => $this->getLastDayVisit(),
+            "roles" => $this->getRoles(),
+        ];
+    }
+
+    #[Pure] public function __construct()
     {
         $this->newItems = new ArrayCollection();
         $this->comments = new ArrayCollection();
     }
 
+    /**
+     * @see UserInterface
+     */
     public function getId(): ?int
     {
         return $this->id;
     }
 
+    /**
+     * @see UserInterface
+     */
     public function getEmail(): ?string
     {
         return $this->email;
@@ -120,6 +149,9 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
         // $this->plainPassword = null;
     }
 
+    /**
+     * @see UserInterface
+     */
     public function getFirstName(): ?string
     {
         return $this->firstName;
@@ -132,6 +164,9 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
         return $this;
     }
 
+    /**
+     * @see UserInterface
+     */
     public function getLastName(): ?string
     {
         return $this->lastName;
@@ -144,6 +179,9 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
         return $this;
     }
 
+    /**
+     * @see UserInterface
+     */
     public function getPhone(): ?string
     {
         return $this->phone;
@@ -156,6 +194,9 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
         return $this;
     }
 
+    /**
+     * @see UserInterface
+     */
     public function getLastDayVisit(): ?\DateTimeInterface
     {
         return $this->lastDayVisit;
@@ -169,6 +210,7 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     }
 
     /**
+     * @see UserInterface
      * @return Collection<int, NewItem>
      */
     public function getNewItems(): Collection
@@ -180,7 +222,7 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     {
         if (!$this->newItems->contains($newItem)) {
             $this->newItems[] = $newItem;
-            $newItem->setAdminId($this);
+            $newItem->setAdmin($this);
         }
 
         return $this;
@@ -190,8 +232,8 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     {
         if ($this->newItems->removeElement($newItem)) {
             // set the owning side to null (unless already changed)
-            if ($newItem->getAdminId() === $this) {
-                $newItem->setAdminId(null);
+            if ($newItem->getAdmin() === $this) {
+                $newItem->setAdmin(null);
             }
         }
 
@@ -199,6 +241,7 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     }
 
     /**
+     * @see UserInterface
      * @return Collection<int, Comment>
      */
     public function getComments(): Collection
@@ -210,7 +253,7 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     {
         if (!$this->comments->contains($comment)) {
             $this->comments[] = $comment;
-            $comment->setUserId($this);
+            $comment->setUser($this);
         }
 
         return $this;
@@ -220,8 +263,8 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     {
         if ($this->comments->removeElement($comment)) {
             // set the owning side to null (unless already changed)
-            if ($comment->getUserId() === $this) {
-                $comment->setUserId(null);
+            if ($comment->getUser() === $this) {
+                $comment->setUser(null);
             }
         }
 

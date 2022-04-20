@@ -3,41 +3,39 @@
 namespace App\Controller;
 
 use App\Entity\User;
+use App\Repository\UserRepository;
+use Sensio\Bundle\FrameworkExtraBundle\Configuration\IsGranted;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
+use Symfony\Component\PasswordHasher\Hasher\UserPasswordHasherInterface;
 use Symfony\Component\Routing\Annotation\Route;
 use Symfony\Component\Security\Http\Attribute\CurrentUser;
-use Symfony\Component\Security\Http\Authentication\AuthenticationUtils;
-use Sensio\Bundle\FrameworkExtraBundle\Configuration\IsGranted;
+use Symfony\Component\Serializer\Encoder\JsonEncoder;
+use Symfony\Component\Serializer\Encoder\XmlEncoder;
+use Symfony\Component\Serializer\Normalizer\ObjectNormalizer;
+use Symfony\Component\Serializer\Serializer;
 use Symfony\Component\Uid\Uuid;
 
 class UserController extends AbstractController
 {
     /**
-     * @param Request $request
-     * @return Response
-     * @IsGranted("ROLE_ADMIN")
+     * @return JsonResponse
+     * @IsGranted("ROLE_USER")
      */
-    #[Route('/api/user', name: 'get_user')]
-    public function index(Request $request): Response
+    #[Route('/api/user', name: 'get_user', methods: ['GET'])]
+    public function index(): JsonResponse
     {
-//        $user = $request->getSession()->get('user');
-//        dd( $this->getUser());
-        return new JsonResponse([
-            'user' => $this->getUser(),
-        ]);
+        return new JsonResponse(["user" => $this->getUser()->toArray()]);
     }
 
-    /**
-     * @param User|null $user
-     * @return Response
-     */
-    #[Route('/api/login', name: 'api_login')]
-    public function login(#[CurrentUser] ?User $user): Response
+    #[Route('/api/login', name: 'api_login', methods: ['POST'])]
+    public function login(): Response
     {
-        if (null === $user) {
+        $user = $this->getUser();
+
+        if (null == $user) {
             return $this->json([
                 'message' => 'missing credentials',
             ], Response::HTTP_UNAUTHORIZED);
@@ -46,10 +44,47 @@ class UserController extends AbstractController
         $token = Uuid::v1();
 
         return $this->json([
-            'message' => 'Welcome to your new controller!',
-            'path' => 'src/Controller/UserController.php',
-            'user' => $user->getUserIdentifier(),
+            'user' =>  $this->getUser()->toArray(),
             'token' => $token,
+        ]);
+    }
+
+    /**
+     * @throws \Doctrine\ORM\OptimisticLockException
+     * @throws \Doctrine\ORM\ORMException
+     */
+    #[Route('/api/register', name: 'api_register')]
+    public function register(Request $request, UserPasswordHasherInterface $hasher, UserRepository $userRepository): JsonResponse
+    {
+        $parameters = json_decode($request->getContent(), true);
+
+        $user = new User();
+        $user->setFirstName($parameters['firstName'])
+            ->setLastName($parameters['lastName'])
+            ->setEmail($parameters['email'])
+            ->setPhone($parameters['phone'])
+            ->setRoles([])
+            ->setLastDayVisit(new \DateTimeImmutable('now'));
+
+        $password = $hasher->hashPassword($user, $parameters['password']);
+        $user->setPassword($password);
+        $userRepository->add($user);
+
+        return new JsonResponse([
+            'result' => true,
+        ]);
+    }
+
+    /**
+     * @param User|null $user
+     * @return Response
+     * @IsGranted("ROLE_USER", message="Авторизируйтесь!")
+     */
+    #[Route('/api/logout', name: 'api_logout', methods: ['GET'])]
+    public function logout(#[CurrentUser] ?User $user): Response
+    {
+        return $this->json([
+            'success' => true,
         ]);
     }
 }

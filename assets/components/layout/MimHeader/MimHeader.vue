@@ -11,7 +11,7 @@
             <li class="nav-item">
               <router-link class="nav-link" active-class="active" to="/">Новости</router-link>
             </li>
-            <li class="nav-item">
+            <li class="nav-item" v-if="isAdmin">
               <router-link class="nav-link" active-class="active" to="/news/create">Добавить новость</router-link>
             </li>
           </ul>
@@ -22,6 +22,9 @@
             </a>
             <ul class="dropdown-menu" aria-labelledby="navbarDropdownMenuLink">
               <template v-if="user">
+                <li>
+                  <a v-if="isAdmin" href="/admin" class="dropdown-item" target="_blank">Админ-панель</a>
+                </li>
                 <li>
                   <button class="dropdown-item" @click="logout">Выйти</button>
                 </li>
@@ -43,20 +46,29 @@
 </template>
 
 <script>
-import UserApi from "../../../api/UserApi";
+import {userSymbol} from "@/store";
 
 export default {
   name: "MimHeader",
-  inject: ['user', 'getUser'],
+  inject: {
+    stateUser: {
+      from: userSymbol,
+    }
+  },
   computed: {
     helloMessage() {
-      return this.user ? `Добро пожаловать, ${this.user.first_name}!` : 'Авторизоваться';
+      return this.user ? `Добро пожаловать, ${this.user.firstName}!` : 'Авторизоваться';
+    },
+    user() {
+      return this.stateUser.state.user;
+    },
+    isAdmin() {
+      return this.user?.roles.includes("ROLE_ADMIN");
     }
   },
   methods: {
-    async logout() {
-      await UserApi.logout();
-      await this.getUser();
+    logout() {
+      this.stateUser.logoutUser();
     }
   }
 }

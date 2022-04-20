@@ -1,7 +1,7 @@
 import axios from 'axios';
 
 const config = {
-    // headers: { 'Content-Type': 'application/json' },
+    headers: { 'Content-Type': 'application/json', "Access-Control-Allow-Origin": "*" },
     timeout: 30000,
 };
 
@@ -23,12 +23,7 @@ export class Api {
     post(url, data) {
         return new Promise((resolve, reject) => {
             axios
-                .post(url, data, {
-                    headers: {
-                        'Content-Type': 'application/json',
-                        "Access-Control-Allow-Origin": "*",
-                    }
-                })
+                .post(url, data, config)
                 .then(
                     (response) => resolve(response),
                     (err) => {
@@ -43,6 +38,20 @@ export class Api {
         return new Promise((resolve, reject) => {
             axios
                 .put(url, data, config)
+                .then(
+                    (response) => resolve(response),
+                    (err) => {
+                        reject(err);
+                    }
+                )
+                .catch((error) => reject(error));
+        });
+    }
+
+    patch(url, data) {
+        return new Promise((resolve, reject) => {
+            axios
+                .patch(url, data, config)
                 .then(
                     (response) => resolve(response),
                     (err) => {

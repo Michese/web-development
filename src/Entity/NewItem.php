@@ -6,6 +6,8 @@ use App\Repository\NewItemRepository;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
+use JetBrains\PhpStorm\Pure;
+use Symfony\Component\Serializer\Annotation\Groups;
 
 #[ORM\Entity(repositoryClass: NewItemRepository::class)]
 class NewItem
@@ -13,34 +15,41 @@ class NewItem
     #[ORM\Id]
     #[ORM\GeneratedValue]
     #[ORM\Column(type: 'integer')]
+    #[Groups(['new', 'half'])]
     private $id;
 
     #[ORM\Column(type: 'string', length: 255)]
+    #[Groups(['new', 'half'])]
     private $title;
 
     #[ORM\Column(type: 'string', length: 1023)]
+    #[Groups(['new', 'half'])]
     private $description;
 
     #[ORM\Column(type: 'text')]
-    private $text;
+    #[Groups(['new'])]
+    private ?string $text;
 
     #[ORM\Column(type: 'datetime_immutable')]
-    private $createdAt;
+    #[Groups(['new'])]
+    private ?\DateTimeImmutable $createdAt;
 
     #[ORM\Column(type: 'datetime_immutable', nullable: true)]
-    private $deletedAt;
+    private ?\DateTimeImmutable $deletedAt;
 
     #[ORM\Column(type: 'integer')]
-    private $views;
+    #[Groups(['new'])]
+    private ?int $views;
 
     #[ORM\ManyToOne(targetEntity: User::class, inversedBy: 'newItems')]
     #[ORM\JoinColumn(nullable: false)]
-    private $adminId;
+    #[Groups(['new'])]
+    private ?User $admin;
 
     #[ORM\OneToMany(mappedBy: 'new', targetEntity: Comment::class)]
     private $comments;
 
-    public function __construct()
+    #[Pure] public function __construct()
     {
         $this->comments = new ArrayCollection();
     }
@@ -122,14 +131,14 @@ class NewItem
         return $this;
     }
 
-    public function getAdminId(): ?User
+    public function getAdmin(): ?User
     {
-        return $this->adminId;
+        return $this->admin;
     }
 
-    public function setAdminId(?User $adminId): self
+    public function setAdmin(?User $admin): self
     {
-        $this->adminId = $adminId;
+        $this->admin = $admin;
 
         return $this;
     }
