@@ -30,10 +30,12 @@
             </template>
           </div>
         </div>
-        <div class="card-body">
-          <h3 class="card-title">{{ this.newItem.title }}</h3>
-          <h5 class="card-title">{{ this.newItem.description }}</h5>
-          <p class="card-text text-start" v-html="this.newItem.text"/>
+        <div class="card-body d-flex flex-column align-items-center">
+          <img :src="newItem.image" alt="" class="card__image" />
+
+          <h3 class="card-title">{{ newItem.title }}</h3>
+          <h5 class="card-title">{{ newItem.description }}</h5>
+          <p class="card-text align-items-start text-start" v-html="newItem.text"/>
         </div>
         <div class="card-footer text-muted text-end">
           {{ adminFullName }}
@@ -117,5 +119,13 @@ export default {
 <style lang="scss" scoped>
 .spinner-container {
   height: 300px;
+}
+
+.card {
+  &__image {
+    max-width: 100%;
+    min-height: 200px;
+    max-height: 500px;
+  }
 }
 </style>

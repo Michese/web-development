@@ -50,23 +50,29 @@ class HomeController extends AbstractController
         ]);
     }
 
+    /**
+     * @param NewItemRepository $newRepository
+     * @return JsonResponse
+     * @throws ExceptionInterface
+     */
     #[Route('/api/new', name: 'get_news', methods: ['GET']) ]
-    public function getPosts(NewItemRepository $newRepository): Response
+    public function getPosts(NewItemRepository $newRepository): JsonResponse
     {
         $news = $newRepository->findBy([
             'deletedAt' => null
         ]);
-        $jsonNewItem = $this->serializer->normalize($news, null, ['groups' => ['half']]);
+        $jsonNewItem = $this->serializer->normalize($news, null, ['groups' => ['news']]);
         return new JsonResponse(['news' => $jsonNewItem]);
     }
 
     /**
-     * @throws OptimisticLockException
-     * @throws ORMException
+     * @param int $id
+     * @param NewItemRepository $newRepository
+     * @return JsonResponse
      * @throws ExceptionInterface
      */
     #[Route('/api/new/{id}', name: 'get_new', methods: ['GET']) ]
-    public function getPost(int $id, NewItemRepository $newRepository): Response
+    public function getPost(int $id, NewItemRepository $newRepository): JsonResponse
     {
         $new = $newRepository->find($id);
 
@@ -76,7 +82,7 @@ class HomeController extends AbstractController
             });
         } else {
             $comments = $new->getComments()->filter(function(Comment $comment) {
-                return $comment->getAdmin() != null && $comment->getDeletedAt() == null;
+                return $comment->getIsActive() && $comment->getDeletedAt() == null;
             });
         }
 
@@ -96,7 +102,6 @@ class HomeController extends AbstractController
      * @param ValidatorInterface $validator
      * @return JsonResponse
      * @IsGranted("ROLE_ADMIN", message="У вас недостаточно прав!")
-     * @throws ExceptionInterface
      */
     #[Route('/api/new', name: 'create_new', methods: ['POST']) ]
     public function createNew(Request $request, NewItemRepository $newItemRepository, ValidatorInterface $validator): JsonResponse
@@ -206,7 +211,7 @@ class HomeController extends AbstractController
         }
 
         if ($this->isGranted('ROLE_ADMIN')) {
-            $comment->setAdmin($user);
+            $comment->setIsActive(true);
         }
 
         $commentRepository->add($comment);
@@ -230,7 +235,7 @@ class HomeController extends AbstractController
     {
         $comment = $commentRepository->find($commentId);
         $user = $this->getUser();
-        $comment->setAdmin($user);
+        $comment->setIsActive(true);
         $commentRepository->add($comment);
 
         return new JsonResponse(['result' => true]);

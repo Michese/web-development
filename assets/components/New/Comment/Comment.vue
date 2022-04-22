@@ -67,7 +67,7 @@ export default {
       return this.stateUser.state.user;
     },
     canApprove() {
-      return this.isAdmin && this.item.admin === null;
+      return this.isAdmin && this.item.isActive === null;
     },
     isAdmin() {
       return !!this.user?.roles.includes('ROLE_ADMIN');

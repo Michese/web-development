@@ -1,7 +1,7 @@
 <template>
   <div class="card mb-3 card_custom">
     <div class="card-body">
-      <img :src="newItem.image" alt="" />
+      <img :src="newItem.image" alt="" class="card__image" />
       <h5 class="card-title">{{ newItem.title }}</h5>
       <h6 class="card-subtitle mb-2 text-muted">{{ newItem.description }}</h6>
       <p class="card-text">{{ newItem.text }}</p>
@@ -32,6 +32,11 @@ export default {
     &:hover {
       box-shadow: 0 0 5px black;
     }
+  }
+
+  &__image {
+    width: 100%;
+    height: 300px;
   }
 }
 </style>

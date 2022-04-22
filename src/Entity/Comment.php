@@ -19,26 +19,26 @@ class Comment
     #[ORM\ManyToOne(targetEntity: User::class, inversedBy: 'comments')]
     #[ORM\JoinColumn(nullable: false)]
     #[Groups(['new'])]
-    private ?User $user;
-
-    #[ORM\ManyToOne(targetEntity: User::class)]
-    #[Groups(['new'])]
-    private ?User $admin;
+    private $user;
 
     #[ORM\Column(type: 'datetime_immutable')]
     #[Groups(['new'])]
-    private ?\DateTimeImmutable $createdAt;
+    private $createdAt;
 
     #[ORM\Column(type: 'datetime_immutable', nullable: true)]
-    private ?\DateTimeImmutable $deletedAt;
+    private $deletedAt;
 
     #[ORM\Column(type: 'text')]
     #[Groups(['new'])]
-    private ?string $text;
+    private $text;
 
     #[ORM\ManyToOne(targetEntity: NewItem::class, inversedBy: 'comments')]
     #[ORM\JoinColumn(nullable: false)]
-    private ?NewItem $new;
+    private $new;
+
+    #[ORM\Column(type: 'boolean')]
+    #[Groups(['new'])]
+    private $isActive;
 
     public function getId(): ?int
     {
@@ -53,18 +53,6 @@ class Comment
     public function setUser(?User $user): self
     {
         $this->user = $user;
-
-        return $this;
-    }
-
-    public function getAdmin(): ?User
-    {
-        return $this->admin;
-    }
-
-    public function setAdmin(?User $admin): self
-    {
-        $this->admin = $admin;
 
         return $this;
     }
@@ -113,6 +101,18 @@ class Comment
     public function setNew(?NewItem $new): self
     {
         $this->new = $new;
+
+        return $this;
+    }
+
+    public function getIsActive(): ?bool
+    {
+        return $this->isActive;
+    }
+
+    public function setIsActive(bool $isActive): self
+    {
+        $this->isActive = $isActive;
 
         return $this;
     }

@@ -15,15 +15,15 @@ class NewItem
     #[ORM\Id]
     #[ORM\GeneratedValue]
     #[ORM\Column(type: 'integer')]
-    #[Groups(['new', 'half'])]
+    #[Groups(['new', 'news'])]
     private $id;
 
     #[ORM\Column(type: 'string', length: 255)]
-    #[Groups(['new', 'half'])]
+    #[Groups(['new', 'news'])]
     private $title;
 
     #[ORM\Column(type: 'string', length: 1023)]
-    #[Groups(['new', 'half'])]
+    #[Groups(['new', 'news'])]
     private $description;
 
     #[ORM\Column(type: 'text')]
@@ -154,6 +154,14 @@ class NewItem
         return $this->comments;
     }
 
+
+    #[Pure]
+    #[Groups(['news'])]
+    public function getCountComments(): int
+    {
+        return $this->comments->count();
+    }
+
     public function addComment(Comment $comment): self
     {
         if (!$this->comments->contains($comment)) {
@@ -176,11 +184,11 @@ class NewItem
         return $this;
     }
 
-    #[Groups(['new', 'half'])]
+    #[Groups(['new', 'news'])]
     public function getImage(): ?string
     {
         if ($this->image) {
-            return '/uploads/brochures/' . $this->image;
+            return '/uploads/' . $this->image;
         } else {
             return null;
         }

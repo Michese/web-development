@@ -4,9 +4,7 @@ namespace App\DataFixtures;
 
 use App\Entity\Comment;
 use App\Entity\NewItem;
-use App\Entity\Role;
 use App\Entity\User;
-use Symfony\Component\Uid\Uuid;
 
 class DataFixtures
 {
@@ -19,7 +17,6 @@ class DataFixtures
             ->setPhone('89046867942')
             ->setRoles(['ROLE_ADMIN'])
             ->setLastDayVisit(new \DateTimeImmutable('now'));
-//            ->setApiToken(Uuid::v1());
 
         return $user;
     }
@@ -33,20 +30,18 @@ class DataFixtures
             ->setPhone('89046764591')
             ->setRoles(['ROLE_ADMIN'])
             ->setLastDayVisit(new \DateTimeImmutable('now'));
-//            ->setApiToken(Uuid::v1());
         return $user;
     }
 
-    public function userUsually(): User
+    public function userTest(): User
     {
         $user = new User();
-        $user->setFirstName('Обычный')
-            ->setLastName('Пользователь')
-            ->setEmail('usually@mail.ru')
-            ->setPhone('89046763592')
+        $user->setFirstName('Тест')
+            ->setLastName('Тестович')
+            ->setEmail('test@mail.ru')
+            ->setPhone('89056912312')
             ->setRoles([])
             ->setLastDayVisit(new \DateTimeImmutable('now'));
-//            ->setApiToken(Uuid::v1());
         return $user;
     }
 
@@ -64,6 +59,7 @@ class DataFixtures
 Теперь Мотимару имеет на канале 1,4 миллиона подписчиков и быстро набирает на каждом видео миллионы просмотров.')
             ->setViews(0)
             ->setCreatedAt(new \DateTimeImmutable('now'))
+            ->setImage('1.jpg')
             ->setAdmin($user);
         return $catNew;
     }
@@ -80,6 +76,7 @@ class DataFixtures
 На первом этапе исследователи записали на диктофон голос хозяина или знакомого кошке человека. На аудио произносилась кличка кошки, а также 4 похожих по звучанию слова. Далее задачу усложнили, и люди на записи называли имена других кошек. В конце эксперимента кличку называл совсем незнакомый кошке человек.')
             ->setViews(0)
             ->setCreatedAt(new \DateTimeImmutable('now'))
+            ->setImage('2.jpg')
             ->setAdmin($user);
         return $catNew;
     }
@@ -98,61 +95,62 @@ class DataFixtures
 Ветклиника будет рада и просто добровольцам, которые будут приходить погладить котиков. Ветеринары также сообщили, что всем бездомным животным в клинике нужна постоянная семья.')
             ->setViews(0)
             ->setCreatedAt(new \DateTimeImmutable('now'))
+            ->setImage('3.jpg')
             ->setAdmin($user);
         return $catNew;
     }
 
-    public function firstComment(User $admin, NewItem $new): Comment
+    public function firstComment(User $user, NewItem $new): Comment
     {
         $comment = new Comment();
-        $comment->setAdmin($admin)
+        $comment->setIsActive(true)
             ->setCreatedAt(new \DateTimeImmutable('now'))
             ->setNew($new)
-            ->setUser($admin)
+            ->setUser($user)
             ->setText("Это лучший котик!");
         return $comment;
     }
 
-    public function secondComment(User $admin, NewItem $new): Comment
+    public function secondComment(User $user, NewItem $new): Comment
     {
         $comment = new Comment();
-        $comment->setAdmin($admin)
+        $comment->setIsActive(true)
             ->setCreatedAt(new \DateTimeImmutable('now'))
             ->setNew($new)
-            ->setUser($admin)
+            ->setUser($user)
             ->setText("Aaaaa люблю котов!");
         return $comment;
     }
 
-    public function thirdComment(User $admin, NewItem $new): Comment
+    public function thirdComment(User $user, NewItem $new): Comment
     {
         $comment = new Comment();
-        $comment->setAdmin($admin)
+        $comment->setIsActive(true)
             ->setCreatedAt(new \DateTimeImmutable('now'))
             ->setNew($new)
-            ->setUser($admin)
+            ->setUser($user)
             ->setText("Это же кооооотик :3");
         return $comment;
     }
 
-    public function fourthComment(User $admin, NewItem $new): Comment
+    public function fourthComment(User $user, NewItem $new): Comment
     {
         $comment = new Comment();
-        $comment->setAdmin($admin)
+        $comment->setIsActive(true)
             ->setCreatedAt(new \DateTimeImmutable('now'))
             ->setNew($new)
-            ->setUser($admin)
+            ->setUser($user)
             ->setText("Почему тут одни коты >_> \n Видимо я не туда попал <_<");
         return $comment;
     }
 
-    public function fifthComment(User $admin, NewItem $new): Comment
+    public function fifthComment(User $user, NewItem $new): Comment
     {
         $comment = new Comment();
-        $comment->setAdmin($admin)
+        $comment->setIsActive(true)
             ->setCreatedAt(new \DateTimeImmutable('now'))
             ->setNew($new)
-            ->setUser($admin)
+            ->setUser($user)
             ->setText("Всем по котикам :3");
         return $comment;
     }
