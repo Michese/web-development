@@ -4,6 +4,8 @@ namespace App\Controller;
 
 use App\Entity\User;
 use App\Repository\UserRepository;
+use Doctrine\ORM\OptimisticLockException;
+use Doctrine\ORM\ORMException;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\IsGranted;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\JsonResponse;
@@ -17,6 +19,7 @@ use Symfony\Component\Serializer\Encoder\XmlEncoder;
 use Symfony\Component\Serializer\Normalizer\ObjectNormalizer;
 use Symfony\Component\Serializer\Serializer;
 use Symfony\Component\Uid\Uuid;
+use Symfony\Component\Validator\Validator\ValidatorInterface;
 
 class UserController extends AbstractController
 {
@@ -50,11 +53,11 @@ class UserController extends AbstractController
     }
 
     /**
-     * @throws \Doctrine\ORM\OptimisticLockException
-     * @throws \Doctrine\ORM\ORMException
+     * @throws OptimisticLockException
+     * @throws ORMException
      */
     #[Route('/api/register', name: 'api_register')]
-    public function register(Request $request, UserPasswordHasherInterface $hasher, UserRepository $userRepository): JsonResponse
+    public function register(Request $request, UserPasswordHasherInterface $hasher, UserRepository $userRepository, ValidatorInterface $validator): JsonResponse
     {
         $parameters = json_decode($request->getContent(), true);
 
@@ -68,6 +71,14 @@ class UserController extends AbstractController
 
         $password = $hasher->hashPassword($user, $parameters['password']);
         $user->setPassword($password);
+
+        $errors = $validator->validate($user);
+
+        if (count($errors) > 0) {
+            $errorsString = (string) $errors;
+            return new JsonResponse($errorsString);
+        }
+
         $userRepository->add($user);
 
         return new JsonResponse([

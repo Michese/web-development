@@ -28,26 +28,29 @@ class NewItem
 
     #[ORM\Column(type: 'text')]
     #[Groups(['new'])]
-    private ?string $text;
+    private $text;
 
     #[ORM\Column(type: 'datetime_immutable')]
     #[Groups(['new'])]
-    private ?\DateTimeImmutable $createdAt;
+    private $createdAt;
 
     #[ORM\Column(type: 'datetime_immutable', nullable: true)]
-    private ?\DateTimeImmutable $deletedAt;
+    private $deletedAt;
 
     #[ORM\Column(type: 'integer')]
     #[Groups(['new'])]
-    private ?int $views;
+    private $views;
 
     #[ORM\ManyToOne(targetEntity: User::class, inversedBy: 'newItems')]
     #[ORM\JoinColumn(nullable: false)]
     #[Groups(['new'])]
-    private ?User $admin;
+    private $admin;
 
     #[ORM\OneToMany(mappedBy: 'new', targetEntity: Comment::class)]
     private $comments;
+
+    #[ORM\Column(type: 'string', length: 255, nullable: true)]
+    private $image;
 
     #[Pure] public function __construct()
     {
@@ -169,6 +172,23 @@ class NewItem
                 $comment->setNew(null);
             }
         }
+
+        return $this;
+    }
+
+    #[Groups(['new', 'half'])]
+    public function getImage(): ?string
+    {
+        if ($this->image) {
+            return '/uploads/brochures/' . $this->image;
+        } else {
+            return null;
+        }
+    }
+
+    public function setImage(?string $image): self
+    {
+        $this->image = $image;
 
         return $this;
     }

@@ -45,6 +45,7 @@ class NewItemRepository extends ServiceEntityRepository
         return $newItem->setText($params['text'])
             ->setTitle($params['title'])
             ->setDescription($params['description'])
+            ->setImage($params['image'])
             ->setViews(0)
             ->setCreatedAt(new \DateTimeImmutable('now'))
             ->setAdmin($user);

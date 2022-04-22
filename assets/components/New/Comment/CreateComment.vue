@@ -13,7 +13,7 @@ export default {
   emits: ['fetch-new'],
   props: {
     newId: {
-      type: Number,
+      type: String,
       required: true,
     }
   },

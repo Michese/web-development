@@ -5,6 +5,7 @@ namespace App\Entity;
 use App\Repository\UserRepository;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
+use Symfony\Component\Validator\Constraints as Assert;
 use Doctrine\ORM\Mapping as ORM;
 use JetBrains\PhpStorm\ArrayShape;
 use JetBrains\PhpStorm\Pure;
@@ -21,6 +22,7 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     #[ORM\Column(type: 'integer')]
     private $id;
 
+    #[Assert\Email]
     #[Groups(['user'])]
     #[ORM\Column(type: 'string', length: 180, unique: true)]
     private $email;
@@ -53,8 +55,8 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     #[ORM\OneToMany(mappedBy: 'user', targetEntity: Comment::class)]
     private $comments;
 
-
-    #[ArrayShape(["id" => "int|null", "firstName" => "null|string", "email" => "null|string", "lastName" => "null|string", "phone" => "null|string", "lastDayVisit" => "\DateTimeInterface|null", "roles" => "array|string[]"])] public function toArray(): array
+    #[ArrayShape(["id" => "int|null", "firstName" => "null|string", "email" => "null|string", "lastName" => "null|string", "phone" => "null|string", "lastDayVisit" => "\DateTimeInterface|null", "roles" => "array|string[]"])]
+    public function toArray(): array
     {
         return [
             "id" => $this->getId(),

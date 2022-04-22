@@ -20,10 +20,10 @@ export class Api {
         });
     }
 
-    post(url, data) {
+    post(url, data, configure) {
         return new Promise((resolve, reject) => {
             axios
-                .post(url, data, config)
+                .post(url, data, {...config, ...configure})
                 .then(
                     (response) => resolve(response),
                     (err) => {

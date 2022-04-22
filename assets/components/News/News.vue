@@ -26,7 +26,7 @@
         </button>
       </div>
 
-      <div class="cards row row-cols-4 gap-1 justify-content-around">
+      <div class="cards d-grid">
         <news-card v-for="(newItem, index) in news" :key="`new_${index}`" :new-item="newItem"/>
       </div>
     </div>
@@ -50,7 +50,6 @@ export default {
       this.isLoading = false;
       return {news: []};
     })).news;
-    console.log('news', this.news);
   }
 }
 </script>
@@ -74,5 +73,7 @@ export default {
 
 .cards {
   margin-top: 20px;
+  grid-template-columns: repeat(3, 1fr);
+  grid-gap: 20px;
 }
 </style>

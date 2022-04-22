@@ -1,10 +1,11 @@
 <template>
   <div class="card mb-3 card_custom">
     <div class="card-body">
+      <img :src="newItem.image" alt="" />
       <h5 class="card-title">{{ newItem.title }}</h5>
       <h6 class="card-subtitle mb-2 text-muted">{{ newItem.description }}</h6>
       <p class="card-text">{{ newItem.text }}</p>
-      <router-link :to="`/news/${newItem.id}`" class="card-link">Перейти</router-link>
+      <router-link :to="{ name: 'New', params: { newId: newItem.id } }" class="card-link">Перейти</router-link>
     </div>
   </div>
 </template>
@@ -17,7 +18,7 @@ export default {
       type: Object,
       required: true,
     }
-  }
+  },
 }
 </script>
 

@@ -23,6 +23,12 @@ const routes = [
         component: defineComponent(CreateNew),
     },
     {
+        path: '/news/:newId/edit',
+        name: 'EditNew',
+        props: true,
+        component: defineComponent(CreateNew),
+    },
+    {
         path: '/news/:newId',
         name: 'New',
         props: true,
@@ -42,22 +48,6 @@ const routes = [
         path: '/*',
         redirect: { name: 'home' }
     }
-    // {
-    //     path: routerEnum.detailedPage + '/:post',
-    //     name: 'detailed-page',
-    //     component: DetailedPage,
-    //     props: true,
-    // },
-    // {
-    //     path: routerEnum.creatingPage,
-    //     name: 'creating-page',
-    //     component: CreatingPage,
-    // },
-    // {
-    //     path: routerEnum.profile,
-    //     name: 'profile',
-    //     component: Profile,
-    // },
 ];
 
 const router = createRouter({
