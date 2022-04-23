@@ -159,7 +159,9 @@ class NewItem
     #[Groups(['news'])]
     public function getCountComments(): int
     {
-        return $this->comments->count();
+        return $this->comments->filter(function ($comment) {
+            return $comment->getDeletedAt() == null;
+        })->count();
     }
 
     public function addComment(Comment $comment): self
