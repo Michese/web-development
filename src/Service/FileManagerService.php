@@ -25,12 +25,18 @@ class FileManagerService
 
         $file->move($this->getTargetDirectory(), $fileName);
 
-        return $fileName;
+        return '\uploads\\' . $fileName;
+    }
+
+    public function delete(string $fileName): bool
+    {
+        $uploadFile = $this->load($fileName);
+        return unlink($uploadFile);
     }
 
     public function load(string $fileName): UploadedFile
     {
-        return new UploadedFile($this->getTargetDirectory(), $fileName);
+        return new UploadedFile($this->getTargetDirectory() . $fileName, $fileName);
     }
 
     public function getTargetDirectory()

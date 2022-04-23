@@ -52,6 +52,7 @@ class CommentRepository extends ServiceEntityRepository
         $comment = new Comment();
         $comment->setCreatedAt(new \DateTimeImmutable('now'))
             ->setUser($user)
+            ->setIsActive(false)
             ->setNew($new)
             ->setText($params["text"]);
         return $comment;

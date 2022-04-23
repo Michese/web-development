@@ -2,7 +2,7 @@
   <div class="container">
     <h1 class="text-center mb-3">{{ isEdit ? 'Редактирование'  : 'Добавление новой' }} новости</h1>
     <mim-spinner v-if="isLoading" />
-    <form v-else action="#" method="post" class="user-login__form d-flex flex-column align-items-center mb-4" @submit.prevent="onSubmit">
+    <form v-else action="#" method="post" class="user-login__form d-flex flex-column align-items-center mb-4" ref="form" @submit.prevent="onSubmit">
       <div class="input-group mb-3 w-50">
         <input v-model="title" type="text" name="username" class="form-control" placeholder="Название"
                aria-label="email" aria-describedby="email" required>
@@ -20,11 +20,13 @@
 
       <div class="input-group mb-3 w-50">
         <input type="file" accept="image/jpeg" name="image" class="form-control" placeholder="image" aria-label="image"
-                  aria-describedby="image" required/>
+                  aria-describedby="image" :required="!isEdit" @change="changeImage" />
       </div>
 
+      <img class="form__image mb-2 w-50" :src="image" alt="">
 
-      <input type="submit" :value="isEdit ? 'Редактировать' : 'Добавить'" class="btn btn-primary">
+
+      <input type="submit" :value="isEdit ? 'Редактировать' : 'Добавить'" class="btn bg-custom-blue text-white">
     </form>
   </div>
 </template>
@@ -74,50 +76,59 @@ export default {
   },
   created() {
     if (this.isEdit) {
-      NewsApi.getNew(this.newId).then(({newItem: {title, description, text}}) => {
+      NewsApi.getNew(this.newId).then(({newItem: {title, description, text, image}}) => {
         this.title = title;
         this.description = description;
         this.text = text;
+        this.image = image;
       }).finally(() => {
         this.isLoading = false;
       });
     } else this.isLoading = false;
   },
   methods: {
-    async onSubmit(event) {
+    async onSubmit() {
       if (this.isEdit) {
         const { data: { result } } = await NewsApi.changeNew(this.newId, {
           title: this.title,
           description: this.description,
           text: this.text,
+          image: this.image,
         })
 
         if (result) await this.$router.push({name: 'New', params: {newId: result}});
       } else {
-        const fullForm = new FormData(event.target);
-        const fileForm = new FormData()
-        const image = fullForm.get('image');
-        console.log('fullForm->get(\'image\')', fullForm.get('image'));
-        fileForm.append('file', image, image.name);
+          if (this.image) {
+            const { data: { result } } = await NewsApi.createNew({
+              title: this.title,
+              description: this.description,
+              text: this.text,
+              image: this.image,
+            })
 
-        const { data } = await NewsApi.uploadFile(fileForm)
-
-        if (data.result) {
-          const { data: { result } } = await NewsApi.createNew({
-            title: this.title,
-            description: this.description,
-            text: this.text,
-            image: data.result,
-          })
-
-          if (result) await this.$router.push({name: 'New', params: {newId: result}});
-        }
+            if (result) await this.$router.push({name: 'New', params: {newId: result}});
+          }
       }
+    },
+    async changeImage() {
+      const fullForm = new FormData(this.$refs.form),
+          image = fullForm.get('image'),
+          fileForm = new FormData();
+
+      fileForm.append('file', image, image.name);
+
+      const { data: { result } } = await NewsApi.uploadFile(fileForm)
+
+      if (result) this.image = result;
     },
   },
 }
 </script>
 
-<style scoped>
-
+<style lang="scss" scoped>
+.form {
+  &__image {
+    max-height: 700px;
+   }
+}
 </style>

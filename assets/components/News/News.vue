@@ -10,10 +10,10 @@
             <img src="./images/1.jpg" class="carousel__image d-block w-100" alt="...">
           </div>
           <div class="carousel-item">
-            <img src="./images/1.jpg" class="carousel__image d-block w-100" alt="...">
+            <img src="./images/2.jpg" class="carousel__image d-block w-100" alt="...">
           </div>
           <div class="carousel-item">
-            <img src="./images/1.jpg" class="carousel__image d-block w-100" alt="...">
+            <img src="./images/3.jpg" class="carousel__image d-block w-100" alt="...">
           </div>
         </div>
         <button class="carousel-control-prev" type="button" data-bs-target="#carouselExampleControls" data-bs-slide="prev">
@@ -68,6 +68,7 @@ export default {
 .carousel {
   &__image {
     max-height: 600px;
+    object-fit: cover;
   }
 }
 

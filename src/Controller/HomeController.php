@@ -108,8 +108,6 @@ class HomeController extends AbstractController
     {
         $user = $this->getUser();
 
-        if ($user == null) return new JsonResponse([ 'result' => false ]);
-
         $parameters = json_decode($request->getContent(), true);
         $newItem = $newItemRepository->createNew($user, $parameters);
 
@@ -136,7 +134,7 @@ class HomeController extends AbstractController
      * @IsGranted("ROLE_ADMIN", message="У вас недостаточно прав!")
      */
     #[Route('/api/new/{newId}', name: 'edit_new', methods: ['PUT']) ]
-    public function editNew(int $newId, Request $request, NewItemRepository $newItemRepository, ValidatorInterface $validator): JsonResponse
+    public function editNew(int $newId, Request $request, NewItemRepository $newItemRepository, ValidatorInterface $validator, FileManagerService $fileManagerService): JsonResponse
     {
         $user = $this->getUser();
 
@@ -144,6 +142,10 @@ class HomeController extends AbstractController
 
         $parameters = json_decode($request->getContent(), true);
         $newItem = $newItemRepository->find($newId);
+        if (array_key_exists('image', $parameters)) {
+            $newItem->setImage($parameters['image']);
+        }
+
         $newItem->setAdmin($user);
         $newItem->setTitle($parameters['title']);
         $newItem->setDescription($parameters['description']);
@@ -269,8 +271,8 @@ class HomeController extends AbstractController
     #[Route('/api/file', name: 'upload_file', methods: ['POST'])]
     public function uploadFile(Request $request, FileManagerService $fileManagerService): JsonResponse
     {
-        $brochureFile = $request->files->get('file');
-        $fileName = $fileManagerService->upload($brochureFile);
+        $newFile = $request->files->get('file');
+        $fileName = $fileManagerService->upload($newFile);
 
         return new JsonResponse(['result' => $fileName]);
     }

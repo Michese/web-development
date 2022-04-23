@@ -31,7 +31,7 @@ class NewItem
     private $text;
 
     #[ORM\Column(type: 'datetime_immutable')]
-    #[Groups(['new'])]
+    #[Groups(['new', 'news'])]
     private $createdAt;
 
     #[ORM\Column(type: 'datetime_immutable', nullable: true)]
@@ -188,7 +188,7 @@ class NewItem
     public function getImage(): ?string
     {
         if ($this->image) {
-            return '/uploads/' . $this->image;
+            return $this->image;
         } else {
             return null;
         }

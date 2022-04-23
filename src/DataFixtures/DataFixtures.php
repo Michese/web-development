@@ -59,7 +59,7 @@ class DataFixtures
 Теперь Мотимару имеет на канале 1,4 миллиона подписчиков и быстро набирает на каждом видео миллионы просмотров.')
             ->setViews(0)
             ->setCreatedAt(new \DateTimeImmutable('now'))
-            ->setImage('1.jpg')
+            ->setImage('\uploads\1.jpg')
             ->setAdmin($user);
         return $catNew;
     }
@@ -76,7 +76,7 @@ class DataFixtures
 На первом этапе исследователи записали на диктофон голос хозяина или знакомого кошке человека. На аудио произносилась кличка кошки, а также 4 похожих по звучанию слова. Далее задачу усложнили, и люди на записи называли имена других кошек. В конце эксперимента кличку называл совсем незнакомый кошке человек.')
             ->setViews(0)
             ->setCreatedAt(new \DateTimeImmutable('now'))
-            ->setImage('2.jpg')
+            ->setImage('\uploads\2.jpg')
             ->setAdmin($user);
         return $catNew;
     }
@@ -95,7 +95,7 @@ class DataFixtures
 Ветклиника будет рада и просто добровольцам, которые будут приходить погладить котиков. Ветеринары также сообщили, что всем бездомным животным в клинике нужна постоянная семья.')
             ->setViews(0)
             ->setCreatedAt(new \DateTimeImmutable('now'))
-            ->setImage('3.jpg')
+            ->setImage('\uploads\3.jpg')
             ->setAdmin($user);
         return $catNew;
     }
