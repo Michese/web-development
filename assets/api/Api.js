@@ -1,4 +1,7 @@
 import axios from 'axios';
+import {stateNotification} from "../store";
+
+const { addNotification } = stateNotification;
 
 const config = {
     headers: { 'Content-Type': 'application/json', "Access-Control-Allow-Origin": "*" },
@@ -13,6 +16,7 @@ export class Api {
                 .then(
                     (response) => resolve(response.data),
                     (err) => {
+                        addNotification({ caption: err.response.statusText, text: err.response.data.detail });
                         reject(err);
                     }
                 )
@@ -27,6 +31,7 @@ export class Api {
                 .then(
                     (response) => resolve(response),
                     (err) => {
+                        addNotification({ caption: err.response.statusText, text: err.response.data.detail ?? err.response.data.error });
                         reject(err);
                     }
                 )
@@ -41,6 +46,7 @@ export class Api {
                 .then(
                     (response) => resolve(response),
                     (err) => {
+                        addNotification({ caption: err.response.statusText, text: err.response.data.detail });
                         reject(err);
                     }
                 )
@@ -55,6 +61,7 @@ export class Api {
                 .then(
                     (response) => resolve(response),
                     (err) => {
+                        addNotification({ caption: err.response.statusText, text: err.response.data.detail });
                         reject(err);
                     }
                 )
@@ -69,6 +76,7 @@ export class Api {
                 .then(
                     (response) => resolve(response.data),
                     (err) => {
+                        addNotification({ caption: err.response.statusText, text: err.response.data.detail });
                         reject(err);
                     }
                 )

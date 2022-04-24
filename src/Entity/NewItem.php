@@ -154,7 +154,6 @@ class NewItem
         return $this->comments;
     }
 
-
     #[Pure]
     #[Groups(['news'])]
     public function getCountComments(): int

@@ -3,15 +3,17 @@
     <mim-spinner />
   </div>
   <slot v-else />
+  <mim-notification />
 </template>
 
 <script>
 import MimSpinner from "../../../ui/MimSpinner/MimSpinner";
 import {userSymbol} from "../../../store";
+import MimNotification from "../MimNotification/MimNotification";
 
 export default {
   name: "MimWrapper",
-  components: {MimSpinner},
+  components: {MimNotification, MimSpinner},
   data: () => ({
     isLoading: true,
   }),
