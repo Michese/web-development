@@ -2,31 +2,44 @@
   <div class="container">
     <h1 class="text-center mb-3">{{ isEdit ? 'Редактирование'  : 'Добавление новой' }} новости</h1>
     <mim-spinner v-if="isLoading" />
-    <form v-else action="#" method="post" class="user-login__form d-flex flex-column align-items-center mb-4" ref="form" @submit.prevent="onSubmit">
-      <div class="input-group mb-3 w-50">
-        <input v-model="title" type="text" name="username" class="form-control" placeholder="Название"
-               aria-label="email" aria-describedby="email" required>
+    <form v-else action="#" method="post" class="create-new__form mb-3" ref="form" @submit.prevent="onSubmit">
+      <div class="form__email">
+        <h3>Название</h3>
+        <div class="input-group mb-3">
+          <input v-model="title" type="text" name="username" class="form-control" placeholder="Название"
+                 aria-label="email" aria-describedby="email" required oninvalid="this.setCustomValidity('Необходмо ввести название')">
+        </div>
       </div>
 
-      <div class="input-group mb-3 w-50">
+
+      <div class="form__description">
+        <h3>Описание</h3>
+        <div class="input-group mb-3">
         <textarea v-model="description" name="description" class="form-control" placeholder="Описание"
-                  aria-label="description" aria-describedby="description" rows="5" required/>
+                  aria-label="description" aria-describedby="description" required oninvalid="this.setCustomValidity('Необходмо ввести описание')"/>
+        </div>
       </div>
 
-      <div class="input-group mb-3 w-50">
-        <textarea v-model="text" name="text" class="form-control" placeholder="Текст" aria-label="text"
-                  aria-describedby="text" rows="20" required/>
+      <div class="form__text">
+        <h3>Текст</h3>
+        <textarea v-model="text" name="text" class="form-control text__textarea" placeholder="Текст" aria-label="text"
+                  aria-describedby="text" required oninvalid="this.setCustomValidity('Необходмо ввести текст')"/>
       </div>
 
-      <div class="input-group mb-3 w-50">
-        <input type="file" accept="image/jpeg" name="image" class="form-control" placeholder="image" aria-label="image"
-                  aria-describedby="image" :required="!isEdit" @change="changeImage" />
+     <div class="form__image">
+       <div class="input-group mb-3">
+         <input id="image" type="file" accept="image/jpeg" name="image" :class="{ 'd-none': !!image }" class="from__input-image-body" placeholder="image" aria-label="image"
+                aria-describedby="image" :required="!isEdit" @change="changeImage" oninvalid="this.setCustomValidity('Необходмо добавить картинку')" />
+       </div>
+
+       <label for="image" class="text-center w-100">
+         <img class="form__input-image mb-2 w-50" :src="image" alt="">
+       </label>
+     </div>
+
+      <div class="form__submit text-center w-100" >
+        <input type="submit" :value="isEdit ? 'Редактировать' : 'Добавить'" class="btn bg-custom-blue text-white text-center">
       </div>
-
-      <img class="form__image mb-2 w-50" :src="image" alt="">
-
-
-      <input type="submit" :value="isEdit ? 'Редактировать' : 'Добавить'" class="btn bg-custom-blue text-white">
     </form>
   </div>
 </template>
@@ -56,6 +69,16 @@ export default {
       immediate: true,
       handler() {
         if (!this.user || !this.user.roles.includes("ROLE_ADMIN")) this.$router.push({name: 'Home'});
+      }
+    },
+    newId() {
+      if (!this.newId) {
+        this.isLoading = true;
+        this.title = '';
+        this.description = '';
+        this.text = '';
+        this.image = '';
+        this.isLoading = false;
       }
     }
   },
@@ -126,9 +149,57 @@ export default {
 </script>
 
 <style lang="scss" scoped>
+.create-new__form {
+  display: grid;
+  grid-template-areas:
+            "title text text"
+            "description text text"
+            "image image image"
+            "submit submit submit";
+  grid-template-rows: auto auto auto auto;
+  grid-gap: 15px;
+}
+
 .form {
+  &__title {
+    grid-area: title;
+  }
+
+  &__description {
+    grid-area: description;
+  }
+
+  &__text {
+    height: max-content;
+    grid-area: text;
+  }
+
+
   &__image {
-    max-height: 700px;
+    cursor: pointer;
+    grid-area: image;
+  }
+
+  &__input-image-body {
+    display: none;
+  }
+
+  &__image:empty &__input-image-body {
+    display: block;
+  }
+
+  &__submit {
+    grid-area: submit;
+  }
+
+  &__input-image {
+    max-height: 300px;
    }
+}
+
+.text__textarea {
+  height: 175px;
+  grid-column: 3;
+  //height: -webkit-fill-available;
 }
 </style>

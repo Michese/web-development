@@ -1,4 +1,5 @@
 security:
+    access_denied_url: /
     role_hierarchy:
         ROLE_ADMIN: [ROLE_USER]
 
@@ -29,6 +30,11 @@ security:
                 check_path: api_login
                 username_path: username
                 password_path: password
+            entry_point: App\Security\AuthenticationEntryPoint
+            access_denied_handler: App\Security\AccessDeniedHandler
+            login_throttling:
+                max_attempts: 5
+                interval: '5 minutes'
 
             logout:
                 path: api_logout
@@ -41,7 +47,7 @@ security:
     # Easy way to control access for large sections of your site
     # Note: Only the *first* access control that matches will be used
     access_control:
-        # - { path: ^/admin, roles: ROLE_ADMIN }
+         - { path: ^/admin, roles: ROLE_ADMIN }
         # - { path: ^/profile, roles: ROLE_USER }
 
 when@test:

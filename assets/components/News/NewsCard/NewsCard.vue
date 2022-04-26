@@ -1,5 +1,5 @@
 <template>
-  <article class="card mb-3 card_custom">
+  <router-link :to="{ name: 'New', params: { newId: newItem.id } }" class="card mb-3 card_custom">
     <div class="card-body d-flex flex-column justify-content-between">
       <main>
         <img :src="newItem.image" alt="" class="card__image"/>
@@ -8,7 +8,6 @@
         <p class="card-text">{{ newItem.text }}</p>
       </main>
       <footer class="d-flex justify-content-between">
-        <router-link :to="{ name: 'New', params: { newId: newItem.id } }" class="card-link">Перейти</router-link>
         <div class="card__settles">
           <span class="card__date">{{ createdAt }}</span>
           <span class="card__comments ms-2 text-custom-blue">
@@ -22,7 +21,7 @@
         </div>
       </footer>
     </div>
-  </article>
+  </router-link>
 </template>
 
 <script>

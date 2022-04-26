@@ -38,7 +38,7 @@ class Comment
 
     #[ORM\Column(type: 'boolean')]
     #[Groups(['new'])]
-    private $isActive;
+    private $isActive = false;
 
     public function getId(): ?int
     {

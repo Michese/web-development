@@ -38,7 +38,7 @@
 
           <h3 class="card-title">{{ newItem.title }}</h3>
           <h5 class="card-title">{{ newItem.description }}</h5>
-          <p class="card-text align-items-start text-start" v-html="newItem.text"/>
+          <p class="card-text align-items-start text-start" v-html="itemText"/>
         </div>
         <div class="card-footer text-muted text-end">
           {{ adminFullName }}
@@ -95,6 +95,9 @@ export default {
     },
     isAdmin() {
       return this.user?.roles?.includes('ROLE_ADMIN') ?? false;
+    },
+    itemText() {
+      return this.newItem?.text.replaceAll('\n', '<br />') ?? ''
     }
   },
   methods: {
@@ -104,6 +107,7 @@ export default {
         if (newItem && comments) {
           this.newItem = newItem;
           this.comments = comments;
+          console.log('text', this.newItem.text.replaceAll('\n', ''));
         }
       }).finally(() => {
         this.isLoading = false;

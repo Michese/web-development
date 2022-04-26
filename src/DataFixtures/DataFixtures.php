@@ -57,7 +57,6 @@ class DataFixtures
 Хозяева ведут канал с котиком с его 50-дневного возраста, с 30 ноября 2019 года. На канал выкладывались видео с повседневной жизнью котика. Котенок привлек зрителей милой внешностью и выразительной мордочкой.
 
 Теперь Мотимару имеет на канале 1,4 миллиона подписчиков и быстро набирает на каждом видео миллионы просмотров.')
-            ->setViews(0)
             ->setCreatedAt(new \DateTimeImmutable('now'))
             ->setImage('\uploads\1.jpg')
             ->setAdmin($user);
@@ -74,7 +73,6 @@ class DataFixtures
 Для исследования взяли 80 кошек — как домашних, так и взятых напрокат из кошачьего кафе.
 
 На первом этапе исследователи записали на диктофон голос хозяина или знакомого кошке человека. На аудио произносилась кличка кошки, а также 4 похожих по звучанию слова. Далее задачу усложнили, и люди на записи называли имена других кошек. В конце эксперимента кличку называл совсем незнакомый кошке человек.')
-            ->setViews(0)
             ->setCreatedAt(new \DateTimeImmutable('now'))
             ->setImage('\uploads\2.jpg')
             ->setAdmin($user);
@@ -93,7 +91,6 @@ class DataFixtures
 Вакансия появилась из-за специфики работы в ветклиники. В стационаре постоянно находятся уличные коты, которым просто необходима любовь и внимание человека. Когда человек гладит кота, питомец перестает бояться и социализируется.
 
 Ветклиника будет рада и просто добровольцам, которые будут приходить погладить котиков. Ветеринары также сообщили, что всем бездомным животным в клинике нужна постоянная семья.')
-            ->setViews(0)
             ->setCreatedAt(new \DateTimeImmutable('now'))
             ->setImage('\uploads\3.jpg')
             ->setAdmin($user);
@@ -114,8 +111,7 @@ class DataFixtures
     public function secondComment(User $user, NewItem $new): Comment
     {
         $comment = new Comment();
-        $comment->setIsActive(true)
-            ->setCreatedAt(new \DateTimeImmutable('now'))
+        $comment->setCreatedAt(new \DateTimeImmutable('now'))
             ->setNew($new)
             ->setUser($user)
             ->setText("Aaaaa люблю котов!");
@@ -136,8 +132,7 @@ class DataFixtures
     public function fourthComment(User $user, NewItem $new): Comment
     {
         $comment = new Comment();
-        $comment->setIsActive(true)
-            ->setCreatedAt(new \DateTimeImmutable('now'))
+        $comment->setCreatedAt(new \DateTimeImmutable('now'))
             ->setNew($new)
             ->setUser($user)
             ->setText("Почему тут одни коты >_> \n Видимо я не туда попал <_<");

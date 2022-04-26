@@ -37,9 +37,9 @@ class NewItem
     #[ORM\Column(type: 'datetime_immutable', nullable: true)]
     private $deletedAt;
 
-    #[ORM\Column(type: 'integer')]
+    #[ORM\Column(type: 'integer', options: ['default' => 0])]
     #[Groups(['new'])]
-    private $views;
+    private $views = 0;
 
     #[ORM\ManyToOne(targetEntity: User::class, inversedBy: 'newItems')]
     #[ORM\JoinColumn(nullable: false)]
