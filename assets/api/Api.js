@@ -1,5 +1,5 @@
 import axios from 'axios';
-import {stateNotification} from "../store";
+import {stateNotification} from "../store/notification";
 
 const { addNotification } = stateNotification;
 
@@ -16,7 +16,7 @@ export class Api {
                 .then(
                     (response) => resolve(response.data),
                     (err) => {
-                        addNotification({ caption: err.response.statusText, text: err.response.data.detail });
+                        addNotification({ caption: err.response?.statusText, text: err.response?.data?.detail });
                         reject(err);
                     }
                 )
@@ -31,7 +31,7 @@ export class Api {
                 .then(
                     (response) => resolve(response),
                     (err) => {
-                        addNotification({ caption: err.response.statusText, text: err.response.data.detail ?? err.response.data.error });
+                        addNotification({ caption: err.response?.statusText, text: err.response?.data?.detail ?? err.response?.data?.error });
                         reject(err);
                     }
                 )
@@ -46,7 +46,7 @@ export class Api {
                 .then(
                     (response) => resolve(response),
                     (err) => {
-                        addNotification({ caption: err.response.statusText, text: err.response.data.detail });
+                        addNotification({ caption: err.response?.statusText, text: err.response?.data?.detail });
                         reject(err);
                     }
                 )
@@ -61,7 +61,7 @@ export class Api {
                 .then(
                     (response) => resolve(response),
                     (err) => {
-                        addNotification({ caption: err.response.statusText, text: err.response.data.detail });
+                        addNotification({ caption: err.response?.statusText, text: err.response?.data?.detail });
                         reject(err);
                     }
                 )
@@ -76,7 +76,7 @@ export class Api {
                 .then(
                     (response) => resolve(response.data),
                     (err) => {
-                        addNotification({ caption: err.response.statusText, text: err.response.data.detail });
+                        addNotification({ caption: err.response?.statusText, text: err.response?.data?.detail });
                         reject(err);
                     }
                 )

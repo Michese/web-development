@@ -6,7 +6,7 @@
 
 <script>
 import MimMessage from "./MimMessage/MimMessage";
-import {notificationSymbol} from "../../../store";
+import {notificationSymbol} from "../../../store/notification";
 
 export default {
   name: "MimNotification",

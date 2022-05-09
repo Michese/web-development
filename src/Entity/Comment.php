@@ -2,12 +2,34 @@
 
 namespace App\Entity;
 
+use ApiPlatform\Core\Action\NotFoundAction;
+use ApiPlatform\Core\Annotation\ApiResource;
 use App\Repository\CommentRepository;
 use Doctrine\ORM\Mapping as ORM;
 use Symfony\Component\Serializer\Annotation\Groups;
 use Symfony\Component\Validator\Constraints as Assert;
 
 #[ORM\Entity(repositoryClass: CommentRepository::class)]
+#[ApiResource(
+    collectionOperations: [],
+    itemOperations: [
+        'post' => [
+            'method' => 'POST',
+            'route_name' => 'create_comment',
+            "security" => "is_granted('ROLE_USER', message='Необходимо зарегистрироваться!')"
+        ],
+        'approve' => [
+            'method' => 'PATCH',
+            'route_name' => 'approve_comment',
+            "security" => "is_granted('ROLE_ADMIN')"
+        ],
+        'delete' => [
+            'method' => 'DELETE',
+            'route_name' => 'delete_comment',
+            "security" => "is_granted('ROLE_ADMIN')"
+        ],
+    ]
+)]
 class Comment
 {
     #[ORM\Id]

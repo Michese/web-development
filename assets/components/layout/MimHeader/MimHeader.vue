@@ -46,7 +46,7 @@
 </template>
 
 <script>
-import {userSymbol} from "@/store";
+import {userSymbol} from "../../../store/user";
 
 export default {
   name: "MimHeader",

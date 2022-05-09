@@ -8,6 +8,7 @@ use Doctrine\ORM\OptimisticLockException;
 use Doctrine\ORM\ORMException;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\IsGranted;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
+use Symfony\Component\HttpFoundation\Cookie;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
@@ -31,25 +32,6 @@ class UserController extends AbstractController
     public function index(): JsonResponse
     {
         return new JsonResponse(["user" => $this->getUser()->toArray()]);
-    }
-
-    #[Route('/api/login', name: 'api_login', methods: ['POST'])]
-    public function login(): Response
-    {
-        $user = $this->getUser();
-
-        if (null == $user) {
-            return $this->json([
-                'message' => 'missing credentials',
-            ], Response::HTTP_UNAUTHORIZED);
-        }
-
-        $token = Uuid::v1();
-
-        return $this->json([
-            'user' =>  $this->getUser()->toArray(),
-            'token' => $token,
-        ]);
     }
 
     /**
@@ -92,8 +74,11 @@ class UserController extends AbstractController
      * @IsGranted("ROLE_USER", message="Авторизируйтесь!")
      */
     #[Route('/api/logout', name: 'api_logout', methods: ['GET'])]
-    public function logout(#[CurrentUser] ?User $user): Response
+    public function logout(Request $request): Response
     {
+        $response = new Response();
+        $response->headers->clearCookie('PHPSESSID');
+        $response->send();
         return $this->json([
             'success' => true,
         ]);

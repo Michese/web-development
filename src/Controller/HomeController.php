@@ -4,19 +4,14 @@ namespace App\Controller;
 
 use App\Entity\Comment;
 use App\Entity\NewItem;
-use App\Model\UploadFileModel;
 use App\Repository\CommentRepository;
 use App\Repository\NewItemRepository;
 use App\Service\FileManagerService;
-use Cassandra\Blob;
 use Doctrine\Common\Annotations\AnnotationReader;
 use Doctrine\ORM\OptimisticLockException;
 use Doctrine\ORM\ORMException;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\IsGranted;
-use SplFileObject;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
-use Symfony\Component\HttpFoundation\File\File;
-use Symfony\Component\HttpFoundation\File\UploadedFile;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
@@ -24,7 +19,6 @@ use Symfony\Component\Routing\Annotation\Route;
 use Symfony\Component\Serializer\Exception\ExceptionInterface;
 use Symfony\Component\Serializer\Mapping\Factory\ClassMetadataFactory;
 use Symfony\Component\Serializer\Mapping\Loader\AnnotationLoader;
-use Symfony\Component\Serializer\Normalizer\DataUriNormalizer;
 use Symfony\Component\Serializer\Normalizer\DateTimeNormalizer;
 use Symfony\Component\Serializer\Normalizer\ObjectNormalizer;
 use Symfony\Component\Serializer\Serializer;
@@ -51,47 +45,30 @@ class HomeController extends AbstractController
     }
 
     /**
+     * @param NewItem $newItem
      * @param NewItemRepository $newRepository
      * @return JsonResponse
      * @throws ExceptionInterface
      */
-    #[Route('/api/new', name: 'get_news', methods: ['GET']) ]
-    public function getPosts(NewItemRepository $newRepository): JsonResponse
+    #[Route('/api/new_items/{id}', name: 'get_new', methods: ['GET']) ]
+    public function getPost(NewItem $newItem, NewItemRepository $newRepository): JsonResponse
     {
-        $news = $newRepository->findBy([
-            'deletedAt' => null
-        ]);
-        $jsonNewItem = $this->serializer->normalize($news, null, ['groups' => ['news']]);
-        return new JsonResponse(['news' => $jsonNewItem]);
-    }
-
-    /**
-     * @param int $id
-     * @param NewItemRepository $newRepository
-     * @return JsonResponse
-     * @throws ExceptionInterface
-     */
-    #[Route('/api/new/{id}', name: 'get_new', methods: ['GET']) ]
-    public function getPost(int $id, NewItemRepository $newRepository): JsonResponse
-    {
-        $new = $newRepository->find($id);
-
         if ($this->isGranted('ROLE_ADMIN')) {
-            $comments = $new->getComments()->filter(function(Comment $comment) {
+            $comments = $newItem->getComments()->filter(function(Comment $comment) {
                 return $comment->getDeletedAt() == null;
             });
         } else {
-            $comments = $new->getComments()->filter(function(Comment $comment) {
+            $comments = $newItem->getComments()->filter(function(Comment $comment) {
                 return $comment->getIsActive() && $comment->getDeletedAt() == null;
             });
         }
 
-        if ($this->getUser() && $new->getAdmin()->getId() != $this->getUser()->getId()) {
-            $new->setViews($new->getViews() + 1);
-            $newRepository->add($new);
+        if ($this->getUser() && $newItem->getAdmin()->getId() != $this->getUser()->getId()) {
+            $newItem->setViews($newItem->getViews() + 1);
+            $newRepository->add($newItem);
         }
 
-        $jsonNewItem = $this->serializer->normalize($new, null, ['groups' => ['new']]);
+        $jsonNewItem = $this->serializer->normalize($newItem, null, ['groups' => ['new']]);
         $jsonComments = $this->serializer->normalize($comments, null, ['groups' => ['new']]);
         return new JsonResponse(['newItem' => $jsonNewItem, 'comments' => $jsonComments]);
     }
@@ -103,7 +80,7 @@ class HomeController extends AbstractController
      * @return JsonResponse
      * @IsGranted("ROLE_ADMIN", message="У вас недостаточно прав!")
      */
-    #[Route('/api/new', name: 'create_new', methods: ['POST']) ]
+    #[Route('/api/new_items', name: 'create_new', methods: ['POST']) ]
     public function createNew(Request $request, NewItemRepository $newItemRepository, ValidatorInterface $validator): JsonResponse
     {
         $user = $this->getUser();
@@ -130,10 +107,11 @@ class HomeController extends AbstractController
      * @param Request $request
      * @param NewItemRepository $newItemRepository
      * @param ValidatorInterface $validator
+     * @param FileManagerService $fileManagerService
      * @return JsonResponse
      * @IsGranted("ROLE_ADMIN", message="У вас недостаточно прав!")
      */
-    #[Route('/api/new/{newId}', name: 'edit_new', methods: ['PUT']) ]
+    #[Route('/api/new_items/{newId}', name: 'edit_new', methods: ['PUT']) ]
     public function editNew(int $newId, Request $request, NewItemRepository $newItemRepository, ValidatorInterface $validator, FileManagerService $fileManagerService): JsonResponse
     {
         $user = $this->getUser();
@@ -166,18 +144,15 @@ class HomeController extends AbstractController
     }
 
     /**
-     * @param int $newId
+     * @param NewItem $newItem
      * @param NewItemRepository $newItemRepository
      * @return JsonResponse
      * @IsGranted("ROLE_ADMIN", message="У вас недостаточно прав!")
      */
-    #[Route('/api/new/{newId}', name: 'delete_new', methods: ['DELETE']) ]
-    public function deleteNew(int $newId, NewItemRepository $newItemRepository): JsonResponse
+    #[Route('/api/new_items/{id}', name: 'delete_new') ]
+    public function deleteNew(NewItem $newItem, NewItemRepository $newItemRepository): JsonResponse
     {
-        $newItem = $newItemRepository->find($newId);
-        $newItem->setDeletedAt(new \DateTimeImmutable('now'));
-        $newItemRepository->add($newItem);
-
+        $newItemRepository->remove($newItem);
         return new JsonResponse([
             'result' => true,
         ]);
@@ -194,7 +169,7 @@ class HomeController extends AbstractController
      * @throws OptimisticLockException
      * @IsGranted("ROLE_USER", message="Необходимо зарегистрироваться!")
      */
-    #[Route('/api/new/{newId}/comment', name: 'create_comment', methods: ['POST']) ]
+    #[Route('/api/new_items/{newId}/comment', name: 'create_comment', methods: ['POST']) ]
     public function createComment(int $newId, Request $request, NewItemRepository $newItemRepository, CommentRepository $commentRepository, ValidatorInterface $validator): JsonResponse
     {
         $user = $this->getUser();
@@ -232,11 +207,10 @@ class HomeController extends AbstractController
      * @throws OptimisticLockException
      * @IsGranted("ROLE_ADMIN", message="У вас недостаточно прав!")
      */
-    #[Route('/api/new/{newId}/comment/{commentId}', name: 'approve_comment', methods: ['PATCH'])]
+    #[Route('/api/new_items/{newId}/comment/{commentId}', name: 'approve_comment', methods: ['PATCH'])]
     public function approveComment(int $newId, int $commentId, CommentRepository $commentRepository): Response
     {
         $comment = $commentRepository->find($commentId);
-        $user = $this->getUser();
         $comment->setIsActive(true);
         $commentRepository->add($comment);
 
@@ -252,7 +226,7 @@ class HomeController extends AbstractController
      * @throws OptimisticLockException
      * @IsGranted("ROLE_ADMIN", message="У вас недостаточно прав!")
      */
-    #[Route('/api/new/{newId}/comment/{commentId}', name: 'delete_comment', methods: ['DELETE'])]
+    #[Route('/api/new_items/{newId}/comment/{commentId}', name: 'delete_comment', methods: ['DELETE'])]
     public function deleteComment(int $newId, int $commentId, CommentRepository $commentRepository): Response
     {
         $comment = $commentRepository->find($commentId);

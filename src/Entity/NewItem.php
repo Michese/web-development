@@ -2,6 +2,13 @@
 
 namespace App\Entity;
 
+use ApiPlatform\Core\Annotation\ApiFilter;
+use ApiPlatform\Core\Annotation\ApiResource;
+use ApiPlatform\Core\Bridge\Doctrine\MongoDbOdm\Filter\OrderFilter;
+use ApiPlatform\Core\Bridge\Doctrine\MongoDbOdm\Filter\RangeFilter;
+use ApiPlatform\Core\Bridge\Doctrine\MongoDbOdm\Filter\ExistsFilter;
+use ApiPlatform\Core\Bridge\Doctrine\Orm\Filter\DateFilter;
+use ApiPlatform\Core\Serializer\Filter\PropertyFilter;
 use App\Repository\NewItemRepository;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
@@ -10,6 +17,35 @@ use JetBrains\PhpStorm\Pure;
 use Symfony\Component\Serializer\Annotation\Groups;
 
 #[ORM\Entity(repositoryClass: NewItemRepository::class)]
+#[ApiResource(
+    collectionOperations: ['get' => [
+        'normalization_context' => ['groups' => ['news']],
+        'pagination_items_per_page' => 3,
+        'order' => ["createdAt" => "DESC"],
+    ]],
+    itemOperations: [
+        'get' => [
+            'controller' => '\App\Controller\HomeController::getPost',
+            'path' => '/new_items/{id}',
+            'method' => 'GET',
+        ],
+        'post' => [
+            'method' => 'POST',
+            'route_name' => 'create_new',
+            "security" => "is_granted('ROLE_ADMIN')"
+        ],
+        'put' => [
+            'method' => 'PUT',
+            'route_name' => 'edit_new',
+            "security" => "is_granted('ROLE_ADMIN')"
+        ],
+        'delete' => [
+            'method' => 'DELETE',
+            'route_name' => 'delete_new',
+            "security" => "is_granted('ROLE_ADMIN')"
+        ],
+    ]
+)]
 class NewItem
 {
     #[ORM\Id]
@@ -46,7 +82,7 @@ class NewItem
     #[Groups(['new'])]
     private $admin;
 
-    #[ORM\OneToMany(mappedBy: 'new', targetEntity: Comment::class)]
+    #[ORM\OneToMany(mappedBy: 'new', targetEntity: Comment::class, cascade: ['remove'])]
     private $comments;
 
     #[ORM\Column(type: 'string', length: 255, nullable: true)]

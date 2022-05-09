@@ -2,6 +2,7 @@
 
 namespace App\Entity;
 
+use ApiPlatform\Core\Annotation\ApiResource;
 use App\Repository\UserRepository;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
@@ -14,6 +15,16 @@ use Symfony\Component\Security\Core\User\UserInterface;
 use Symfony\Component\Serializer\Annotation\Groups;
 
 #[ORM\Entity(repositoryClass: UserRepository::class)]
+#[ApiResource(
+    collectionOperations: [],
+    itemOperations: [
+        'get' => [
+            'method' => 'GET',
+            'route_name' => 'get_user',
+            "security" => "is_granted('ROLE_USER', message='Необходимо зарегистрироваться!')"
+        ],
+    ]
+)]
 class User implements UserInterface, PasswordAuthenticatedUserInterface
 {
     #[Groups(['user', 'new'])]
@@ -67,6 +78,11 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
             "lastDayVisit" => $this->getLastDayVisit(),
             "roles" => $this->getRoles(),
         ];
+    }
+
+    public function username()
+    {
+        return $this->email;
     }
 
     #[Pure] public function __construct()

@@ -1,38 +1,60 @@
 {
-    "devDependencies": {
-        "@hotwired/stimulus": "^3.0.0",
-        "@symfony/stimulus-bridge": "^3.0.0",
-        "@symfony/webpack-encore": "^1.8.2",
-        "@vue/cli-service": "^5.0.4",
-        "@vue/compiler-sfc": "^3.2.31",
-        "core-js": "^3.0.0",
-        "css-loader": "^6.7.1",
-        "file-loader": "^6.2.0",
-        "mini-css-extract-plugin": "^2.6.0",
-        "prettier": "^2.6.0",
-        "regenerator-runtime": "^0.13.2",
-        "sass": "^1.49.9",
-        "sass-loader": "^12.6.0",
-        "url-loader": "^4.1.1",
-        "webpack": "^5.70.0",
-        "webpack-cli": "^4.9.2",
-        "webpack-dev-server": "^4.7.4",
-        "webpack-notifier": "^1.15.0"
-    },
-    "license": "UNLICENSED",
-    "private": true,
-    "scripts": {
-        "dev-server": "encore dev-server",
-        "dev": "encore dev",
-        "watch": "encore dev --watch",
-        "build": "encore production --progress"
-    },
-    "dependencies": {
-        "axios": "^0.26.1",
-        "bootstrap": "^5.1.3",
-        "stimulus": "^3.0.1",
-        "vue": "^3.2.31",
-        "vue-loader": "^17.0.0",
-        "vue-router": "^4.0.14"
+  "devDependencies": {
+    "@hotwired/stimulus": "^3.0.0",
+    "@symfony/stimulus-bridge": "^3.0.0",
+    "@symfony/webpack-encore": "^1.8.2",
+    "@vue/cli-plugin-babel": "^5.0.4",
+    "@vue/cli-plugin-router": "^5.0.4",
+    "@vue/cli-plugin-unit-jest": "^5.0.4",
+    "@vue/cli-service": "^5.0.4",
+    "@vue/compiler-sfc": "^3.2.31",
+    "@vue/test-utils": "^2.0.0-rc.21",
+    "@vue/vue3-jest": "^27.0.0",
+    "babel-jest": "^27.0.0",
+    "core-js": "^3.0.0",
+    "css-loader": "^6.7.1",
+    "file-loader": "^6.2.0",
+    "jest": "^27.0.0",
+    "madge": "^5.0.1",
+    "mini-css-extract-plugin": "^2.6.0",
+    "prettier": "^2.6.0",
+    "regenerator-runtime": "^0.13.2",
+    "sass": "^1.49.9",
+    "sass-loader": "^12.6.0",
+    "url-loader": "^4.1.1",
+    "webpack": "^5.70.0",
+    "webpack-cli": "^4.9.2",
+    "webpack-dev-server": "^4.7.4",
+    "webpack-notifier": "^1.15.0"
+  },
+  "license": "UNLICENSED",
+  "private": true,
+  "scripts": {
+    "dev-server": "encore dev-server",
+    "dev": "encore dev",
+    "watch": "encore dev --watch",
+    "build": "encore production --progress",
+    "test": "vue-cli-service test:unit"
+  },
+  "dependencies": {
+    "axios": "^0.26.1",
+    "bootstrap": "^5.1.3",
+    "stimulus": "^3.0.1",
+    "vue": "^3.2.31",
+    "vue-loader": "^17.0.0",
+    "vue-router": "^4.0.14"
+  },
+  "jest": {
+    "preset": "@vue/cli-plugin-unit-jest",
+    "transform": {
+      "\\.[jt]sx?$": "babel-jest",
+      "\\.vue$": "babel-jest",
+      "\\.css$": "some-css-transformer"
     }
+  },
+  "babel": {
+    "presets": [
+      "@vue/cli-plugin-babel/preset"
+    ]
+  }
 }

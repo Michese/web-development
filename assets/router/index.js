@@ -13,9 +13,10 @@ const routes = [
         component: defineComponent(News),
     },
     {
-        path: '/news',
+        path: '/news/:page',
         name: 'News',
         component: defineComponent(News),
+        props: true,
     },
     {
         path: '/news/create',
@@ -29,7 +30,7 @@ const routes = [
         component: defineComponent(CreateNew),
     },
     {
-        path: '/news/:newId',
+        path: '/new/:newId',
         name: 'New',
         props: true,
         component: defineComponent(New),

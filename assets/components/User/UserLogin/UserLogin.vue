@@ -4,7 +4,7 @@
     <form action="#" method="post" class="user-login__form d-flex flex-column align-items-center" @submit.prevent="onSubmit">
       <div class="input-group mb-3">
         <span class="input-group-text" id="basic-addon1">@</span>
-        <input v-model="username" type="email" name="username" class="form-control" placeholder="Электронная почта" aria-label="email" aria-describedby="email">
+        <input v-model="email" type="email" name="email" class="form-control" placeholder="Электронная почта" aria-label="email" aria-describedby="email">
       </div>
 
       <div class="input-group mb-3">
@@ -17,7 +17,7 @@
 </template>
 
 <script>
-import {userSymbol} from "../../../store";
+import {userSymbol} from "../../../store/user";
 
 export default {
   name: "UserLogin",
@@ -27,7 +27,7 @@ export default {
     }
   },
   data: () => ({
-    username: '',
+    email: '',
     password: '',
   }),
   watch: {
@@ -41,7 +41,7 @@ export default {
   methods: {
     async onSubmit() {
       await this.stateUser.loginUser({
-        username: this.username,
+        email: this.email,
         password: this.password,
       })
     }

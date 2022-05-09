@@ -45,7 +45,7 @@
 </template>
 
 <script>
-import {userSymbol} from "../../store";
+import {userSymbol} from "../../store/user";
 import NewsApi from "../../api/NewsApi";
 import MimSpinner from "../../ui/MimSpinner/MimSpinner";
 

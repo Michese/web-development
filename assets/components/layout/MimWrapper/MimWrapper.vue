@@ -8,7 +8,7 @@
 
 <script>
 import MimSpinner from "../../../ui/MimSpinner/MimSpinner";
-import {userSymbol} from "../../../store";
+import {userSymbol} from "../../../store/user";
 import MimNotification from "../MimNotification/MimNotification";
 
 export default {

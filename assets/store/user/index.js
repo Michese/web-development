@@ -14,22 +14,21 @@ export const createStateUser = () => {
     };
 
     const logoutUser = async () => {
-        await UserApi.logout();
-        state.user = null;
-        return true;
+        const { success } = await UserApi.logout();
+        if (success) state.user = null;
+        return !!success;
     };
 
     const loginUser = async data => {
-        const { data: { user } } = await UserApi.login(data);
-        if (user) state.user = user;
-        return user;
+        const { data: { token } } = await UserApi.login(data);
+        if (token) await fetchUser();
+        return state.user;
     };
 
     const registerUser = async data => {
         const { data: { result } } = await UserApi.register(data);
-        console.log('result', result);
         if (result) return await loginUser({
-            username: data.email,
+            email: data.email,
             password: data.password,
         });
         else result;

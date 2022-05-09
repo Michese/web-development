@@ -58,7 +58,7 @@
 import Comment from "./Comment/Comment";
 import {MimSpinner} from "../../ui";
 import NewsApi from "../../api/NewsApi";
-import {userSymbol} from '@/store';
+import {userSymbol} from '../../store/user';
 import CreateComment from "./Comment/CreateComment";
 
 export default {

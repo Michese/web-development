@@ -5,7 +5,8 @@ import App from './App.vue';
 import router from './router';
 import vBodyOverflow from './helpers/vBodyOverflow';
 import vClickOutside from './helpers/vClickOutside';
-import {stateUser, userSymbol, notificationSymbol, stateNotification} from "./store";
+import {stateUser, userSymbol} from "./store/user";
+import {notificationSymbol, stateNotification} from "./store/notification";
 
 const app = createApp(App);
 app.use(router);

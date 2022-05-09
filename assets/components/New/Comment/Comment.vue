@@ -42,7 +42,7 @@
 
 <script>
 import NewsApi from "../../../api/NewsApi";
-import {userSymbol} from "../../../store";
+import {userSymbol} from "../../../store/user";
 
 export default {
   name: "Comment",

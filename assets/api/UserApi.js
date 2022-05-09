@@ -1,4 +1,4 @@
-import { Api } from '@/api/Api';
+import { Api } from './Api';
 
 class UserApi extends Api {
     async getUser() {
